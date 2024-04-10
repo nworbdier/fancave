@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -36,6 +34,14 @@
     },
     "updates": {
       "url": "https://u.expo.dev/28242acf-dcdf-43d5-9e7e-ee9eea987f78"
-    }
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow FanCave to access your microphone."
+        }
+      ]
+    ]
   }
 }
