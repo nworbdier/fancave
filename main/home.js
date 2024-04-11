@@ -63,59 +63,117 @@ export default function App() {
     setRefreshing(false);
   };
 
-  const renderTweetItem = ({ item }) => (
+  const RegularTweetView = ({ item }) => (
     <View style={styles.tweetContainer}>
-      <Text style={styles.author}>@{item.screen_name}</Text>
-      <Text style={styles.tweetText}>{item.text}</Text>
-      {item.media && item.media.photo && item.media.photo[0] && (
-        <TouchableOpacity
-          onPress={() => setSelectedImage(item.media.photo[0].media_url_https)}
-        >
-          <Image
-            source={{ uri: item.media.photo[0].media_url_https }}
-            style={styles.tweetMedia}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
-      {item.quoted && (
-        <View style={styles.quotedContainer}>
-          <View
-            style={{
-              alignItems: "center",
-              flexDirection: "row",
-              paddingBottom: 10,
-            }}
-          >
-            <Image
-              source={{ uri: item.quoted.author.avatar }}
-              style={[styles.quoteAvatar, { marginRight: 8 }]}
-              resizeMode="contain"
-            />
-            <Text style={styles.quotedAuthor}>
-              @{item.quoted.author.screen_name}
-            </Text>
-          </View>
-          <Text style={styles.quotedText}>{item.quoted.text}</Text>
-          {item.quoted.media &&
-            item.quoted.media.photo &&
-            item.quoted.media.photo[0] && (
-              <TouchableOpacity
-                onPress={() =>
-                  setSelectedImage(item.quoted.media.photo[0].media_url_https)
-                }
-              >
-                <Image
-                  source={{ uri: item.quoted.media.photo[0].media_url_https }}
-                  style={styles.quotedMedia}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            )}
-        </View>
-      )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingBottom: 10,
+        }}
+      >
+        <Image
+          source={{ uri: item.author.avatar }}
+          style={[styles.quoteAvatar, { marginRight: 8 }]}
+          resizeMode="contain"
+        />
+        <Text style={styles.author}>@{item.author.screen_name}</Text>
+      </View>
+      <Text>{item.text}</Text>
     </View>
   );
+
+  const QuotedTweetView = ({ item }) => (
+    <View style={styles.tweetContainer}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingBottom: 10,
+        }}
+      >
+        <Image
+          source={{ uri: item.author.avatar }}
+          style={[styles.quoteAvatar, { marginRight: 8 }]}
+          resizeMode="contain"
+        />
+        <Text style={styles.author}>@{item.author.screen_name}</Text>
+      </View>
+      <Text paddingBottom={10}>{item.text}</Text>
+      <View style={styles.quotedContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingBottom: 10,
+          }}
+        >
+          <Image
+            source={{ uri: item.quoted.author.avatar }}
+            style={[styles.quoteAvatar, { marginRight: 8 }]}
+            resizeMode="contain"
+          />
+          <Text style={styles.quotedAuthor}>
+            @{item.quoted.author.screen_name}
+          </Text>
+        </View>
+        <Text>{item.quoted.text}</Text>
+      </View>
+    </View>
+  );
+
+  const RetweetedTweetView = ({ item }) => (
+    <View style={styles.tweetContainer}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingBottom: 10,
+        }}
+      >
+        <Image
+          source={{ uri: item.author.avatar }}
+          style={[styles.quoteAvatar, { marginRight: 8 }]}
+          resizeMode="contain"
+        />
+        <Text style={styles.author}>@{item.author.screen_name} Retweeted</Text>
+      </View>
+      <View style={styles.quotedContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingBottom: 10,
+          }}
+        >
+          <Image
+            source={{ uri: item.retweeted_tweet.author.avatar }}
+            style={[styles.quoteAvatar, { marginRight: 8 }]}
+            resizeMode="contain"
+          />
+          <Text style={styles.author}>
+            @{item.retweeted_tweet.author.screen_name}
+          </Text>
+        </View>
+        <Text>{item.retweeted_tweet.text}</Text>
+      </View>
+    </View>
+  );
+
+  const TweetItem = ({ item }) => {
+    // Function to render the appropriate tweet view based on the tweet type
+    const renderTweetView = () => {
+      if (item.retweeted_tweet) {
+        return <RetweetedTweetView item={item} />;
+      } else if (item.quoted) {
+        return <QuotedTweetView item={item} />;
+      } else {
+        return <RegularTweetView item={item} />;
+      }
+    };
+
+    return renderTweetView();
+  };
 
   const getKeyByValue = (object, value) => {
     return Object.keys(object).find((key) => object[key] === value);
@@ -180,7 +238,7 @@ export default function App() {
         ) : (
           <FlatList
             data={tweets}
-            renderItem={renderTweetItem}
+            renderItem={({ item }) => <TweetItem item={item} />}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -228,18 +286,17 @@ const styles = StyleSheet.create({
     backgroundColor: "grey",
   },
   header: {
-    flex: 0.5,
-    backgroundColor: "grey",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
+    backgroundColor: "grey",
   },
   headerLeft: {
-    backgroundColor: "grey",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    backgroundColor: "grey",
   },
   headerText: {
     fontSize: 18,
@@ -272,8 +329,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   author: {
+    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 5,
     color: "#1da1f2", // Twitter blue
   },
   quotedContainer: {
@@ -296,7 +353,7 @@ const styles = StyleSheet.create({
   quoteAvatar: {
     width: 24,
     height: 24,
-    borderRadius: 15,
+    borderRadius: 12,
   },
   quotedAuthor: {
     fontSize: 14,
