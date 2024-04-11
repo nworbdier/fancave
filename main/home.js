@@ -29,6 +29,7 @@ export default function App() {
   const listDictionary = {
     "1777306887953805810": "Purdue Boilermakers",
     "1777402248013771060": "Iowa Hawkeyes",
+    "1778436010977747315": "Indianapolis Colts",
   };
 
   useEffect(() => {
