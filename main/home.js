@@ -82,11 +82,15 @@ export default function App() {
       </View>
       <Text marginBottom={10}>{decode(item.text)}</Text>
       {item.media && item.media.photo && item.media.photo[0] && (
-        <Image
-          source={{ uri: item.media.photo[0].media_url_https }}
-          style={styles.tweetImage}
-          resizeMode="contain"
-        />
+        <TouchableOpacity
+          onPress={() => setSelectedImage(item.media.photo[0].media_url_https)}
+        >
+          <Image
+            source={{ uri: item.media.photo[0].media_url_https }}
+            style={styles.tweetImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -109,11 +113,15 @@ export default function App() {
       </View>
       <Text paddingBottom={10}>{decode(item.text)}</Text>
       {item.media && item.media.photo && item.media.photo[0] && (
-        <Image
-          source={{ uri: item.media.photo[0].media_url_https }}
-          style={styles.tweetImage}
-          resizeMode="contain"
-        />
+        <TouchableOpacity
+          onPress={() => setSelectedImage(item.media.photo[0].media_url_https)}
+        >
+          <Image
+            source={{ uri: item.media.photo[0].media_url_https }}
+            style={styles.tweetImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       )}
       <View style={styles.quotedContainer}>
         <View
@@ -136,11 +144,17 @@ export default function App() {
         {item.quoted.media &&
           item.quoted.media.photo &&
           item.quoted.media.photo[0] && (
-            <Image
-              source={{ uri: item.quoted.media.photo[0].media_url_https }}
-              style={styles.quotedMedia}
-              resizeMode="contain"
-            />
+            <TouchableOpacity
+              onPress={() =>
+                setSelectedImage(item.quoted.media.photo[0].media_url_https)
+              }
+            >
+              <Image
+                source={{ uri: item.quoted.media.photo[0].media_url_https }}
+                style={styles.quotedMedia}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
           )}
       </View>
     </View>
@@ -183,13 +197,21 @@ export default function App() {
         {item.retweeted_tweet.media &&
           item.retweeted_tweet.media.photo &&
           item.retweeted_tweet.media.photo[0] && (
-            <Image
-              source={{
-                uri: item.retweeted_tweet.media.photo[0].media_url_https,
-              }}
-              style={styles.quotedMedia}
-              resizeMode="contain"
-            />
+            <TouchableOpacity
+              onPress={() =>
+                setSelectedImage(
+                  item.retweeted_tweet.media.photo[0].media_url_https
+                )
+              }
+            >
+              <Image
+                source={{
+                  uri: item.retweeted_tweet.media.photo[0].media_url_https,
+                }}
+                style={styles.quotedMedia}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
           )}
       </View>
     </View>
@@ -265,12 +287,12 @@ export default function App() {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("Account")}>
-          <Ionicons name="settings" size={24} color="black" />
+          <Ionicons name="settings" size={24} color="white" />
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="grey" />
         ) : (
           <FlatList
             data={tweets}
@@ -323,20 +345,20 @@ export default function App() {
 const styles = StyleSheet.create({
   app: {
     flex: 1,
-    backgroundColor: "grey",
+    backgroundColor: "black",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
-    backgroundColor: "grey",
+    marginVertical: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "grey",
   },
   headerText: {
     fontSize: 18,

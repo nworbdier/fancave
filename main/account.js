@@ -106,10 +106,11 @@ const AccountScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "black",
   },
   header: {
     flex: 1,
-    backgroundColor: "grey",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
@@ -117,13 +118,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 8,
-    backgroundColor: "grey",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
     justifyContent: "center",
     alignItems: "center",
   },
   footer: {
     flex: 1,
-    backgroundColor: "grey",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
     justifyContent: "center",
     alignItems: "center",
   },

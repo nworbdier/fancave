@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   navBar: {
     flex: 1,
     width: "100%",
-    backgroundColor: "grey",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingTop: 10,
