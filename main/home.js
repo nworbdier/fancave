@@ -14,6 +14,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import NavBar from "../components/navBar";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { decode } from "html-entities";
 
 export default function App() {
   const navigation = useNavigation();
@@ -79,7 +80,14 @@ export default function App() {
         />
         <Text style={styles.author}>@{item.author.screen_name}</Text>
       </View>
-      <Text>{item.text}</Text>
+      <Text marginBottom={10}>{decode(item.text)}</Text>
+      {item.media && item.media.photo && item.media.photo[0] && (
+        <Image
+          source={{ uri: item.media.photo[0].media_url_https }}
+          style={styles.tweetImage}
+          resizeMode="contain"
+        />
+      )}
     </View>
   );
 
@@ -99,7 +107,14 @@ export default function App() {
         />
         <Text style={styles.author}>@{item.author.screen_name}</Text>
       </View>
-      <Text paddingBottom={10}>{item.text}</Text>
+      <Text paddingBottom={10}>{decode(item.text)}</Text>
+      {item.media && item.media.photo && item.media.photo[0] && (
+        <Image
+          source={{ uri: item.media.photo[0].media_url_https }}
+          style={styles.tweetImage}
+          resizeMode="contain"
+        />
+      )}
       <View style={styles.quotedContainer}>
         <View
           style={{
@@ -117,7 +132,16 @@ export default function App() {
             @{item.quoted.author.screen_name}
           </Text>
         </View>
-        <Text>{item.quoted.text}</Text>
+        <Text marginBottom={10}>{decode(item.quoted.text)}</Text>
+        {item.quoted.media &&
+          item.quoted.media.photo &&
+          item.quoted.media.photo[0] && (
+            <Image
+              source={{ uri: item.quoted.media.photo[0].media_url_https }}
+              style={styles.quotedMedia}
+              resizeMode="contain"
+            />
+          )}
       </View>
     </View>
   );
@@ -155,7 +179,18 @@ export default function App() {
             @{item.retweeted_tweet.author.screen_name}
           </Text>
         </View>
-        <Text>{item.retweeted_tweet.text}</Text>
+        <Text marginBottom={10}>{decode(item.retweeted_tweet.text)}</Text>
+        {item.retweeted_tweet.media &&
+          item.retweeted_tweet.media.photo &&
+          item.retweeted_tweet.media.photo[0] && (
+            <Image
+              source={{
+                uri: item.retweeted_tweet.media.photo[0].media_url_https,
+              }}
+              style={styles.quotedMedia}
+              resizeMode="contain"
+            />
+          )}
       </View>
     </View>
   );
@@ -164,7 +199,8 @@ export default function App() {
     // Function to render the appropriate tweet view based on the tweet type
     const renderTweetView = () => {
       if (item.retweeted_tweet) {
-        return <RetweetedTweetView item={item} />;
+        // If it's a retweet, don't render anything
+        return null;
       } else if (item.quoted) {
         return <QuotedTweetView item={item} />;
       } else {
@@ -257,7 +293,11 @@ export default function App() {
           >
             <Ionicons name="close" size={24} color="white" />
           </TouchableOpacity>
-          <Image source={{ uri: selectedImage }} style={styles.fullImage} />
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.fullImage}
+            resizeMode="contain"
+          />
         </View>
       )}
 
@@ -326,7 +366,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     borderRadius: 10,
-    marginBottom: 10,
   },
   author: {
     fontSize: 14,
