@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FanCave",
-    "slug": "FanCave",
+    "name": "fancave",
+    "slug": "fancave",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
