@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   },
   tweetContainer: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "lightgrey",
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   author: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#1da1f2", // Twitter blue
+    color: "lightgrey", // Twitter blue
   },
   quotedContainer: {
     borderWidth: 1,
