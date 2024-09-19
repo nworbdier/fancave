@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 10.5,
     paddingTop: 10,
-    backgroundColor: "white",
+    backgroundColor: "dimgrey",
   },
   tweetContainer: {
     borderWidth: 1,
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     marginHorizontal: 15,
-    backgroundColor: "#f5f8fa", // Twitter background color
+    backgroundColor: "dimgrey", // Twitter background color
   },
   tweetText: {
     fontSize: 16,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
-    backgroundColor: "#f5f8fa", // Twitter background color
+    backgroundColor: "dimgrey", // Twitter background color
   },
   quotedText: {
     marginBottom: 10,

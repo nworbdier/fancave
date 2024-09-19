@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: "rgba(64, 64, 64, 0.40)", // 75% opacity black
+    backgroundColor: "grey", // 75% opacity black
   },
 });

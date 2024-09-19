@@ -16,7 +16,7 @@
     "@react-navigation/native-stack": "^6.9.26",
     "axios": "^1.6.8",
     "cheerio": "^1.0.0-rc.12",
-    "expo": "~50.0.14",
+    "expo": "^51.0.32",
     "expo-av": "^13.10.5",
     "expo-dev-client": "^3.3.11",
     "expo-status-bar": "~1.11.1",
