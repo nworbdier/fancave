@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { StatusBar, RefreshControl } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -10,11 +9,20 @@ import {
   ActivityIndicator,
   FlatList,
   Modal,
+  RefreshControl,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavBar from "../components/navBar";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { decode } from "html-entities";
+import moment from "moment";
+import debounce from "lodash.debounce";
+
+const CACHE_KEY_PREFIX = "CACHED_TWEETS_";
+const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutes
+const TWEETS_PER_PAGE = 20;
 
 export default function App() {
   const navigation = useNavigation();
@@ -22,9 +30,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const [selectedTeam, setSelectedTeam] = useState("Purdue Boilermakers"); // Default to Purdue
+  const [selectedTeam, setSelectedTeam] = useState("Purdue Boilermakers");
   const [modalVisible, setModalVisible] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const listDictionary = {
     "1777306887953805810": "Purdue Boilermakers",
@@ -33,209 +42,148 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchTwitterListTimeline();
+    fetchTwitterListTimeline(1, true);
   }, [selectedTeam]);
 
-  const fetchTwitterListTimeline = async () => {
-    const list_id = getKeyByValue(listDictionary, selectedTeam);
-    const url = process.env.EXPO_PUBLIC_RAPID_API_URL;
-    const querystring = { list_id: list_id };
-    const headers = {
-      "X-RapidAPI-Key": process.env.EXPO_PUBLIC_RAPID_API_KEY,
-      "X-RapidAPI-Host": process.env.EXPO_PUBLIC_RAPID_API_HOST,
-    };
+  const fetchTwitterListTimeline = async (
+    pageToFetch = 1,
+    isNewTeam = false
+  ) => {
+    const listId = Object.keys(listDictionary).find(
+      (key) => listDictionary[key] === selectedTeam
+    );
+    if (!listId) return;
+
+    const cacheKey = `${CACHE_KEY_PREFIX}${selectedTeam}`;
 
     try {
+      // Check cache first
+      if (pageToFetch === 1) {
+        const cachedData = await AsyncStorage.getItem(cacheKey);
+        if (cachedData) {
+          const { tweets: cachedTweets, timestamp } = JSON.parse(cachedData);
+          if (Date.now() - timestamp < CACHE_EXPIRATION) {
+            setTweets(cachedTweets);
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      const url = "https://twitter-api47.p.rapidapi.com/v2/list/tweets";
+      const querystring = {
+        listId,
+        limit: TWEETS_PER_PAGE,
+        offset: (pageToFetch - 1) * TWEETS_PER_PAGE,
+      };
+
+      const headers = {
+        "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_KEY,
+        "x-rapidapi-host": "twitter-api47.p.rapidapi.com",
+      };
+
       const response = await fetch(
-        url + "?" + new URLSearchParams(querystring),
-        { headers }
+        `${url}?${new URLSearchParams(querystring)}`,
+        {
+          method: "GET",
+          headers,
+        }
       );
+
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+
       const data = await response.json();
-      setTweets(data.timeline);
-      setLoading(false);
+      const extractedTweets = (data.tweets || []).map((tweet) => ({
+        text: tweet?.legacy?.full_text,
+        created_at: tweet?.legacy?.created_at,
+        media: tweet?.legacy?.extended_entities?.media?.[0]?.media_url_https,
+        author: {
+          screen_name: tweet?.core?.user_results?.result?.legacy?.screen_name,
+          avatar:
+            tweet?.core?.user_results?.result?.legacy
+              ?.profile_image_url_https || "default_avatar_url",
+        },
+      }));
+
+      if (pageToFetch === 1 || isNewTeam) {
+        setTweets(extractedTweets);
+        // Cache the new data
+        await AsyncStorage.setItem(
+          cacheKey,
+          JSON.stringify({
+            tweets: extractedTweets,
+            timestamp: Date.now(),
+          })
+        );
+      } else {
+        setTweets((prevTweets) => [...prevTweets, ...extractedTweets]);
+      }
+
+      setHasMore(extractedTweets.length === TWEETS_PER_PAGE);
     } catch (error) {
       console.error("Error fetching Twitter list timeline:", error);
+    } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  const debouncedRefresh = useCallback(
+    debounce(() => {
+      setPage(1);
+      setHasMore(true);
+      fetchTwitterListTimeline(1, true);
+    }, 300),
+    [selectedTeam]
+  );
+
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchTwitterListTimeline();
-    setRefreshing(false);
+    debouncedRefresh();
   };
 
-  const RegularTweetView = ({ item }) => (
-    <View style={styles.tweetContainer}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingBottom: 10,
-        }}
-      >
-        <Image
-          source={{ uri: item.author.avatar }}
-          style={[styles.quoteAvatar, { marginRight: 8 }]}
-          resizeMode="contain"
-        />
-        <Text style={styles.author}>@{item.author.screen_name}</Text>
-      </View>
-      <Text marginBottom={10}>{decode(item.text)}</Text>
-      {item.media && item.media.photo && item.media.photo[0] && (
-        <TouchableOpacity
-          onPress={() => setSelectedImage(item.media.photo[0].media_url_https)}
-        >
-          <Image
-            source={{ uri: item.media.photo[0].media_url_https }}
-            style={styles.tweetImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+  const loadMoreTweets = () => {
+    if (hasMore && !loading) {
+      setPage((prevPage) => prevPage + 1);
+      fetchTwitterListTimeline(page + 1);
+    }
+  };
 
-  const QuotedTweetView = ({ item }) => (
-    <View style={styles.tweetContainer}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingBottom: 10,
-        }}
-      >
-        <Image
-          source={{ uri: item.author.avatar }}
-          style={[styles.quoteAvatar, { marginRight: 8 }]}
-          resizeMode="contain"
-        />
-        <Text style={styles.author}>@{item.author.screen_name}</Text>
-      </View>
-      <Text paddingBottom={10}>{decode(item.text)}</Text>
-      {item.media && item.media.photo && item.media.photo[0] && (
-        <TouchableOpacity
-          onPress={() => setSelectedImage(item.media.photo[0].media_url_https)}
-        >
-          <Image
-            source={{ uri: item.media.photo[0].media_url_https }}
-            style={styles.tweetImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
-      <View style={styles.quotedContainer}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingBottom: 10,
-          }}
-        >
-          <Image
-            source={{ uri: item.quoted.author.avatar }}
-            style={[styles.quoteAvatar, { marginRight: 8 }]}
-            resizeMode="contain"
-          />
-          <Text style={styles.quotedAuthor}>
-            @{item.quoted.author.screen_name}
-          </Text>
-        </View>
-        <Text marginBottom={10}>{decode(item.quoted.text)}</Text>
-        {item.quoted.media &&
-          item.quoted.media.photo &&
-          item.quoted.media.photo[0] && (
-            <TouchableOpacity
-              onPress={() =>
-                setSelectedImage(item.quoted.media.photo[0].media_url_https)
-              }
-            >
-              <Image
-                source={{ uri: item.quoted.media.photo[0].media_url_https }}
-                style={styles.quotedMedia}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          )}
-      </View>
-    </View>
-  );
+  const handleTeamChange = (team) => {
+    setSelectedTeam(team);
+    setModalVisible(false);
+    setLoading(true);
+    setPage(1);
+    setHasMore(true);
+  };
 
-  const RetweetedTweetView = ({ item }) => (
-    <View style={styles.tweetContainer}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingBottom: 10,
-        }}
-      >
-        <Image
-          source={{ uri: item.author.avatar }}
-          style={[styles.quoteAvatar, { marginRight: 8 }]}
-          resizeMode="contain"
-        />
-        <Text style={styles.author}>@{item.author.screen_name} Retweeted</Text>
-      </View>
-      <View style={styles.quotedContainer}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingBottom: 10,
-          }}
-        >
-          <Image
-            source={{ uri: item.retweeted_tweet.author.avatar }}
-            style={[styles.quoteAvatar, { marginRight: 8 }]}
-            resizeMode="contain"
-          />
-          <Text style={styles.author}>
-            @{item.retweeted_tweet.author.screen_name}
-          </Text>
+  const RegularTweetView = ({ item }) => {
+    const formattedDate = moment(item.created_at, "ddd MMM DD HH:mm:ss ZZ YYYY")
+      .locale("en")
+      .format("h:mm A");
+
+    return (
+      <View style={styles.tweetContainer}>
+        <View style={styles.tweetHeader}>
+          <Image source={{ uri: item.author.avatar }} style={styles.avatar} />
+          <View style={styles.tweetHeaderText}>
+            <Text style={styles.author}>@{item.author.screen_name}</Text>
+            <Text style={styles.date}>{formattedDate}</Text>
+          </View>
         </View>
-        <Text marginBottom={10}>{decode(item.retweeted_tweet.text)}</Text>
-        {item.retweeted_tweet.media &&
-          item.retweeted_tweet.media.photo &&
-          item.retweeted_tweet.media.photo[0] && (
-            <TouchableOpacity
-              onPress={() =>
-                setSelectedImage(
-                  item.retweeted_tweet.media.photo[0].media_url_https
-                )
-              }
-            >
-              <Image
-                source={{
-                  uri: item.retweeted_tweet.media.photo[0].media_url_https,
-                }}
-                style={styles.quotedMedia}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          )}
+        <Text style={styles.tweetText}>{decode(item.text)}</Text>
+        {item.media && (
+          <TouchableOpacity onPress={() => setSelectedImage(item.media)}>
+            <Image source={{ uri: item.media }} style={styles.tweetImage} />
+          </TouchableOpacity>
+        )}
       </View>
-    </View>
-  );
+    );
+  };
 
   const TweetItem = ({ item }) => {
-    // Function to render the appropriate tweet view based on the tweet type
-    const renderTweetView = () => {
-      if (item.retweeted_tweet) {
-        // If it's a retweet, don't render anything
-        return null;
-      } else if (item.quoted) {
-        return <QuotedTweetView item={item} />;
-      } else {
-        return <RegularTweetView item={item} />;
-      }
-    };
-
-    return renderTweetView();
-  };
-
-  const getKeyByValue = (object, value) => {
-    return Object.keys(object).find((key) => object[key] === value);
+    return <RegularTweetView item={item} />;
   };
 
   return (
@@ -245,9 +193,7 @@ export default function App() {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+        onRequestClose={() => setModalVisible(!modalVisible)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -261,10 +207,7 @@ export default function App() {
             {Object.values(listDictionary).map((team, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() => {
-                  setSelectedTeam(team);
-                  setModalVisible(!modalVisible);
-                }}
+                onPress={() => handleTeamChange(team)}
               >
                 <Text style={styles.modalText}>{team}</Text>
               </TouchableOpacity>
@@ -292,7 +235,7 @@ export default function App() {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        {loading ? (
+        {loading && page === 1 ? (
           <ActivityIndicator size="large" color="grey" />
         ) : (
           <FlatList
@@ -303,6 +246,13 @@ export default function App() {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             showsVerticalScrollIndicator={false}
+            onEndReached={loadMoreTweets}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={() =>
+              loading && page !== 1 ? (
+                <ActivityIndicator size="small" color="grey" />
+              ) : null
+            }
           />
         )}
       </View>
@@ -323,22 +273,6 @@ export default function App() {
           />
         </View>
       )}
-
-      {selectedVideo && (
-        <View style={styles.fullVideoContainer}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setSelectedVideo(null)}
-          >
-            <Ionicons name="close" size={24} color="white" />
-          </TouchableOpacity>
-          <Video
-            source={{ uri: selectedVideo }}
-            style={styles.fullVideo}
-            controls={true}
-          />
-        </View>
-      )}
     </View>
   );
 }
@@ -354,7 +288,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
     marginVertical: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   headerLeft: {
     flexDirection: "row",
@@ -369,7 +303,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 10.5,
     paddingTop: 10,
-    backgroundColor: "dimgrey",
+    backgroundColor: "#646665",
   },
   tweetContainer: {
     borderWidth: 1,
@@ -378,55 +312,37 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     marginHorizontal: 15,
-    backgroundColor: "dimgrey", // Twitter background color
+    backgroundColor: "#646665",
   },
-  tweetText: {
-    fontSize: 16,
-    marginBottom: 10,
-    lineHeight: 22,
+  tweetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10, // Optional: adds spacing below the header
+  },
+  tweetHeaderText: {
+    flexDirection: "column", // Keep the text in a column
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
   tweetImage: {
     width: "100%",
+    resizeMode: "contain",
     height: 200,
     borderRadius: 10,
   },
   author: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "lightgrey", // Twitter blue
+    color: "lightgrey",
   },
-  quotedContainer: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-    backgroundColor: "dimgrey", // Twitter background color
-  },
-  quotedText: {
-    marginBottom: 10,
-  },
-  tweetMedia: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  quoteAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  quotedAuthor: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#1da1f2", // Twitter blue
-  },
-  quotedMedia: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
+  date: {
+    fontSize: 12,
+    color: "lightgrey",
+    marginLeft: 10,
   },
   fullImageContainer: {
     position: "absolute",
