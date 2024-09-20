@@ -327,6 +327,7 @@ const styles = StyleSheet.create({
     width: "100%",
     resizeMode: "contain",
     height: 200,
+    marginTop: 15,
     borderRadius: 10,
   },
   author: {
@@ -341,6 +342,7 @@ const styles = StyleSheet.create({
   },
   tweetText: {
     color: "lightgrey",
+    fontSize: 14,
   },
   fullImageContainer: {
     position: "absolute",
