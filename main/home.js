@@ -303,7 +303,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 10.5,
     paddingTop: 10,
-    backgroundColor: "#646665",
   },
   tweetContainer: {
     borderWidth: 1,
@@ -312,7 +311,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     marginHorizontal: 15,
-    backgroundColor: "#646665",
   },
   tweetHeader: {
     flexDirection: "row",
@@ -343,6 +341,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "lightgrey",
     marginLeft: 10,
+  },
+  tweetText: {
+    color: "lightgrey",
   },
   fullImageContainer: {
     position: "absolute",
