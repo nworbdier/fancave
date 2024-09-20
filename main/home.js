@@ -230,9 +230,6 @@ export default function App() {
             marginLeft={5}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Account")}>
-          <Ionicons name="settings" size={24} color="white" />
-        </TouchableOpacity>
       </View>
       <View style={styles.content}>
         {loading && page === 1 ? (
