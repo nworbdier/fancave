@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
+import Search from "./main/search";
 import AccountScreen from "./main/account";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -16,6 +17,7 @@ function Main() {
     <View style={styles.app}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Account" component={AccountScreen} />
       </Stack.Navigator>
     </View>

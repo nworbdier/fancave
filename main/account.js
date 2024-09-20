@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  Image,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
@@ -39,7 +40,7 @@ const AccountScreen = ({ navigation }) => {
   const handleDeleteAccount = () => {
     Alert.alert(
       "Confirm",
-      "Warning: This will delete your account data and your access to BetHQ will be revoked. Are you sure you want to proceed?",
+      "Warning: This will delete your account and revoke access. Are you sure you want to proceed?",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -69,16 +70,15 @@ const AccountScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {Platform.OS === "android" && (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FontAwesome name="arrow-left" size={24} color="white" />
-          </TouchableOpacity>
-        )}
+        <Text style={styles.headerText}>Settings</Text>
       </View>
       <View style={styles.content}>
         {user ? (
           <View style={styles.accountContainer}>
-            <Text style={styles.headerText}>Account</Text>
+            <Image
+              source={{ uri: "https://example.com/user-profile.jpg" }}
+              style={styles.profileImage}
+            />
             <View style={styles.userInfo}>
               <Text style={styles.title}>Email:</Text>
               <Text style={styles.text}>{user.email}</Text>
@@ -92,13 +92,32 @@ const AccountScreen = ({ navigation }) => {
             >
               <Text style={styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
-            <View style={styles.socialView}></View>
           </View>
         ) : (
           <Text style={styles.text}>You are not logged in.</Text>
         )}
       </View>
-      <View style={styles.footer}></View>
+      <View style={styles.footer}>
+        {/* Additional Settings */}
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => openLink("https://example.com/faq")}
+        >
+          <Text style={styles.linkText}>FAQ</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => openLink("https://example.com/terms")}
+        >
+          <Text style={styles.linkText}>Terms of Service</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => openLink("https://example.com/privacy")}
+        >
+          <Text style={styles.linkText}>Privacy Policy</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -110,21 +129,20 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
-    justifyContent: "space-between",
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black with opacity
+    alignSelf: "center",
     alignItems: "center",
     flexDirection: "row",
     paddingHorizontal: 30,
   },
   content: {
-    flex: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
+    flex: 2,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
   },
   footer: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black color with 50% opacity
     justifyContent: "center",
     alignItems: "center",
   },
@@ -132,14 +150,27 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "white",
     fontWeight: "bold",
-    paddingBottom: 10,
+    textAlign: "center",
   },
   accountContainer: {
     alignItems: "center",
   },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  profileName: {
+    fontSize: 25,
+    color: "white",
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
   userInfo: {
     flexDirection: "column",
     alignItems: "center",
+    marginBottom: 20,
   },
   title: {
     fontSize: 20,
@@ -148,9 +179,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     color: "white",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   button: {
     minWidth: "40%",
@@ -166,22 +197,18 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     alignItems: "center",
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
   },
-  socialHeader: {
-    color: "white",
-    fontWeight: "bold",
-    marginBottom: 10,
-    marginTop: 10,
-    fontSize: 20,
+  linkButton: {
+    padding: 10,
   },
-  socialView: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  linkText: {
+    color: "lightblue",
+    fontSize: 18,
   },
 });
 

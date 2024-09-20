@@ -9,7 +9,9 @@ const NavBar = () => {
   return (
     <View style={styles.navBar}>
       <MaterialIcons name="home-filled" size={32} color="white" />
-      <MaterialIcons name="search" size={32} color="white" />
+      <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+        <MaterialIcons name="search" size={32} color="white" />
+      </TouchableOpacity>
       <MaterialCommunityIcons name="bell-outline" size={32} color="white" />
       <TouchableOpacity onPress={() => navigation.navigate("Account")}>
         <MaterialCommunityIcons name="account" size={32} color="white" />

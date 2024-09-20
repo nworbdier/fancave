@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   tweetText: {
     color: "lightgrey",
-    fontSize: 14,
+    fontSize: 15,
   },
   fullImageContainer: {
     position: "absolute",
