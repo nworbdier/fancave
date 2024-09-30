@@ -15,7 +15,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavBar from "../components/navBar";
-import { FontAwesome6, AntDesign, Ionicons } from "@expo/vector-icons";
+import {
+  FontAwesome6,
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import debounce from "lodash.debounce";
 import TweetLayout from "./tweet-layout";
 
@@ -190,19 +195,21 @@ export default function App() {
             </View>
 
             {Object.values(listDictionary).map((team, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleTeamChange(team)}
-                style={styles.teamItem}
-              >
-                <AntDesign
-                  name="star"
-                  size={18}
-                  color="white"
-                  style={styles.starIcon}
-                />
-                <Text style={styles.modalText}>{team}</Text>
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleTeamChange(team)}
+                  style={styles.teamItem}
+                >
+                  <AntDesign
+                    name="star"
+                    size={18}
+                    color="white"
+                    style={styles.starIcon}
+                  />
+                  <Text style={styles.modalText}>{team}</Text>
+                </TouchableOpacity>
+              </View>
             ))}
           </View>
         </View>
@@ -217,11 +224,12 @@ export default function App() {
           <Text style={styles.headerText}>{selectedTeam}</Text>
           <FontAwesome6
             name="chevron-down"
-            size={20}
+            size={18}
             color="white"
             marginLeft={5}
           />
         </TouchableOpacity>
+        <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
       </View>
       <View style={styles.content}>
         {loading && page === 1 ? (

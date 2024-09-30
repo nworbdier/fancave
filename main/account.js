@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
-import { signOut, deleteUser } from "firebase/auth";s
+import { signOut, deleteUser } from "firebase/auth";
 
 const AccountScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
