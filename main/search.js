@@ -11,6 +11,7 @@ import {
   Image, // Import the Image component
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import NavBar from "../components/navBar";
 
 const Search = () => {
   const [query, setQuery] = useState("");
