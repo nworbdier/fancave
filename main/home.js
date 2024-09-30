@@ -15,10 +15,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavBar from "../components/navBar";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { decode } from "html-entities";
-import moment from "moment";
+import { FontAwesome6, AntDesign, Ionicons } from "@expo/vector-icons";
 import debounce from "lodash.debounce";
+import TweetLayout from "./tweet-layout";
 
 const CACHE_KEY_PREFIX = "CACHED_TWEETS_";
 const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutes
@@ -158,32 +157,8 @@ export default function App() {
     setHasMore(true);
   };
 
-  const RegularTweetView = ({ item }) => {
-    const formattedDate = moment(item.created_at, "ddd MMM DD HH:mm:ss ZZ YYYY")
-      .locale("en")
-      .format("h:mm A");
-
-    return (
-      <View style={styles.tweetContainer}>
-        <View style={styles.tweetHeader}>
-          <Image source={{ uri: item.author.avatar }} style={styles.avatar} />
-          <View style={styles.tweetHeaderText}>
-            <Text style={styles.author}>@{item.author.screen_name}</Text>
-            <Text style={styles.date}>{formattedDate}</Text>
-          </View>
-        </View>
-        <Text style={styles.tweetText}>{decode(item.text)}</Text>
-        {item.media && (
-          <TouchableOpacity onPress={() => setSelectedImage(item.media)}>
-            <Image source={{ uri: item.media }} style={styles.tweetImage} />
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
-
-  const TweetItem = ({ item }) => {
-    return <RegularTweetView item={item} />;
+  const handleImagePress = (imageUrl) => {
+    setSelectedImage(imageUrl);
   };
 
   return (
@@ -197,18 +172,35 @@ export default function App() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(!modalVisible)}
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 15,
+              }}
             >
-              <Text style={styles.modalCloseButton}>X</Text>
-            </TouchableOpacity>
-            <Text style={styles.boldText}>Select Team</Text>
+              <Text style={styles.boldText}>Feed</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.modalCloseButton}>X</Text>
+              </TouchableOpacity>
+            </View>
+
             {Object.values(listDictionary).map((team, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => handleTeamChange(team)}
+                style={styles.teamItem}
               >
+                <AntDesign
+                  name="star"
+                  size={18}
+                  color="white"
+                  style={styles.starIcon}
+                />
                 <Text style={styles.modalText}>{team}</Text>
               </TouchableOpacity>
             ))}
@@ -237,7 +229,9 @@ export default function App() {
         ) : (
           <FlatList
             data={tweets}
-            renderItem={({ item }) => <TweetItem item={item} />}
+            renderItem={({ item }) => (
+              <TweetLayout item={item} onImagePress={handleImagePress} />
+            )}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -301,49 +295,6 @@ const styles = StyleSheet.create({
     flex: 10.5,
     paddingTop: 10,
   },
-  tweetContainer: {
-    borderWidth: 1,
-    borderColor: "lightgrey",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    marginHorizontal: 15,
-  },
-  tweetHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10, // Optional: adds spacing below the header
-  },
-  tweetHeaderText: {
-    flexDirection: "column", // Keep the text in a column
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  tweetImage: {
-    width: "100%",
-    resizeMode: "contain",
-    height: 200,
-    marginTop: 15,
-    borderRadius: 10,
-  },
-  author: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "lightgrey",
-  },
-  date: {
-    fontSize: 12,
-    color: "lightgrey",
-    marginLeft: 10,
-  },
-  tweetText: {
-    color: "lightgrey",
-    fontSize: 15,
-  },
   fullImageContainer: {
     position: "absolute",
     top: 0,
@@ -360,50 +311,53 @@ const styles = StyleSheet.create({
     height: "85%",
     resizeMode: "contain",
   },
-  closeButton: {
-    position: "absolute",
-    top: 70,
-    right: 20,
-    zIndex: 1000,
-  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
+  closeButton: {
+    textAlign: "right",
+  },
   modalCloseButton: {
-    position: "absolute",
-    top: 10,
-    right: 20,
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 24,
+  },
+  teamItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  starIcon: {
+    marginRight: 10,
   },
   modalView: {
-    backgroundColor: "white",
+    backgroundColor: "black",
     borderRadius: 20,
+    borderTopColor: "white",
+    borderRightColor: "white",
+    borderLeftColor: "white",
+    borderWidth: 1,
     padding: 35,
     alignItems: "flex-start",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
     position: "absolute",
     bottom: 0,
     left: 0,
     width: "100%",
-    height: "40%",
+    height: "87%",
   },
   modalText: {
-    marginBottom: 15,
     marginLeft: 5,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
+    color: "white",
   },
   boldText: {
     fontWeight: "bold",
-    marginBottom: 20,
-    fontSize: 30,
+    fontSize: 24,
+    color: "white",
+    textAlign: "left",
+    flex: 1,
   },
 });

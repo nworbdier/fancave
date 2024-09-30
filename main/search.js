@@ -6,7 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  ScrollView,
+  SafeAreaView,
+  Image, // Import the Image component
 } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Search = () => {
   const [query, setQuery] = useState("");
@@ -23,33 +27,84 @@ const Search = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Search</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
+      <View style={styles.container}>
+        <ScrollView>
+          {/* Search Box */}
+          <View style={styles.searchBoxContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search..."
+              placeholderTextColor="gray"
+              value={query}
+              onChangeText={setQuery}
+            />
+          </View>
+
+          {/* Browse Leagues */}
+          <Text style={styles.gridHeader}>Browse Leagues</Text>
+          <View style={styles.grid}>
+            {[
+              { league: "NCAAF", icon: "american-football-outline" },
+              { league: "NCAAB", icon: "basketball-outline" },
+              { league: "NFL", icon: "american-football-outline" },
+              { league: "MLB", icon: "baseball-outline" },
+              {
+                league: "NHL",
+                icon: "hockey-puck", // Custom image for NHL
+                isCustomIcon: true, // Flag for custom image
+              },
+              { league: "NBA", icon: "basketball-outline" },
+              { league: "WNBA", icon: "basketball-outline" },
+              { league: "MLS", icon: "football-outline" },
+            ].map(({ league, icon, isCustomIcon }) => (
+              <View key={league} style={styles.gridItem}>
+                <TouchableOpacity style={styles.gridButton}>
+                  {isCustomIcon ? (
+                    <Image
+                      source={require("../assets/hockey-puck.png")} // Load custom hockey puck image
+                      style={{ width: 24, height: 24 }}
+                    />
+                  ) : (
+                    <Ionicons name={icon} size={24} color="white" />
+                  )}
+                  <Text style={styles.gridButtonText}>{league}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+
+          {/* Browse by Sport */}
+          <Text style={styles.gridHeader}>Browse by Sport</Text>
+          <View style={styles.grid}>
+            {[
+              { sport: "Football", icon: "american-football-outline" },
+              { sport: "Basketball", icon: "basketball-outline" },
+              { sport: "Baseball", icon: "baseball-outline" },
+              {
+                sport: "Hockey",
+                icon: "hockey-puck", // Custom image for hockey
+                isCustomIcon: true, // Flag for custom image
+              },
+              { sport: "Soccer", icon: "football-outline" },
+            ].map(({ sport, icon, isCustomIcon }) => (
+              <View key={sport} style={styles.gridItem}>
+                <TouchableOpacity style={styles.gridButton}>
+                  {isCustomIcon ? (
+                    <Image
+                      source={require("../assets/hockey-puck.png")} // Load custom hockey puck image
+                      style={{ width: 24, height: 24 }}
+                    />
+                  ) : (
+                    <Ionicons name={icon} size={24} color="white" />
+                  )}
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </View>
-      <View style={styles.content}>
-        <TextInput
-          style={styles.input}
-          placeholder="Search..."
-          placeholderTextColor="gray"
-          value={query}
-          onChangeText={setQuery}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSearch}>
-          <Text style={styles.buttonText}>Search</Text>
-        </TouchableOpacity>
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.resultItem}>
-              <Text style={styles.text}>{item.name}</Text>
-            </View>
-          )}
-          ListEmptyComponent={<Text style={styles.text}>No results found</Text>}
-        />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -57,22 +112,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
-  },
-  header: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black with opacity
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    flex: 3,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
     padding: 20,
   },
-  headerText: {
-    fontSize: 30,
-    color: "white",
-    fontWeight: "bold",
+  searchBoxContainer: {
+    marginBottom: 20,
   },
   input: {
     height: 40,
@@ -81,27 +124,37 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: "white",
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  button: {
-    backgroundColor: "blue",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonText: {
+  gridHeader: {
+    fontSize: 20,
     color: "white",
     fontWeight: "bold",
+    marginBottom: 20,
   },
-  resultItem: {
-    padding: 10,
-    borderBottomColor: "gray",
-    borderBottomWidth: 1,
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 15,
   },
-  text: {
+  gridItem: {
+    width: "48%",
+    marginBottom: 10,
+  },
+  gridButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  gridButtonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });
 
