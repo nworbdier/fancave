@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -6,25 +6,57 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  ScrollView,
   SafeAreaView,
-  Image, // Import the Image component
+  Image,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 
+const leagueIcons = {
+  NCAAF: "american-football-outline",
+  NCAAB: "basketball-outline",
+  NFL: "american-football-outline",
+  MLB: "baseball-outline",
+  NHL: require("../assets/hockey-puck.png"), // Use require for hockey puck
+  NBA: "basketball-outline",
+  WNBA: "basketball-outline",
+  MLS: "football-outline",
+};
+
 const Search = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    // Simulate search logic, replace with your API or logic
-    const mockResults = [
-      { id: "1", name: "Result 1" },
-      { id: "2", name: "Result 2" },
-      { id: "3", name: "Result 3" },
-    ];
-    setResults(mockResults.filter((item) => item.name.includes(query)));
+  // Search after a 2-second pause of no typing
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query) {
+        handleSearch();
+      } else {
+        setResults([]); // Clear results if the query is empty
+      }
+    }, 500); // 2 seconds delay
+
+    return () => clearTimeout(delayDebounceFn); // Cleanup timeout
+  }, [query]);
+
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://fancave-api-production.up.railway.app/search?q=${query}`
+      );
+      const data = await response.json();
+      // console.log(data);
+      setResults(data.data || []); // Set results to data.data which contains the teams
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,67 +74,82 @@ const Search = () => {
           />
         </View>
 
-        {/* Browse Leagues */}
-        <Text style={styles.gridHeader}>Browse Leagues</Text>
-        <View style={styles.grid}>
-          {[
-            { league: "NCAAF", icon: "american-football-outline" },
-            { league: "NCAAB", icon: "basketball-outline" },
-            { league: "NFL", icon: "american-football-outline" },
-            { league: "MLB", icon: "baseball-outline" },
-            {
-              league: "NHL",
-              icon: "hockey-puck", // Custom image for NHL
-              isCustomIcon: true, // Flag for custom image
-            },
-            { league: "NBA", icon: "basketball-outline" },
-            { league: "WNBA", icon: "basketball-outline" },
-            { league: "MLS", icon: "football-outline" },
-          ].map(({ league, icon, isCustomIcon }) => (
-            <View key={league} style={styles.gridItem}>
-              <TouchableOpacity style={styles.gridButton}>
-                {isCustomIcon ? (
-                  <Image
-                    source={require("../assets/hockey-puck.png")} // Load custom hockey puck image
-                    style={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  <Ionicons name={icon} size={24} color="white" />
-                )}
-                <Text style={styles.gridButtonText}>{league}</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+        {loading && <ActivityIndicator size="large" color="#fff" />}
 
-        {/* Browse by Sport */}
-        <Text style={styles.gridHeader}>Browse by Sport</Text>
-        <View style={styles.grid}>
-          {[
-            { sport: "Football", icon: "american-football-outline" },
-            { sport: "Basketball", icon: "basketball-outline" },
-            { sport: "Baseball", icon: "baseball-outline" },
-            {
-              sport: "Hockey",
-              icon: "hockey-puck", // Custom image for hockey
-              isCustomIcon: true, // Flag for custom image
-            },
-            { sport: "Soccer", icon: "football-outline" },
-          ].map(({ sport, icon, isCustomIcon }) => (
-            <View key={sport} style={styles.gridItem}>
-              <TouchableOpacity style={styles.gridButton}>
-                {isCustomIcon ? (
+        {/* Conditionally Render Results or Browse Sections */}
+        {results.length > 0 ? (
+          <FlatList
+            data={results}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.listItem}>
+                {item.league === "NHL" ? (
                   <Image
-                    source={require("../assets/hockey-puck.png")} // Load custom hockey puck image
+                    source={leagueIcons[item.league]}
                     style={{ width: 24, height: 24 }}
                   />
                 ) : (
-                  <Ionicons name={icon} size={24} color="white" />
+                  <Ionicons
+                    name={leagueIcons[item.league]}
+                    size={24}
+                    color="white"
+                  />
                 )}
+                <Text style={styles.listText}>{item.team}</Text>
               </TouchableOpacity>
+            )}
+          />
+        ) : (
+          <>
+            {/* Browse Leagues */}
+            <Text style={styles.gridHeader}>Browse Leagues</Text>
+            <View style={styles.grid}>
+              {Object.entries(leagueIcons).map(([league, icon]) => (
+                <View key={league} style={styles.gridItem}>
+                  <TouchableOpacity style={styles.gridButton}>
+                    {league === "NHL" ? (
+                      <Image
+                        source={icon} // Use the require icon for NHL
+                        style={{ width: 24, height: 24 }}
+                      />
+                    ) : (
+                      <Ionicons name={icon} size={24} color="white" />
+                    )}
+                    <Text style={styles.gridButtonText}>{league}</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+
+            {/* Browse by Sport */}
+            <Text style={styles.gridHeader}>Browse by Sport</Text>
+            <View style={styles.grid}>
+              {[
+                { sport: "Football", icon: "american-football-outline" },
+                { sport: "Basketball", icon: "basketball-outline" },
+                { sport: "Baseball", icon: "baseball-outline" },
+                {
+                  sport: "Hockey",
+                  icon: require("../assets/hockey-puck.png"), // Use require for hockey puck
+                  isCustomIcon: true,
+                },
+                { sport: "Soccer", icon: "football-outline" },
+              ].map(({ sport, icon, isCustomIcon }) => (
+                <View key={sport} style={styles.gridItem}>
+                  <TouchableOpacity style={styles.gridButton}>
+                    {isCustomIcon ? (
+                      <Image
+                        source={icon} // Use the require icon for custom sports
+                        style={{ width: 24, height: 24 }}
+                      />
+                    ) : (
+                      <Ionicons name={icon} size={24} color="white" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
       </View>
       <NavBar />
     </View>
@@ -125,10 +172,21 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: "white",
     borderWidth: 1,
-    borderRadius: 5, 
+    borderRadius: 5,
     color: "white",
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  listItem: {
+    flexDirection: "row",
+    justifyContent: "left",
+    padding: 10,
+    alignItems: "center",
+  },
+  listText: {
+    color: "white",
+    fontSize: 16,
+    marginLeft: 15,
   },
   gridHeader: {
     fontSize: 20,
