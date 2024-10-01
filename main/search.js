@@ -101,7 +101,7 @@ const Search = () => {
         ) : (
           <>
             {/* Browse Leagues */}
-            <Text style={styles.gridHeader}>Browse Leagues</Text>
+            <Text style={styles.gridHeader}>Browse by League</Text>
             <View style={styles.grid}>
               {Object.entries(leagueIcons).map(([league, icon]) => (
                 <View key={league} style={styles.gridItem}>
@@ -144,6 +144,7 @@ const Search = () => {
                     ) : (
                       <Ionicons name={icon} size={24} color="white" />
                     )}
+                    <Text style={styles.gridButtonText}>{sport}</Text>
                   </TouchableOpacity>
                 </View>
               ))}

@@ -14,11 +14,13 @@ const NavBar = () => {
       <TouchableOpacity onPress={() => navigation.navigate("Search")}>
         <MaterialIcons name="search" size={32} color="white" />
       </TouchableOpacity>
-      <MaterialCommunityIcons
-        name="scoreboard-outline"
-        size={32}
-        color="white"
-      />
+      <TouchableOpacity onPress={() => navigation.navigate("SportSelector")}>
+        <MaterialCommunityIcons
+          name="scoreboard-outline"
+          size={32}
+          color="white"
+        />
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Account")}>
         <MaterialCommunityIcons name="account" size={32} color="white" />
       </TouchableOpacity>
