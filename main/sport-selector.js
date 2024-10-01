@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -25,7 +26,7 @@ const sports = ["NCAAF", "NCAAB", "NFL", "MLB", "NHL", "NBA", "WNBA", "MLS"];
 
 const SportSelector = () => {
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity style={styles.itemContainer}>
       {item === "NHL" ? (
         <Image source={leagueIcons[item]} style={styles.icon} />
       ) : (
@@ -37,13 +38,13 @@ const SportSelector = () => {
         />
       )}
       <Text style={styles.itemText}>{item}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <SafeAreaView />
-      <Text style={styles.header}>Select Sport</Text>
+      {/* <Text style={styles.header}>Select Sport</Text> */}
       <FlatList
         data={sports.reverse()} // Reverse the array to keep "NCAAF" as the first item
         renderItem={renderItem}
@@ -71,8 +72,8 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "row",
+    padding: 15,
     alignItems: "center",
-    paddingVertical: 15,
   },
   itemText: {
     color: "white",

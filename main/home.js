@@ -341,12 +341,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   modalView: {
-    backgroundColor: "black",
+    backgroundColor: "#141414",
     borderRadius: 20,
-    borderTopColor: "white",
-    borderRightColor: "white",
-    borderLeftColor: "white",
-    borderWidth: 1,
     padding: 35,
     alignItems: "flex-start",
     position: "absolute",
