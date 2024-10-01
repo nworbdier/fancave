@@ -25,6 +25,9 @@ const leagueIcons = {
 const sports = ["NCAAF", "NCAAB", "NFL", "MLB", "NHL", "NBA", "WNBA", "MLS"];
 
 const SportSelector = () => {
+  // Ensure we reverse a copy of the array to avoid mutating the original
+  const reversedSports = [...sports].reverse();
+
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
       {item === "NHL" ? (
@@ -44,9 +47,8 @@ const SportSelector = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView />
-      {/* <Text style={styles.header}>Select Sport</Text> */}
       <FlatList
-        data={sports.reverse()} // Reverse the array to keep "NCAAF" as the first item
+        data={reversedSports} // Use the reversed copy of the array here
         renderItem={renderItem}
         keyExtractor={(item) => item}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
