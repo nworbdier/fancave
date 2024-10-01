@@ -11,6 +11,7 @@ import {
   Modal,
   RefreshControl,
   StatusBar,
+  Touchable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,6 +41,7 @@ export default function App() {
   const [hasMore, setHasMore] = useState(true);
 
   const listDictionary = {
+    "": "All Feeds",
     "1777306887953805810": "Purdue Boilermakers",
     "1777402248013771060": "Iowa Hawkeyes",
     "1778436010977747315": "Indianapolis Colts",
@@ -229,7 +231,9 @@ export default function App() {
             marginLeft={5}
           />
         </TouchableOpacity>
-        <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
+        <TouchableOpacity>
+          <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
+        </TouchableOpacity>
       </View>
       <View style={styles.content}>
         {loading && page === 1 ? (

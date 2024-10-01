@@ -6,12 +6,12 @@ import {
   Alert,
   TouchableOpacity,
   Linking,
-  Platform,
   Image,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut, deleteUser } from "firebase/auth";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AccountScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -26,14 +26,6 @@ const AccountScreen = ({ navigation }) => {
       await signOut(FIREBASE_AUTH);
     } catch (error) {
       console.error("Error signing out: ", error);
-    }
-  };
-
-  const openLink = async (url) => {
-    try {
-      await Linking.openURL(url);
-    } catch (error) {
-      console.error("Error opening link: ", error);
     }
   };
 
@@ -67,55 +59,110 @@ const AccountScreen = ({ navigation }) => {
     );
   };
 
+  const openLink = async (url) => {
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error("Error opening link: ", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <SafeAreaView />
       <View style={styles.header}>
         <Text style={styles.headerText}>Settings</Text>
       </View>
-      <View style={styles.content}>
-        {user ? (
-          <View style={styles.accountContainer}>
-            <Image
-              source={{ uri: "https://example.com/user-profile.jpg" }}
-              style={styles.profileImage}
-            />
-            <View style={styles.userInfo}>
-              <Text style={styles.title}>Email:</Text>
-              <Text style={styles.text}>{user.email}</Text>
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handleLogout}>
-              <Text style={styles.buttonText}>Logout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonDelete}
-              onPress={handleDeleteAccount}
-            >
-              <Text style={styles.buttonText}>Delete Account</Text>
-            </TouchableOpacity>
+      {user && (
+        <View style={styles.accountSection}>
+          <Image
+            source={{ uri: "https://example.com/user-profile.jpg" }}
+            style={styles.profileImage}
+          />
+          <View style={styles.userInfo}>
+            <Text style={styles.userEmail}>{user.email}</Text>
           </View>
-        ) : (
-          <Text style={styles.text}>You are not logged in.</Text>
-        )}
+        </View>
+      )}
+      {/* General Settings */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>General</Text>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>Notifications</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>Theme</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>Edit Profile</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
       </View>
-      <View style={styles.footer}>
-        {/* Additional Settings */}
+
+      {/* Contact Section */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Contact</Text>
         <TouchableOpacity
-          style={styles.linkButton}
+          style={styles.option}
+          onPress={() => openLink("https://discord.com")}
+        >
+          <Text style={styles.optionText}>Join Discord</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => openLink("https://example.com/feedback")}
+        >
+          <Text style={styles.optionText}>Feedback</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => openLink("https://example.com/support")}
+        >
+          <Text style={styles.optionText}>Support</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Legal Info Section */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Legal</Text>
+        <TouchableOpacity
+          style={styles.option}
           onPress={() => openLink("https://example.com/faq")}
         >
-          <Text style={styles.linkText}>FAQ</Text>
+          <Text style={styles.optionText}>FAQ</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.linkButton}
+          style={styles.option}
           onPress={() => openLink("https://example.com/terms")}
         >
-          <Text style={styles.linkText}>Terms of Service</Text>
+          <Text style={styles.optionText}>Terms of Service</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.linkButton}
+          style={styles.option}
           onPress={() => openLink("https://example.com/privacy")}
         >
-          <Text style={styles.linkText}>Privacy Policy</Text>
+          <Text style={styles.optionText}>Privacy Policy</Text>
+          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Logout and Delete Account */}
+      <View style={styles.sectionContainer}>
+        <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteOption}
+          onPress={handleDeleteAccount}
+        >
+          <Text style={styles.deleteText}>Delete Account</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -126,89 +173,63 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
-  },
-  header: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // Black with opacity
-    alignSelf: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingHorizontal: 30,
-  },
-  content: {
-    flex: 2,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  footer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingHorizontal: 20,
   },
   headerText: {
     fontSize: 30,
     color: "white",
     fontWeight: "bold",
-    textAlign: "center",
   },
-  accountContainer: {
+  accountSection: {
+    flexDirection: "row",
     alignItems: "center",
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  profileName: {
-    fontSize: 25,
-    color: "white",
-    fontWeight: "bold",
-    marginBottom: 20,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginRight: 20,
   },
   userInfo: {
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "center",
   },
-  title: {
+  userEmail: {
+    fontSize: 18,
+    color: "white",
+  },
+  sectionContainer: {
+    marginBottom: 30,
+  },
+  sectionHeader: {
     fontSize: 20,
-    color: "white",
-    fontWeight: "bold",
+    color: "lightgray",
     marginBottom: 10,
-  },
-  text: {
-    fontSize: 18,
-    color: "white",
-    marginBottom: 10,
-  },
-  button: {
-    minWidth: "40%",
-    borderRadius: 5,
-    backgroundColor: "blue",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 10,
-  },
-  buttonDelete: {
-    minWidth: "40%",
-    borderRadius: 5,
-    backgroundColor: "red",
-    alignItems: "center",
-    padding: 10,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "white",
     fontWeight: "bold",
   },
-  linkButton: {
-    padding: 10,
+  option: {
+    paddingVertical: 10,
+    marginLeft: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  linkText: {
-    color: "lightblue",
+  optionText: {
     fontSize: 18,
+    color: "white",
+    fontWeight: "regular",
+  },
+  logoutOption: {
+    paddingBottom: 15,
+  },
+  logoutText: {
+    fontSize: 18,
+    color: "red",
+    fontWeight: "bold",
+  },
+
+  deleteText: {
+    fontSize: 18,
+    color: "darkred",
+    fontWeight: "bold",
   },
 });
 

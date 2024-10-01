@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import NavBar from "../components/navBar";
 
 // The league icons as provided
 const leagueIcons = {
@@ -45,25 +46,31 @@ const SportSelector = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.page}>
       <SafeAreaView />
-      <FlatList
-        data={reversedSports} // Use the reversed copy of the array here
-        renderItem={renderItem}
-        keyExtractor={(item) => item}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        inverted={true} // This will make the list start from the bottom
-      />
-      <SafeAreaView />
+      <View style={styles.content}>
+        <FlatList
+          data={reversedSports} // Use the reversed copy of the array here
+          renderItem={renderItem}
+          keyExtractor={(item) => item}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          inverted={true} // This will make the list start from the bottom
+        />
+      </View>
+      <NavBar />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
     flex: 1,
     backgroundColor: "black",
     paddingHorizontal: 20,
+  },
+  content: {
+    flex: 10.5,
+    paddingBottom: 10,
   },
   header: {
     color: "white",
