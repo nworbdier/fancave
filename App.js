@@ -6,7 +6,7 @@ import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
 import Search from "./main/search";
-import AccountScreen from "./main/account";
+import Settings from "./main/settings";
 import SportSelector from "./main/sport-selector";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -19,7 +19,7 @@ function Main() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
-        <Stack.Screen name="Account" component={AccountScreen} />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="SportSelector" component={SportSelector} />
       </Stack.Navigator>
     </View>

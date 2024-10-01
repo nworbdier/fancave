@@ -13,7 +13,7 @@ import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut, deleteUser } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const AccountScreen = ({ navigation }) => {
+const Settings = ({ navigation }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -233,4 +233,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountScreen;
+export default Settings;

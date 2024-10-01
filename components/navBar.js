@@ -21,7 +21,7 @@ const NavBar = () => {
           color="white"
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Account")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
         <MaterialCommunityIcons name="account" size={32} color="white" />
       </TouchableOpacity>
     </View>
