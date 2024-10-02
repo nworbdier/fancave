@@ -25,7 +25,7 @@ const leagueIcons = {
 
 const sports = ["NCAAF", "NCAAB", "NFL", "MLB", "NHL", "NBA", "WNBA", "MLS"];
 
-const SportSelector = () => {
+const Scores = () => {
   const [selectedSport, setSelectedSport] = useState(null);
 
   const handleSelectSport = (sport) => {
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SportSelector;
+export default Scores;

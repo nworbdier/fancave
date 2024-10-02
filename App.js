@@ -9,7 +9,7 @@ import Notifications from "./main/notipref";
 import Theme from "./main/theme";
 import Search from "./main/search";
 import Settings from "./main/settings";
-import SportSelector from "./main/scores";
+import Scores from "./main/scores";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -24,7 +24,7 @@ function Main() {
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Theme" component={Theme} />
-        <Stack.Screen name="SportSelector" component={SportSelector} />
+        <Stack.Screen name="Scores" component={Scores} />
       </Stack.Navigator>
     </View>
   );
