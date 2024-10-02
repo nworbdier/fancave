@@ -12,8 +12,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut, deleteUser } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
-const Settings = ({ navigation }) => {
+const Settings = ({}) => {
+  const navigation = useNavigation();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -88,7 +90,12 @@ const Settings = ({ navigation }) => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeader}>General</Text>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>Notifications</Text>
+          <Text
+            style={styles.optionText}
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            Notifications
+          </Text>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
