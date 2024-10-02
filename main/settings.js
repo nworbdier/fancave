@@ -77,10 +77,6 @@ const Settings = ({}) => {
       </View>
       {user && (
         <View style={styles.accountSection}>
-          <Image
-            source={{ uri: "https://example.com/user-profile.jpg" }}
-            style={styles.profileImage}
-          />
           <View style={styles.userInfo}>
             <Text style={styles.userEmail}>{user.email}</Text>
           </View>
@@ -96,7 +92,10 @@ const Settings = ({}) => {
           <Text style={styles.optionText}>Notifications</Text>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("Theme")}
+        >
           <Text style={styles.optionText}>Theme</Text>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
@@ -113,7 +112,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://discord.com")}
         >
-          <Text style={styles.optionText}>Join Discord</Text>
+          <Text style={styles.optionText}>FanCave X</Text>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -197,6 +196,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: "center",
+    marginVertical: 30,
   },
   userEmail: {
     fontSize: 18,

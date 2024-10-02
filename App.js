@@ -6,6 +6,7 @@ import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
 import Notifications from "./main/notipref";
+import Theme from "./main/theme";
 import Search from "./main/search";
 import Settings from "./main/settings";
 import SportSelector from "./main/sport-selector";
@@ -22,6 +23,7 @@ function Main() {
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="Theme" component={Theme} />
         <Stack.Screen name="SportSelector" component={SportSelector} />
       </Stack.Navigator>
     </View>
