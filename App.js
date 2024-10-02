@@ -9,7 +9,7 @@ import Notifications from "./main/notipref";
 import Theme from "./main/theme";
 import Search from "./main/search";
 import Settings from "./main/settings";
-import SportSelector from "./main/sport-selector";
+import SportSelector from "./main/scores";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,11 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 
-// The league icons as provided
 const leagueIcons = {
   NCAAF: "american-football-outline",
   NCAAB: "basketball-outline",
@@ -26,17 +26,26 @@ const leagueIcons = {
 const sports = ["NCAAF", "NCAAB", "NFL", "MLB", "NHL", "NBA", "WNBA", "MLS"];
 
 const SportSelector = () => {
-  // Ensure we reverse a copy of the array to avoid mutating the original
-  const reversedSports = [...sports].reverse();
+  const [selectedSport, setSelectedSport] = useState(null);
+
+  const handleSelectSport = (sport) => {
+    setSelectedSport(sport);
+  };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemContainer}>
+    <TouchableOpacity
+      style={[
+        styles.itemContainer,
+        selectedSport === item && styles.selectedItem,
+      ]}
+      onPress={() => handleSelectSport(item)}
+    >
       {item === "NHL" ? (
         <Image source={leagueIcons[item]} style={styles.icon} />
       ) : (
         <Ionicons
           name={leagueIcons[item]}
-          size={24}
+          size={18}
           color="white"
           style={styles.icon}
         />
@@ -48,14 +57,26 @@ const SportSelector = () => {
   return (
     <View style={styles.page}>
       <SafeAreaView />
-      <View style={styles.content}>
+      <View style={styles.sportCarousel}>
         <FlatList
-          data={reversedSports} // Use the reversed copy of the array here
+          data={sports}
           renderItem={renderItem}
           keyExtractor={(item) => item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
-          inverted={true} // This will make the list start from the bottom
         />
+      </View>
+
+      {/* Placeholder content view for future score display */}
+      <View style={styles.contentView}>
+        {selectedSport ? (
+          <Text style={styles.contentText}>
+            Displaying scores for {selectedSport}
+          </Text>
+        ) : (
+          <Text style={styles.contentText}>Select a sport to view scores</Text>
+        )}
       </View>
       <NavBar />
     </View>
@@ -68,35 +89,45 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     paddingHorizontal: 20,
   },
-  content: {
-    flex: 10.5,
-    paddingBottom: 10,
+  sportCarousel: {
+    flexShrink: 1, // Allows the button to shrink if needed
+    flexGrow: 0, // Prevents the button from growing more than needed
+    flexBasis: "auto", // Sets the button size based on its content
   },
-  header: {
+  contentView: {
+    flex: 9,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  contentText: {
     color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginVertical: 20,
-    textAlign: "left",
+    fontSize: 18,
   },
   itemContainer: {
     flexDirection: "row",
-    padding: 15,
+    padding: 10,
     alignItems: "center",
+    backgroundColor: "black",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "white",
   },
+
+  selectedItem: {
+    backgroundColor: "#333",
+  },
+
   itemText: {
     color: "white",
     fontSize: 18,
     marginLeft: 10,
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 18,
+    height: 18,
   },
   separator: {
-    height: 1,
-    backgroundColor: "white",
-    marginVertical: 5,
+    width: 10,
   },
 });
 
