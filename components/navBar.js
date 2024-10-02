@@ -14,7 +14,7 @@ const NavBar = () => {
       <TouchableOpacity onPress={() => navigation.navigate("Search")}>
         <MaterialIcons name="search" size={32} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("SportSelector")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Scores")}>
         <MaterialCommunityIcons
           name="scoreboard-outline"
           size={32}
