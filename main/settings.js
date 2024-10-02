@@ -89,13 +89,11 @@ const Settings = ({}) => {
       {/* General Settings */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeader}>General</Text>
-        <TouchableOpacity style={styles.option}>
-          <Text
-            style={styles.optionText}
-            onPress={() => navigation.navigate("Notifications")}
-          >
-            Notifications
-          </Text>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("Notifications")}
+        >
+          <Text style={styles.optionText}>Notifications</Text>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
