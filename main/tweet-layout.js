@@ -5,9 +5,22 @@ import { decode } from "html-entities";
 import { Ionicons } from "@expo/vector-icons"; // Make sure to install this package
 
 const TweetLayout = ({ item, onImagePress }) => {
-  const formattedDate = moment(item.created_at, "ddd MMM DD HH:mm:ss ZZ YYYY")
-    .locale("en")
-    .format("MMM D");
+  const getFormattedDate = (createdAt) => {
+    const now = moment();
+    const tweetTime = moment(createdAt, "ddd MMM DD HH:mm:ss ZZ YYYY");
+    const diffMinutes = now.diff(tweetTime, "minutes");
+    const diffHours = now.diff(tweetTime, "hours");
+
+    if (diffMinutes < 60) {
+      return `${diffMinutes}m`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h`;
+    } else {
+      return tweetTime.format("MMM D");
+    }
+  };
+
+  const formattedDate = getFormattedDate(item.created_at);
 
   return (
     <View style={styles.tweetContainer}>
