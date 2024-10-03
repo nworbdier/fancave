@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -40,6 +40,16 @@ const sportsMappings = {
   wnba: { sport: "basketball", league: "wnba" },
   mls: { sport: "soccer", league: "usa.1" },
 };
+
+const SearchBox = ({ value, onChangeText }) => (
+  <TextInput
+    style={styles.searchBox}
+    placeholder="Search for a team..."
+    placeholderTextColor="#999"
+    value={value}
+    onChangeText={onChangeText}
+  />
+);
 
 const Scores = () => {
   const [selectedSport, setSelectedSport] = useState("ncaaf");
@@ -224,34 +234,25 @@ const Scores = () => {
     </View>
   );
 
-  const filterGames = useCallback(
-    (games) => {
-      if (!searchTerm) return games;
-      const filteredGames = {};
-      Object.entries(games).forEach(([date, gamesForDate]) => {
-        const filtered = gamesForDate.filter(
-          (game) =>
-            game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        if (filtered.length > 0) {
-          filteredGames[date] = filtered;
-        }
-      });
-      return filteredGames;
-    },
-    [searchTerm]
-  );
+  const handleSearchChange = useCallback((text) => {
+    setSearchTerm(text);
+  }, []);
 
-  const SearchBox = () => (
-    <TextInput
-      style={styles.searchBox}
-      placeholder="Search for a team..."
-      placeholderTextColor="#999"
-      value={searchTerm}
-      onChangeText={setSearchTerm}
-    />
-  );
+  const filteredGames = useMemo(() => {
+    if (!searchTerm) return gameData;
+    const filtered = {};
+    Object.entries(gameData).forEach(([date, gamesForDate]) => {
+      const filteredGamesForDate = gamesForDate.filter(
+        (game) =>
+          game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      if (filteredGamesForDate.length > 0) {
+        filtered[date] = filteredGamesForDate;
+      }
+    });
+    return filtered;
+  }, [gameData, searchTerm]);
 
   return (
     <View style={styles.page}>
@@ -267,18 +268,16 @@ const Scores = () => {
       </View>
 
       <View style={styles.contentView}>
-        <SearchBox />
+        <SearchBox value={searchTerm} onChangeText={handleSearchChange} />
         {selectedSport ? (
           loading && !refreshing ? (
             <ActivityIndicator size="large" color="white" />
           ) : (
             <SectionList
-              sections={Object.entries(filterGames(gameData)).map(
-                ([date, data]) => ({
-                  title: date,
-                  data,
-                })
-              )}
+              sections={Object.entries(filteredGames).map(([date, data]) => ({
+                title: date,
+                data,
+              }))}
               renderItem={renderGameItem}
               renderSectionHeader={renderDateHeader}
               keyExtractor={(item) => item.id}
