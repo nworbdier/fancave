@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   View,
   Text,
@@ -57,6 +63,11 @@ const Scores = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dates, setDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [dateListLoading, setDateListLoading] = useState(true);
+  const dateListRef = useRef(null);
+  const [dateListWidth, setDateListWidth] = useState(0);
 
   useEffect(() => {
     const loadSelectedSport = async () => {
@@ -64,22 +75,58 @@ const Scores = () => {
         const savedSport = await AsyncStorage.getItem("selectedSport");
         if (savedSport !== null) {
           setSelectedSport(savedSport);
-          fetchGameData(savedSport);
+          await fetchDates(savedSport);
         } else {
-          fetchGameData("ncaaf");
+          await fetchDates("ncaaf");
         }
       } catch (error) {
         console.error("Error loading selected sport:", error);
-        fetchGameData("ncaaf");
+        await fetchDates("ncaaf");
       }
     };
 
     loadSelectedSport();
   }, []);
 
+  useEffect(() => {
+    if (selectedDate) {
+      fetchGameData(selectedSport, selectedDate);
+    }
+  }, [selectedDate, selectedSport]);
+
+  const fetchDates = async (sport) => {
+    setDateListLoading(true);
+    try {
+      const { sport: sportName, league } = sportsMappings[sport];
+      const response = await fetch(
+        `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/calendar/whitelist`
+      );
+      const data = await response.json();
+      const dates = data.eventDate.dates;
+      const closestDate = findClosestDate(dates);
+      const newIndex = dates.findIndex((date) => date === closestDate);
+      setDates(dates);
+      setSelectedDate(closestDate);
+      setDateListLoading(false);
+
+      // Log dates and selected date for debugging
+      // console.log('Available dates:', dates);
+      // console.log('Selected date:', closestDate);
+
+      // Scroll to the closest date after the list is rendered
+      setTimeout(() => {
+        scrollToDate(newIndex);
+      }, 100);
+    } catch (error) {
+      console.error("Error fetching dates:", error);
+      setDates([]);
+      setDateListLoading(false);
+    }
+  };
+
   const handleSelectSport = async (sport) => {
     setSelectedSport(sport);
-    fetchGameData(sport);
+    await fetchDates(sport);
     try {
       await AsyncStorage.setItem("selectedSport", sport);
     } catch (error) {
@@ -87,11 +134,13 @@ const Scores = () => {
     }
   };
 
-  const fetchGameData = async (sport) => {
+  const fetchGameData = async (sport, date) => {
     setLoading(true);
     try {
       const { sport: sportName, league } = sportsMappings[sport];
-      let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard`;
+      let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard?dates=${formatToYYYYMMDD(
+        date
+      )}`;
 
       // Add groups parameter for college football and basketball
       if (sport === "ncaaf") {
@@ -239,12 +288,6 @@ const Scores = () => {
     </View>
   );
 
-  const renderDateHeader = ({ section: { title } }) => (
-    <View style={styles.dateHeader}>
-      <Text style={styles.dateHeaderText}>{title}</Text>
-    </View>
-  );
-
   const handleSearchChange = useCallback((text) => {
     setSearchTerm(text);
   }, []);
@@ -265,6 +308,37 @@ const Scores = () => {
     return filtered;
   }, [gameData, searchTerm]);
 
+  const scrollToDate = (index) => {
+    if (dateListRef.current && dates.length > 0) {
+      const itemWidth = 86; // 80px width + 6px for margins
+      const offset = index * itemWidth - dateListWidth / 2 + itemWidth / 2;
+      dateListRef.current.scrollToOffset({
+        offset: Math.max(0, offset),
+        animated: true,
+      });
+    }
+  };
+
+  const handleDateLayout = (event) => {
+    const { width } = event.nativeEvent.layout;
+    setDateListWidth(width);
+  };
+
+  const renderDateItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={[
+        styles.dateItem,
+        selectedDate === item && styles.selectedDateItem,
+      ]}
+      onPress={() => {
+        setSelectedDate(item);
+        scrollToDate(index);
+      }}
+    >
+      <Text style={styles.dateText}>{formatDate(item)}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.page}>
       <SafeAreaView />
@@ -278,12 +352,34 @@ const Scores = () => {
         />
       </View>
 
+      {dateListLoading ? (
+        <ActivityIndicator size="small" color="white" />
+      ) : (
+        <FlatList
+          ref={dateListRef}
+          data={dates}
+          renderItem={renderDateItem}
+          keyExtractor={(item) => item}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.dateCarousel}
+          onLayout={handleDateLayout}
+          getItemLayout={(data, index) => ({
+            length: dateListWidth / 5,
+            offset: (dateListWidth / 5) * index,
+            index,
+          })}
+        />
+      )}
+
       <View style={styles.contentView}>
         <SearchBox value={searchTerm} onChangeText={handleSearchChange} />
         <View style={styles.scoresContainer}>
           {selectedSport ? (
             loading && !refreshing ? (
-              <ActivityIndicator size="large" color="white" />
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="white" />
+              </View>
             ) : (
               <SectionList
                 sections={Object.entries(filteredGames).map(([date, data]) => ({
@@ -291,7 +387,6 @@ const Scores = () => {
                   data,
                 }))}
                 renderItem={renderGameItem}
-                renderSectionHeader={renderDateHeader}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.gameList}
                 style={styles.fullWidth}
@@ -304,6 +399,7 @@ const Scores = () => {
                     titleColor="white"
                   />
                 }
+                stickySectionHeadersEnabled={false} // Add this line
               />
             )
           ) : (
@@ -411,16 +507,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
   },
-  dateHeader: {
-    padding: 10,
-    marginHorizontal: 10,
-    borderRadius: 5,
-  },
-  dateHeaderText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   searchBox: {
     flexShrink: 1,
     width: "90%",
@@ -436,6 +522,71 @@ const styles = StyleSheet.create({
     flex: 10,
     width: "100%",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dateCarousel: {
+    flexShrink: 1,
+    flexGrow: 0,
+    flexBasis: "auto",
+    paddingHorizontal: 10,
+    height: 30, // Reduced height
+    marginTop: 10,
+  },
+  dateItem: {
+    padding: 5,
+    marginHorizontal: 3,
+    width: 80, // Fixed width instead of percentage
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  selectedDateItem: {
+    backgroundColor: "#333",
+  },
+  dateText: {
+    color: "white",
+    fontSize: 14, // Slightly smaller font
+    textAlign: "center",
+  },
 });
+
+// Helper functions
+const formatToYYYYMMDD = (dateString) => {
+  return dateString.split("T")[0].replace(/-/g, "");
+};
+
+const findClosestDate = (dates) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+
+  // First, check if today's date is in the list
+  const todayString = today.toISOString().split("T")[0];
+  if (dates.includes(todayString)) {
+    return todayString;
+  }
+
+  // If today's date is not in the list, find the next closest date
+  return dates.reduce((closest, date) => {
+    const currentDate = new Date(date);
+    const closestDate = new Date(closest);
+
+    if (
+      currentDate >= today &&
+      (currentDate < closestDate || closestDate < today)
+    ) {
+      return date;
+    }
+    return closest;
+  });
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date
+    .toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    .replace(",", "");
+};
 
 export default Scores;
