@@ -120,6 +120,9 @@ const Scores = () => {
           awayWins = competition.series.competitors[1].wins;
         }
 
+        const homeRank = competition.competitors[0].curatedRank?.current;
+        const awayRank = competition.competitors[1].curatedRank?.current;
+
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
@@ -128,12 +131,14 @@ const Scores = () => {
           HomeTeamRecordSummary: isPlayoff
             ? `${homeWins}-${awayWins}`
             : competition.competitors[0].records?.[0]?.summary || "N/A",
+          HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
           AwayLogo: competition.competitors[1].team.logo,
           AwayScore: competition.competitors[1].score,
           AwayTeamRecordSummary: isPlayoff
             ? `${awayWins}-${homeWins}`
             : competition.competitors[1].records?.[0]?.summary || "N/A",
+          AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
           GameTime: date,
           Status: competition.status.type.name,
           StatusShortDetail: competition.status.type.shortDetail,
@@ -195,7 +200,10 @@ const Scores = () => {
     <View style={styles.gameContainer}>
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
-        <Text style={styles.teamName}>{item.AwayTeam}</Text>
+        <Text style={styles.teamName}>
+          {item.AwayTeam}
+          {item.AwayRank && ` (${item.AwayRank})`}
+        </Text>
         <Text style={styles.record}>
           {item.Status === "STATUS_SCHEDULED"
             ? (item.AwayTeamRecordSummary !== "N/A" &&
@@ -216,7 +224,10 @@ const Scores = () => {
       </View>
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
-        <Text style={styles.teamName}>{item.HomeTeam}</Text>
+        <Text style={styles.teamName}>
+          {item.HomeTeam}
+          {item.HomeRank && ` (${item.HomeRank})`}
+        </Text>
         <Text style={styles.record}>
           {item.Status === "STATUS_SCHEDULED"
             ? (item.HomeTeamRecordSummary !== "N/A" &&
@@ -269,34 +280,38 @@ const Scores = () => {
 
       <View style={styles.contentView}>
         <SearchBox value={searchTerm} onChangeText={handleSearchChange} />
-        {selectedSport ? (
-          loading && !refreshing ? (
-            <ActivityIndicator size="large" color="white" />
+        <View style={styles.scoresContainer}>
+          {selectedSport ? (
+            loading && !refreshing ? (
+              <ActivityIndicator size="large" color="white" />
+            ) : (
+              <SectionList
+                sections={Object.entries(filteredGames).map(([date, data]) => ({
+                  title: date,
+                  data,
+                }))}
+                renderItem={renderGameItem}
+                renderSectionHeader={renderDateHeader}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.gameList}
+                style={styles.fullWidth}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    tintColor="white"
+                    title="Pull to refresh"
+                    titleColor="white"
+                  />
+                }
+              />
+            )
           ) : (
-            <SectionList
-              sections={Object.entries(filteredGames).map(([date, data]) => ({
-                title: date,
-                data,
-              }))}
-              renderItem={renderGameItem}
-              renderSectionHeader={renderDateHeader}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={styles.gameList}
-              style={styles.fullWidth}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  tintColor="white"
-                  title="Pull to refresh"
-                  titleColor="white"
-                />
-              }
-            />
-          )
-        ) : (
-          <Text style={styles.contentText}>Select a sport to view scores</Text>
-        )}
+            <Text style={styles.contentText}>
+              Select a sport to view scores
+            </Text>
+          )}
+        </View>
       </View>
       <NavBar />
     </View>
@@ -396,7 +411,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
   },
-
   dateHeader: {
     padding: 10,
     marginHorizontal: 10,
@@ -408,6 +422,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   searchBox: {
+    flexShrink: 1,
     width: "90%",
     height: 40,
     color: "white",
@@ -416,6 +431,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "white",
+  },
+  scoresContainer: {
+    flex: 10,
+    width: "100%",
   },
 });
 
