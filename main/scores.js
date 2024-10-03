@@ -411,11 +411,12 @@ const styles = StyleSheet.create({
   searchBox: {
     width: "90%",
     height: 40,
-    backgroundColor: "#333",
     color: "white",
     paddingHorizontal: 10,
     marginTop: 10,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "white",
   },
 });
 
