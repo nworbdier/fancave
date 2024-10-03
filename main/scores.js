@@ -14,6 +14,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TextInput } from "react-native";
 
 // Import the NHL icon at the top of the file
 import NHLIcon from "../assets/hockey-puck.png";
@@ -45,6 +46,7 @@ const Scores = () => {
   const [gameData, setGameData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const loadSelectedSport = async () => {
@@ -80,12 +82,12 @@ const Scores = () => {
     try {
       const { sport: sportName, league } = sportsMappings[sport];
       let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard`;
-      
+
       // Add groups parameter for college football and basketball
-      if (sport === 'ncaaf') {
-        url += '?groups=80';
-      } else if (sport === 'ncaab') {
-        url += '?groups=50';
+      if (sport === "ncaaf") {
+        url += "?groups=80";
+      } else if (sport === "ncaab") {
+        url += "?groups=50";
       }
 
       const response = await fetch(url);
@@ -98,14 +100,30 @@ const Scores = () => {
       const gameData = data.events.map((event) => {
         const competition = event.competitions[0];
         const date = new Date(event.date);
+        const isPlayoff =
+          competition.series && competition.series.type === "playoff";
+        let homeWins = null;
+        let awayWins = null;
+
+        if (isPlayoff) {
+          homeWins = competition.series.competitors[0].wins;
+          awayWins = competition.series.competitors[1].wins;
+        }
+
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
           HomeLogo: competition.competitors[0].team.logo,
           HomeScore: competition.competitors[0].score,
+          HomeTeamRecordSummary: isPlayoff
+            ? `${homeWins}-${awayWins}`
+            : competition.competitors[0].records?.[0]?.summary || "N/A",
           AwayTeam: competition.competitors[1].team.shortDisplayName,
           AwayLogo: competition.competitors[1].team.logo,
           AwayScore: competition.competitors[1].score,
+          AwayTeamRecordSummary: isPlayoff
+            ? `${awayWins}-${homeWins}`
+            : competition.competitors[1].records?.[0]?.summary || "N/A",
           GameTime: date,
           Status: competition.status.type.name,
           StatusShortDetail: competition.status.type.shortDetail,
@@ -114,6 +132,7 @@ const Scores = () => {
             month: "short",
             day: "numeric",
           }),
+          IsPlayoff: isPlayoff,
         };
       });
 
@@ -167,7 +186,13 @@ const Scores = () => {
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
         <Text style={styles.teamName}>{item.AwayTeam}</Text>
-        <Text style={styles.score}>{item.AwayScore}</Text>
+        <Text style={styles.record}>
+          {item.Status === "STATUS_SCHEDULED"
+            ? (item.AwayTeamRecordSummary !== "N/A" &&
+                item.AwayTeamRecordSummary) ||
+              ""
+            : item.AwayScore}
+        </Text>
       </View>
       <View style={styles.gameInfo}>
         <Text style={styles.gameStatus}>
@@ -182,7 +207,13 @@ const Scores = () => {
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
         <Text style={styles.teamName}>{item.HomeTeam}</Text>
-        <Text style={styles.score}>{item.HomeScore}</Text>
+        <Text style={styles.record}>
+          {item.Status === "STATUS_SCHEDULED"
+            ? (item.HomeTeamRecordSummary !== "N/A" &&
+                item.HomeTeamRecordSummary) ||
+              ""
+            : item.HomeScore}
+        </Text>
       </View>
     </View>
   );
@@ -191,6 +222,35 @@ const Scores = () => {
     <View style={styles.dateHeader}>
       <Text style={styles.dateHeaderText}>{title}</Text>
     </View>
+  );
+
+  const filterGames = useCallback(
+    (games) => {
+      if (!searchTerm) return games;
+      const filteredGames = {};
+      Object.entries(games).forEach(([date, gamesForDate]) => {
+        const filtered = gamesForDate.filter(
+          (game) =>
+            game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        if (filtered.length > 0) {
+          filteredGames[date] = filtered;
+        }
+      });
+      return filteredGames;
+    },
+    [searchTerm]
+  );
+
+  const SearchBox = () => (
+    <TextInput
+      style={styles.searchBox}
+      placeholder="Search for a team..."
+      placeholderTextColor="#999"
+      value={searchTerm}
+      onChangeText={setSearchTerm}
+    />
   );
 
   return (
@@ -207,15 +267,18 @@ const Scores = () => {
       </View>
 
       <View style={styles.contentView}>
+        <SearchBox />
         {selectedSport ? (
           loading && !refreshing ? (
             <ActivityIndicator size="large" color="white" />
           ) : (
             <SectionList
-              sections={Object.entries(gameData).map(([date, data]) => ({
-                title: date,
-                data,
-              }))}
+              sections={Object.entries(filterGames(gameData)).map(
+                ([date, data]) => ({
+                  title: date,
+                  data,
+                })
+              )}
               renderItem={renderGameItem}
               renderSectionHeader={renderDateHeader}
               keyExtractor={(item) => item.id}
@@ -269,7 +332,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 10,
     alignItems: "center",
-    backgroundColor: "black",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "white",
@@ -287,10 +349,14 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
   },
+  gameList: {
+    paddingVertical: 5,
+  },
   gameContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "#222222",
     padding: 10,
     marginHorizontal: 10,
     marginVertical: 5,
@@ -318,6 +384,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 5,
   },
+  record: {
+    color: "white",
+    fontSize: 14,
+    marginTop: 5,
+  },
   gameInfo: {
     alignItems: "center",
     flex: 1,
@@ -326,19 +397,25 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
   },
-  gameList: {
-    paddingVertical: 10,
-  },
+
   dateHeader: {
     padding: 10,
     marginHorizontal: 10,
-    marginTop: 10,
     borderRadius: 5,
   },
   dateHeaderText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  searchBox: {
+    width: "90%",
+    height: 40,
+    backgroundColor: "#333",
+    color: "white",
+    paddingHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 5,
   },
 });
 
