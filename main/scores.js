@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import the NHL icon at the top of the file
 import NHLIcon from "../assets/hockey-puck.png";
@@ -38,13 +40,38 @@ const sportsMappings = {
 };
 
 const Scores = () => {
-  const [selectedSport, setSelectedSport] = useState(null);
+  const [selectedSport, setSelectedSport] = useState("ncaaf");
   const [gameData, setGameData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleSelectSport = (sport) => {
+  useEffect(() => {
+    const loadSelectedSport = async () => {
+      try {
+        const savedSport = await AsyncStorage.getItem('selectedSport');
+        if (savedSport !== null) {
+          setSelectedSport(savedSport);
+          fetchGameData(savedSport);
+        } else {
+          fetchGameData("ncaaf");
+        }
+      } catch (error) {
+        console.error("Error loading selected sport:", error);
+        fetchGameData("ncaaf");
+      }
+    };
+
+    loadSelectedSport();
+  }, []);
+
+  const handleSelectSport = async (sport) => {
     setSelectedSport(sport);
     fetchGameData(sport);
+    try {
+      await AsyncStorage.setItem('selectedSport', sport);
+    } catch (error) {
+      console.error("Error saving selected sport:", error);
+    }
   };
 
   const fetchGameData = async (sport) => {
@@ -81,8 +108,14 @@ const Scores = () => {
       console.error("Error in fetchGameData:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchGameData(selectedSport);
+  }, [selectedSport]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -92,7 +125,7 @@ const Scores = () => {
       ]}
       onPress={() => handleSelectSport(item)}
     >
-      {item === 'nhl' ? (
+      {item === "nhl" ? (
         <Image source={NHLIcon} style={styles.icon} />
       ) : (
         <Ionicons
@@ -139,7 +172,7 @@ const Scores = () => {
 
       <View style={styles.contentView}>
         {selectedSport ? (
-          loading ? (
+          loading && !refreshing ? (
             <ActivityIndicator size="large" color="white" />
           ) : (
             <FlatList
@@ -148,6 +181,15 @@ const Scores = () => {
               keyExtractor={(item) => item.id}
               contentContainerStyle={styles.gameList}
               style={styles.fullWidth}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor="white"
+                  title="Pull to refresh"
+                  titleColor="white"
+                />
+              }
             />
           )
         ) : (
@@ -247,4 +289,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Scores;
+export default Scores
