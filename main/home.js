@@ -168,6 +168,10 @@ export default function App() {
     setSelectedImage(imageUrl);
   };
 
+  const closeFullScreenImage = () => {
+    setSelectedImage(null);
+  };
+
   return (
     <View style={styles.app}>
       <StatusBar style="auto" />
@@ -262,19 +266,17 @@ export default function App() {
       <NavBar />
 
       {selectedImage && (
-        <View style={styles.fullImageContainer}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setSelectedImage(null)}
-          >
-            <Ionicons name="close" size={24} color="white" />
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.fullImageContainer}
+          activeOpacity={1}
+          onPress={closeFullScreenImage}
+        >
           <Image
             source={{ uri: selectedImage }}
             style={styles.fullImage}
             resizeMode="contain"
           />
-        </View>
+        </TouchableOpacity>
       )}
     </View>
   );

@@ -208,9 +208,10 @@ const styles = StyleSheet.create({
   gridButton: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "white",
     alignItems: "center",
   },
   gridButtonText: {

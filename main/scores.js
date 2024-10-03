@@ -64,7 +64,6 @@ const Scores = () => {
           keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </View>
 
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     flexBasis: "auto", // Sets the button size based on its content
   },
   contentView: {
-    flex: 9,
+    flex: 10,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -111,6 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "white",
+    marginHorizontal: 5,
   },
 
   selectedItem: {
@@ -125,9 +125,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 18,
     height: 18,
-  },
-  separator: {
-    width: 10,
   },
 });
 
