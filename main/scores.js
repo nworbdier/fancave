@@ -9,10 +9,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  SectionList,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Import the NHL icon at the top of the file
 import NHLIcon from "../assets/hockey-puck.png";
@@ -48,7 +49,7 @@ const Scores = () => {
   useEffect(() => {
     const loadSelectedSport = async () => {
       try {
-        const savedSport = await AsyncStorage.getItem('selectedSport');
+        const savedSport = await AsyncStorage.getItem("selectedSport");
         if (savedSport !== null) {
           setSelectedSport(savedSport);
           fetchGameData(savedSport);
@@ -68,7 +69,7 @@ const Scores = () => {
     setSelectedSport(sport);
     fetchGameData(sport);
     try {
-      await AsyncStorage.setItem('selectedSport', sport);
+      await AsyncStorage.setItem("selectedSport", sport);
     } catch (error) {
       console.error("Error saving selected sport:", error);
     }
@@ -78,9 +79,16 @@ const Scores = () => {
     setLoading(true);
     try {
       const { sport: sportName, league } = sportsMappings[sport];
-      const response = await fetch(
-        `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard`
-      );
+      let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard`;
+      
+      // Add groups parameter for college football and basketball
+      if (sport === 'ncaaf') {
+        url += '?groups=80';
+      } else if (sport === 'ncaab') {
+        url += '?groups=50';
+      }
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -89,6 +97,7 @@ const Scores = () => {
       const data = await response.json();
       const gameData = data.events.map((event) => {
         const competition = event.competitions[0];
+        const date = new Date(event.date);
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
@@ -97,13 +106,27 @@ const Scores = () => {
           AwayTeam: competition.competitors[1].team.shortDisplayName,
           AwayLogo: competition.competitors[1].team.logo,
           AwayScore: competition.competitors[1].score,
-          GameTime: competition.date,
+          GameTime: date,
           Status: competition.status.type.name,
           StatusShortDetail: competition.status.type.shortDetail,
+          Date: date.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          }),
         };
       });
 
-      setGameData(gameData);
+      // Group games by date
+      const groupedGames = gameData.reduce((acc, game) => {
+        if (!acc[game.Date]) {
+          acc[game.Date] = [];
+        }
+        acc[game.Date].push(game);
+        return acc;
+      }, {});
+
+      setGameData(groupedGames);
     } catch (error) {
       console.error("Error in fetchGameData:", error);
     } finally {
@@ -147,13 +170,26 @@ const Scores = () => {
         <Text style={styles.score}>{item.AwayScore}</Text>
       </View>
       <View style={styles.gameInfo}>
-        <Text style={styles.gameStatus}>{item.StatusShortDetail}</Text>
+        <Text style={styles.gameStatus}>
+          {item.Status === "STATUS_SCHEDULED"
+            ? item.GameTime.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })
+            : item.StatusShortDetail}
+        </Text>
       </View>
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
         <Text style={styles.teamName}>{item.HomeTeam}</Text>
         <Text style={styles.score}>{item.HomeScore}</Text>
       </View>
+    </View>
+  );
+
+  const renderDateHeader = ({ section: { title } }) => (
+    <View style={styles.dateHeader}>
+      <Text style={styles.dateHeaderText}>{title}</Text>
     </View>
   );
 
@@ -175,9 +211,13 @@ const Scores = () => {
           loading && !refreshing ? (
             <ActivityIndicator size="large" color="white" />
           ) : (
-            <FlatList
-              data={gameData}
+            <SectionList
+              sections={Object.entries(gameData).map(([date, data]) => ({
+                title: date,
+                data,
+              }))}
               renderItem={renderGameItem}
+              renderSectionHeader={renderDateHeader}
               keyExtractor={(item) => item.id}
               contentContainerStyle={styles.gameList}
               style={styles.fullWidth}
@@ -251,11 +291,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#222",
     padding: 10,
     marginHorizontal: 10,
     marginVertical: 5,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "white",
   },
   teamContainer: {
     alignItems: "center",
@@ -275,6 +316,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+    marginTop: 5,
   },
   gameInfo: {
     alignItems: "center",
@@ -287,6 +329,17 @@ const styles = StyleSheet.create({
   gameList: {
     paddingVertical: 10,
   },
+  dateHeader: {
+    padding: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  dateHeaderText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
-export default Scores
+export default Scores;
