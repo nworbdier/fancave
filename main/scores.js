@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,29 +7,81 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 
-const leagueIcons = {
-  NCAAF: "american-football-outline",
-  NCAAB: "basketball-outline",
-  NFL: "american-football-outline",
-  MLB: "baseball-outline",
-  NHL: require("../assets/hockey-puck.png"), // Use require for hockey puck
-  NBA: "basketball-outline",
-  WNBA: "basketball-outline",
-  MLS: "football-outline",
+// Import the NHL icon at the top of the file
+import NHLIcon from "../assets/hockey-puck.png";
+
+const sportsIcons = {
+  ncaaf: { icon: "american-football-outline", name: "NCAAF" },
+  ncaab: { icon: "basketball-outline", name: "NCAAB" },
+  nfl: { icon: "american-football-outline", name: "NFL" },
+  mlb: { icon: "baseball-outline", name: "MLB" },
+  nhl: { icon: "hockey-puck", name: "NHL" }, // Change this to a string
+  nba: { icon: "basketball-outline", name: "NBA" },
+  wnba: { icon: "basketball-outline", name: "WNBA" },
+  mls: { icon: "football-outline", name: "MLS" },
 };
 
-const sports = ["NCAAF", "NCAAB", "NFL", "MLB", "NHL", "NBA", "WNBA", "MLS"];
+const sportsMappings = {
+  ncaaf: { sport: "football", league: "college-football" },
+  ncaab: { sport: "basketball", league: "mens-college-basketball" },
+  nfl: { sport: "football", league: "nfl" },
+  mlb: { sport: "baseball", league: "mlb" },
+  nhl: { sport: "hockey", league: "nhl" },
+  nba: { sport: "basketball", league: "nba" },
+  wnba: { sport: "basketball", league: "wnba" },
+  mls: { sport: "soccer", league: "usa.1" },
+};
 
 const Scores = () => {
   const [selectedSport, setSelectedSport] = useState(null);
+  const [gameData, setGameData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSelectSport = (sport) => {
     setSelectedSport(sport);
+    fetchGameData(sport);
+  };
+
+  const fetchGameData = async (sport) => {
+    setLoading(true);
+    try {
+      const { sport: sportName, league } = sportsMappings[sport];
+      const response = await fetch(
+        `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard`
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      const gameData = data.events.map((event) => {
+        const competition = event.competitions[0];
+        return {
+          id: event.id,
+          HomeTeam: competition.competitors[0].team.shortDisplayName,
+          HomeLogo: competition.competitors[0].team.logo,
+          HomeScore: competition.competitors[0].score,
+          AwayTeam: competition.competitors[1].team.shortDisplayName,
+          AwayLogo: competition.competitors[1].team.logo,
+          AwayScore: competition.competitors[1].score,
+          GameTime: competition.date,
+          Status: competition.status.type.name,
+          StatusShortDetail: competition.status.type.shortDetail,
+        };
+      });
+
+      setGameData(gameData);
+    } catch (error) {
+      console.error("Error in fetchGameData:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -40,18 +92,36 @@ const Scores = () => {
       ]}
       onPress={() => handleSelectSport(item)}
     >
-      {item === "NHL" ? (
-        <Image source={leagueIcons[item]} style={styles.icon} />
+      {item === 'nhl' ? (
+        <Image source={NHLIcon} style={styles.icon} />
       ) : (
         <Ionicons
-          name={leagueIcons[item]}
+          name={sportsIcons[item].icon}
           size={18}
           color="white"
           style={styles.icon}
         />
       )}
-      <Text style={styles.itemText}>{item}</Text>
+      <Text style={styles.itemText}>{sportsIcons[item].name}</Text>
     </TouchableOpacity>
+  );
+
+  const renderGameItem = ({ item }) => (
+    <View style={styles.gameContainer}>
+      <View style={styles.teamContainer}>
+        <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
+        <Text style={styles.teamName}>{item.AwayTeam}</Text>
+        <Text style={styles.score}>{item.AwayScore}</Text>
+      </View>
+      <View style={styles.gameInfo}>
+        <Text style={styles.gameStatus}>{item.StatusShortDetail}</Text>
+      </View>
+      <View style={styles.teamContainer}>
+        <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
+        <Text style={styles.teamName}>{item.HomeTeam}</Text>
+        <Text style={styles.score}>{item.HomeScore}</Text>
+      </View>
+    </View>
   );
 
   return (
@@ -59,7 +129,7 @@ const Scores = () => {
       <SafeAreaView />
       <View style={styles.sportCarousel}>
         <FlatList
-          data={sports}
+          data={Object.keys(sportsIcons)}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           horizontal
@@ -67,12 +137,19 @@ const Scores = () => {
         />
       </View>
 
-      {/* Placeholder content view for future score display */}
       <View style={styles.contentView}>
         {selectedSport ? (
-          <Text style={styles.contentText}>
-            Displaying scores for {selectedSport}
-          </Text>
+          loading ? (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            <FlatList
+              data={gameData}
+              renderItem={renderGameItem}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.gameList}
+              style={styles.fullWidth}
+            />
+          )
         ) : (
           <Text style={styles.contentText}>Select a sport to view scores</Text>
         )}
@@ -86,17 +163,21 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
     backgroundColor: "black",
-    paddingHorizontal: 20,
   },
   sportCarousel: {
-    flexShrink: 1, // Allows the button to shrink if needed
-    flexGrow: 0, // Prevents the button from growing more than needed
-    flexBasis: "auto", // Sets the button size based on its content
+    flexShrink: 1,
+    flexGrow: 0,
+    flexBasis: "auto",
+    paddingHorizontal: 20,
   },
   contentView: {
     flex: 10,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  fullWidth: {
+    width: "100%",
   },
   contentText: {
     color: "white",
@@ -112,11 +193,9 @@ const styles = StyleSheet.create({
     borderColor: "white",
     marginHorizontal: 5,
   },
-
   selectedItem: {
     backgroundColor: "#333",
   },
-
   itemText: {
     color: "white",
     fontSize: 18,
@@ -125,6 +204,46 @@ const styles = StyleSheet.create({
   icon: {
     width: 18,
     height: 18,
+  },
+  gameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#222",
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  teamContainer: {
+    alignItems: "center",
+    flex: 1,
+  },
+  teamLogo: {
+    width: 40,
+    height: 40,
+    marginBottom: 5,
+  },
+  teamName: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  score: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  gameInfo: {
+    alignItems: "center",
+    flex: 1,
+  },
+  gameStatus: {
+    color: "white",
+    fontSize: 12,
+  },
+  gameList: {
+    paddingVertical: 10,
   },
 });
 
