@@ -108,7 +108,7 @@ const Settings = ({}) => {
         <TouchableOpacity style={styles.option}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="manage-accounts" size={24} color="white" />
-            <Text style={styles.optionText}>Edit Profile</Text>
+            <Text style={styles.optionText}>Account</Text>
           </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
@@ -190,12 +190,12 @@ const Settings = ({}) => {
           <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.deleteOption}
             onPress={handleDeleteAccount}
           >
             <Text style={styles.deleteText}>Delete Account</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>
@@ -253,14 +253,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   logoutOption: {
-    paddingBottom: 15,
+    borderWidth: 1,
+    borderColor: "white",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
   },
   logoutText: {
     fontSize: 18,
-    color: "red",
+    color: "yellow",
     fontWeight: "bold",
   },
-
   deleteText: {
     fontSize: 18,
     color: "darkred",
