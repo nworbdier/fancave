@@ -16,14 +16,25 @@ import {
   ActivityIndicator,
   RefreshControl,
   SectionList,
+  TextInput,
 } from "react-native";
-import { Ionicons, FontAwesome6 } from "react-native-vector-icons/Ionicons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native";
 
 // Import the NHL icon at the top of the file
 import NHLIcon from "../assets/hockey-puck.png";
+
+// Define SearchBox component before using it
+const SearchBox = ({ value, onChangeText }) => (
+  <TextInput
+    style={styles.searchBox}
+    placeholder="Search matchups..."
+    placeholderTextColor="#999"
+    value={value}
+    onChangeText={onChangeText}
+  />
+);
 
 // Replace the existing sportsIcons and sportsMappings with this consolidated object
 const sportsData = {
@@ -77,20 +88,10 @@ const sportsData = {
   },
 };
 
-const SearchBox = ({ value, onChangeText }) => (
-  <TextInput
-    style={styles.searchBox}
-    placeholder="Search matchups..."
-    placeholderTextColor="#999"
-    value={value}
-    onChangeText={onChangeText}
-  />
-);
-
 // Define a constant for the offset
 const OFFSET = 1; // Adjust this value as needed
 
-const Scores = () => {
+export default function Scores() {
   const [selectedSport, setSelectedSport] = useState("ncaaf");
   const [gameData, setGameData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -525,7 +526,7 @@ const Scores = () => {
       <NavBar />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   page: {
@@ -707,5 +708,3 @@ const formatDate = (dateString) => {
     .toLocaleDateString("en-US", { month: "short", day: "numeric" })
     .replace(",", "");
 };
-
-export default Scores;
