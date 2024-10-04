@@ -25,32 +25,62 @@ import { TextInput } from "react-native";
 // Import the NHL icon at the top of the file
 import NHLIcon from "../assets/hockey-puck.png";
 
-const sportsIcons = {
-  ncaaf: { icon: "american-football-outline", name: "NCAAF" },
-  ncaab: { icon: "basketball-outline", name: "NCAAB" },
-  nfl: { icon: "american-football-outline", name: "NFL" },
-  mlb: { icon: "baseball-outline", name: "MLB" },
-  nhl: { icon: "hockey-puck", name: "NHL" }, // Change this to a string
-  nba: { icon: "basketball-outline", name: "NBA" },
-  wnba: { icon: "basketball-outline", name: "WNBA" },
-  mls: { icon: "football-outline", name: "MLS" },
-};
-
-const sportsMappings = {
-  ncaaf: { sport: "football", league: "college-football" },
-  ncaab: { sport: "basketball", league: "mens-college-basketball" },
-  nfl: { sport: "football", league: "nfl" },
-  mlb: { sport: "baseball", league: "mlb" },
-  nhl: { sport: "hockey", league: "nhl" },
-  nba: { sport: "basketball", league: "nba" },
-  wnba: { sport: "basketball", league: "wnba" },
-  mls: { sport: "soccer", league: "usa.1" },
+// Replace the existing sportsIcons and sportsMappings with this consolidated object
+const sportsData = {
+  ncaaf: {
+    icon: "american-football-outline",
+    name: "NCAAF",
+    sport: "football",
+    league: "college-football",
+  },
+  nfl: {
+    icon: "american-football-outline",
+    name: "NFL",
+    sport: "football",
+    league: "nfl",
+  },
+  ncaab: {
+    icon: "basketball-outline",
+    name: "NCAAB",
+    sport: "basketball",
+    league: "mens-college-basketball",
+  },
+  mlb: {
+    icon: "baseball-outline",
+    name: "MLB",
+    sport: "baseball",
+    league: "mlb",
+  },
+  nhl: {
+    icon: "hockey-puck",
+    name: "NHL",
+    sport: "hockey",
+    league: "nhl",
+  },
+  nba: {
+    icon: "basketball-outline",
+    name: "NBA",
+    sport: "basketball",
+    league: "nba",
+  },
+  wnba: {
+    icon: "basketball-outline",
+    name: "WNBA",
+    sport: "basketball",
+    league: "wnba",
+  },
+  mls: {
+    icon: "football-outline",
+    name: "MLS",
+    sport: "soccer",
+    league: "usa.1",
+  },
 };
 
 const SearchBox = ({ value, onChangeText }) => (
   <TextInput
     style={styles.searchBox}
-    placeholder="Search for a team..."
+    placeholder="Search matchups..."
     placeholderTextColor="#999"
     value={value}
     onChangeText={onChangeText}
@@ -97,7 +127,7 @@ const Scores = () => {
   const fetchDates = async (sport) => {
     setDateListLoading(true);
     try {
-      const { sport: sportName, league } = sportsMappings[sport];
+      const { sport: sportName, league } = sportsData[sport];
       const response = await fetch(
         `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/calendar/whitelist`
       );
@@ -108,10 +138,6 @@ const Scores = () => {
       setDates(dates);
       setSelectedDate(closestDate);
       setDateListLoading(false);
-
-      // Log dates and selected date for debugging
-      // console.log('Available dates:', dates);
-      // console.log('Selected date:', closestDate);
 
       // Scroll to the closest date after the list is rendered
       setTimeout(() => {
@@ -137,16 +163,16 @@ const Scores = () => {
   const fetchGameData = async (sport, date) => {
     setLoading(true);
     try {
-      const { sport: sportName, league } = sportsMappings[sport];
+      const { sport: sportName, league } = sportsData[sport];
       let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard?dates=${formatToYYYYMMDD(
         date
       )}`;
 
       // Add groups parameter for college football and basketball
       if (sport === "ncaaf") {
-        url += "?groups=80";
+        url += "&groups=80";
       } else if (sport === "ncaab") {
-        url += "?groups=50";
+        url += "&groups=50";
       }
 
       const response = await fetch(url);
@@ -197,6 +223,8 @@ const Scores = () => {
             day: "numeric",
           }),
           IsPlayoff: isPlayoff,
+          HomeWinner: competition.competitors[0].winner,
+          AwayWinner: competition.competitors[1].winner,
         };
       });
 
@@ -235,13 +263,13 @@ const Scores = () => {
         <Image source={NHLIcon} style={styles.icon} />
       ) : (
         <Ionicons
-          name={sportsIcons[item].icon}
+          name={sportsData[item].icon}
           size={18}
           color="white"
           style={styles.icon}
         />
       )}
-      <Text style={styles.itemText}>{sportsIcons[item].name}</Text>
+      <Text style={styles.itemText}>{sportsData[item].name}</Text>
     </TouchableOpacity>
   );
 
@@ -249,11 +277,29 @@ const Scores = () => {
     <View style={styles.gameContainer}>
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
-        <Text style={styles.teamName}>
+        <Text
+          style={[
+            styles.teamName,
+            item.Status === "STATUS_FINAL"
+              ? item.AwayWinner
+                ? styles.winnerText
+                : styles.loserText
+              : null,
+          ]}
+        >
           {item.AwayTeam}
           {item.AwayRank && ` (${item.AwayRank})`}
         </Text>
-        <Text style={styles.record}>
+        <Text
+          style={[
+            styles.recordScore,
+            item.Status === "STATUS_FINAL"
+              ? item.AwayWinner
+                ? styles.winnerText
+                : styles.loserText
+              : null,
+          ]}
+        >
           {item.Status === "STATUS_SCHEDULED"
             ? (item.AwayTeamRecordSummary !== "N/A" &&
                 item.AwayTeamRecordSummary) ||
@@ -273,11 +319,29 @@ const Scores = () => {
       </View>
       <View style={styles.teamContainer}>
         <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
-        <Text style={styles.teamName}>
+        <Text
+          style={[
+            styles.teamName,
+            item.Status === "STATUS_FINAL"
+              ? item.HomeWinner
+                ? styles.winnerText
+                : styles.loserText
+              : null,
+          ]}
+        >
           {item.HomeTeam}
           {item.HomeRank && ` (${item.HomeRank})`}
         </Text>
-        <Text style={styles.record}>
+        <Text
+          style={[
+            styles.recordScore,
+            item.Status === "STATUS_FINAL"
+              ? item.HomeWinner
+                ? styles.winnerText
+                : styles.loserText
+              : null,
+          ]}
+        >
           {item.Status === "STATUS_SCHEDULED"
             ? (item.HomeTeamRecordSummary !== "N/A" &&
                 item.HomeTeamRecordSummary) ||
@@ -335,7 +399,14 @@ const Scores = () => {
         scrollToDate(index);
       }}
     >
-      <Text style={styles.dateText}>{formatDate(item)}</Text>
+      <Text
+        style={[
+          styles.dateText,
+          selectedDate === item && styles.selectedDateText,
+        ]}
+      >
+        {formatDate(item)}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -344,7 +415,7 @@ const Scores = () => {
       <SafeAreaView />
       <View style={styles.sportCarousel}>
         <FlatList
-          data={Object.keys(sportsIcons)}
+          data={Object.keys(sportsData)}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           horizontal
@@ -452,6 +523,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     color: "white",
+    fontWeight: "bold",
     fontSize: 18,
     marginLeft: 10,
   },
@@ -469,7 +541,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#222222",
     padding: 10,
     marginHorizontal: 10,
-    marginVertical: 5,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "white",
@@ -479,24 +550,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   teamLogo: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     marginBottom: 5,
   },
   teamName: {
     color: "white",
+    fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
   },
-  score: {
+  recordScore: {
     color: "white",
-    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 5,
-  },
-  record: {
-    color: "white",
-    fontSize: 14,
+    fontSize: 20,
     marginTop: 5,
   },
   gameInfo: {
@@ -505,7 +572,7 @@ const styles = StyleSheet.create({
   },
   gameStatus: {
     color: "white",
-    fontSize: 12,
+    fontSize: 16,
   },
   searchBox: {
     flexShrink: 1,
@@ -513,7 +580,7 @@ const styles = StyleSheet.create({
     height: 40,
     color: "white",
     paddingHorizontal: 10,
-    marginTop: 10,
+    marginVertical: 10,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "white",
@@ -542,13 +609,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  selectedDateItem: {
-    backgroundColor: "#333",
-  },
   dateText: {
     color: "white",
-    fontSize: 14, // Slightly smaller font
+    fontSize: 16, // Slightly smaller font
     textAlign: "center",
+    fontWeight: "bold",
+  },
+  selectedDateText: {
+    color: "yellow", // Add this new style for selected date text
+  },
+  winnerText: {
+    fontWeight: "bold",
+    color: "white",
+  },
+  loserText: {
+    fontWeight: "normal",
+    color: "#999", // A lighter grey color
   },
 });
 
