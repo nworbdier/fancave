@@ -134,15 +134,22 @@ const Scores = () => {
       const data = await response.json();
       const dates = data.eventDate.dates;
       const closestDate = findClosestDate(dates);
-      const newIndex = dates.findIndex((date) => date === closestDate);
-      setDates(dates);
-      setSelectedDate(closestDate);
-      setDateListLoading(false);
 
-      // Scroll to the closest date after the list is rendered
-      setTimeout(() => {
-        scrollToDate(newIndex);
-      }, 100);
+      // Ensure closestDate is valid before setting it
+      if (closestDate) {
+        const newIndex = dates.findIndex((date) => date === closestDate);
+        setDates(dates);
+        setSelectedDate(closestDate); // Set selectedDate to a valid date
+        setDateListLoading(false);
+
+        // Scroll to the closest date after the list is rendered
+        setTimeout(() => {
+          scrollToDate(newIndex);
+        }, 100);
+      } else {
+        console.error("No valid dates found");
+        setDateListLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching dates:", error);
       setDates([]);
@@ -164,6 +171,13 @@ const Scores = () => {
     setLoading(true);
     try {
       const { sport: sportName, league } = sportsData[sport];
+
+      // Check if date is defined before proceeding
+      if (!date) {
+        console.error("Date is undefined");
+        return; // Exit the function if date is not defined
+      }
+
       let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard?dates=${formatToYYYYMMDD(
         date
       )}`;
@@ -248,8 +262,14 @@ const Scores = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchGameData(selectedSport);
-  }, [selectedSport]);
+    // Check if selectedDate is defined before fetching game data
+    if (selectedDate) {
+      fetchGameData(selectedSport, selectedDate);
+    } else {
+      console.error("selectedDate is undefined during refresh");
+      setRefreshing(false); // Stop refreshing if no date is set
+    }
+  }, [selectedSport, selectedDate]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -466,7 +486,6 @@ const Scores = () => {
                     refreshing={refreshing}
                     onRefresh={onRefresh}
                     tintColor="white"
-                    title="Pull to refresh"
                     titleColor="white"
                   />
                 }
