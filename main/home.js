@@ -146,6 +146,7 @@ export default function App() {
 
   const onRefresh = async () => {
     setRefreshing(true);
+    setLoading(true); // Set loading to true when refreshing starts
     debouncedRefresh();
   };
 
@@ -201,9 +202,8 @@ export default function App() {
             </View>
 
             {Object.values(listDictionary).map((team, index) => (
-              <View>
+              <View key={index}>
                 <TouchableOpacity
-                  key={index}
                   onPress={() => handleTeamChange(team)}
                   style={styles.teamItem}
                 >
@@ -250,16 +250,16 @@ export default function App() {
             )}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="white"
+                titleColor="white"
+              />
             }
             showsVerticalScrollIndicator={false}
             onEndReached={loadMoreTweets}
             onEndReachedThreshold={0.1}
-            ListFooterComponent={() =>
-              loading && page !== 1 ? (
-                <ActivityIndicator size="small" color="grey" />
-              ) : null
-            }
           />
         )}
       </View>
@@ -308,6 +308,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 10.5,
     paddingTop: 10,
+  },
+  loadingContainer: {
+    // Added loading container style
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   fullImageContainer: {
     position: "absolute",
