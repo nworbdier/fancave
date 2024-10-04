@@ -18,7 +18,7 @@ import {
   SectionList,
   TextInput,
 } from "react-native";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -407,7 +407,7 @@ export default function Scores() {
 
   const scrollToDate = (index) => {
     if (dateListRef.current && dates.length > 0) {
-      const itemWidth = 86; // 80px width + 6px for margins
+      const itemWidth = 72; // 70px width + 2px for margins (1px on each side)
       const offset = index * itemWidth - dateListWidth / 2 + itemWidth / 2; // Center the item
       dateListRef.current.scrollToOffset({
         offset: Math.max(0, offset),
@@ -480,8 +480,8 @@ export default function Scores() {
           viewPosition={0.5}
           initialScrollIndex={adjustedScrollIndex} // Use the adjusted index
           getItemLayout={(data, index) => ({
-            length: dateListWidth / 5,
-            offset: (dateListWidth / 5) * index,
+            length: 72, // Match the new itemWidth
+            offset: 72 * index, // Match the new itemWidth
             index,
           })}
         />
@@ -643,13 +643,13 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexBasis: "auto",
     paddingHorizontal: 10,
-    height: 30, // Reduced height
+    height: 30,
     marginTop: 10,
   },
   dateItem: {
     padding: 5,
-    marginHorizontal: 3,
-    width: 80, // Fixed width instead of percentage
+    marginHorizontal: 1, // Reduced from 3 to 1
+    width: 70, // Reduced from 80 to 70
     justifyContent: "center",
     alignItems: "center",
   },
