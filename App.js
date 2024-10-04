@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
-import Notifications from "./main/notipref";
+import Notifications from "./main/notifications";
 import Theme from "./main/theme";
 import Search from "./main/search";
 import Settings from "./main/settings";

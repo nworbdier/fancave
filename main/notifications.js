@@ -57,6 +57,8 @@ const Notifications = () => {
 
       {/* Allow Notifications */}
       <View style={styles.sectionContainer}>
+        {/* Manage Notifications */}
+        <Text style={styles.sectionHeader}>Manage Notifications</Text>
         <View style={styles.option}>
           <Text style={styles.optionText}>Allow Notifications</Text>
           <Switch
@@ -68,31 +70,26 @@ const Notifications = () => {
           />
         </View>
 
-        {/* Manage Notifications */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader}>Manage Notifications</Text>
+        <View style={styles.option}>
+          <Text style={styles.optionText}>Posts</Text>
+          <Switch
+            value={posts}
+            onValueChange={(value) => setPosts(value)}
+            thumbColor={"white"}
+            trackColor={{ false: "lightgrey", true: "#5BC236" }}
+            ios_backgroundColor="lightgrey"
+          />
+        </View>
 
-          <View style={styles.option}>
-            <Text style={styles.optionText2}>Posts</Text>
-            <Switch
-              value={posts}
-              onValueChange={(value) => setPosts(value)}
-              thumbColor={"white"}
-              trackColor={{ false: "lightgrey", true: "#5BC236" }}
-              ios_backgroundColor="lightgrey"
-            />
-          </View>
-
-          <View style={styles.option}>
-            <Text style={styles.optionText2}>Scores</Text>
-            <Switch
-              value={scores}
-              onValueChange={(value) => setScores(value)}
-              thumbColor={"white"}
-              trackColor={{ false: "lightgrey", true: "#5BC236" }}
-              ios_backgroundColor="lightgrey"
-            />
-          </View>
+        <View style={styles.option}>
+          <Text style={styles.optionText}>Scores</Text>
+          <Switch
+            value={scores}
+            onValueChange={(value) => setScores(value)}
+            thumbColor={"white"}
+            trackColor={{ false: "lightgrey", true: "#5BC236" }}
+            ios_backgroundColor="lightgrey"
+          />
         </View>
       </View>
     </View>
@@ -109,14 +106,13 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "white",
     fontWeight: "bold",
-    marginVertical: 20,
   },
   sectionContainer: {
-    marginVertical: 15,
+    marginVertical: 25,
   },
   sectionHeader: {
     fontSize: 20,
-    color: "lightgray",
+    color: "grey",
     marginBottom: 15,
     fontWeight: "bold",
   },
@@ -130,12 +126,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 18,
     color: "white",
-    fontWeight: "regular",
-  },
-  optionText2: {
-    fontSize: 18,
-    color: "white",
-    fontWeight: "regular",
+    fontWeight: "bold",
   },
 });
 

@@ -17,7 +17,7 @@ import {
   RefreshControl,
   SectionList,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Ionicons, FontAwesome6 } from "react-native-vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native";
@@ -512,7 +512,7 @@ const Scores = () => {
                     titleColor="white"
                   />
                 }
-                stickySectionHeadersEnabled={false} // Add this line
+                stickySectionHeadersEnabled={false}
               />
             )
           ) : (

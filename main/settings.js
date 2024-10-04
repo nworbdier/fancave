@@ -8,7 +8,7 @@ import {
   Linking,
   Image,
 } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut, deleteUser } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -89,7 +89,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => navigation.navigate("Notifications")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="notifications" size={24} color="white" />
             <Text style={styles.optionText}>Notifications</Text>
           </View>
@@ -99,15 +99,15 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => navigation.navigate("Theme")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="palette" size={24} color="white" />
             <Text style={styles.optionText}>Theme</Text>
           </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
-          <View style={styles.optionContent}>
-            <MaterialIcons name="edit" size={24} color="white" />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <MaterialIcons name="manage-accounts" size={24} color="white" />
             <Text style={styles.optionText}>Edit Profile</Text>
           </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
@@ -121,8 +121,8 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://discord.com")}
         >
-          <View style={styles.optionContent}>
-            <MaterialIcons name="people" size={24} color="white" />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <FontAwesome6 name="x-twitter" size={24} color="white" />
             <Text style={styles.optionText}>FanCave X</Text>
           </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
@@ -131,7 +131,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/feedback")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="feedback" size={24} color="white" />
             <Text style={styles.optionText}>Feedback</Text>
           </View>
@@ -141,7 +141,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/support")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="support" size={24} color="white" />
             <Text style={styles.optionText}>Support</Text>
           </View>
@@ -156,7 +156,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/faq")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="question-answer" size={24} color="white" />
             <Text style={styles.optionText}>FAQ</Text>
           </View>
@@ -166,7 +166,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/terms")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="gavel" size={24} color="white" />
             <Text style={styles.optionText}>Terms of Service</Text>
           </View>
@@ -176,7 +176,7 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/privacy")}
         >
-          <View style={styles.optionContent}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="privacy-tip" size={24} color="white" />
             <Text style={styles.optionText}>Privacy Policy</Text>
           </View>
@@ -186,7 +186,7 @@ const Settings = ({}) => {
 
       {/* Logout and Delete Account */}
       <View style={styles.sectionContainer}>
-        <View style={styles.centeredContainer}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   userEmail: {
-    fontSize: 18,
+    fontSize: 20,
     color: "white",
   },
   sectionContainer: {
@@ -246,14 +246,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  optionContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   optionText: {
-    fontSize: 18,
+    fontSize: 20,
     color: "white",
-    marginLeft: 10, // Add margin to the left of the text
+    fontWeight: "regular",
+    marginLeft: 10,
   },
   logoutOption: {
     paddingBottom: 15,
@@ -269,11 +266,11 @@ const styles = StyleSheet.create({
     color: "darkred",
     fontWeight: "bold",
   },
-  centeredContainer: {
-    flexDirection: "column",
-    alignItems: "center", // Center items horizontally
-    justifyContent: "center", // Center items vertically
-    paddingVertical: 20, // Optional: Add some vertical padding
+  buttonContainer: {
+    flexDirection: "column", // Stack buttons vertically
+    alignItems: "center", // Center horizontally
+    justifyContent: "center", // Center vertically
+    paddingVertical: 20, // Add some vertical padding
   },
 });
 

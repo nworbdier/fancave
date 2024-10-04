@@ -5,23 +5,34 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Theme = () => {
-  const [selectedTheme, setSelectedTheme] = useState("auto"); // Default theme is null (no selection)
+  const [selectedMode, setSelectedMode] = useState("auto"); // Default mode
+  const [selectedColor, setSelectedColor] = useState("yellow"); // Default color
 
-  // Load saved theme from AsyncStorage when component mounts
+  // Load saved theme and color from AsyncStorage when component mounts
   useEffect(() => {
     const loadTheme = async () => {
       const savedTheme = await AsyncStorage.getItem("theme");
+      const savedColor = await AsyncStorage.getItem("color");
       if (savedTheme) {
-        setSelectedTheme(savedTheme);
+        setSelectedMode(savedTheme);
+      }
+      if (savedColor) {
+        setSelectedColor(savedColor);
       }
     };
     loadTheme();
   }, []);
 
-  // Function to handle theme selection
-  const handleThemeSelection = async (theme) => {
-    setSelectedTheme(theme);
-    await AsyncStorage.setItem("theme", theme); // Save theme to AsyncStorage
+  // Function to handle mode selection
+  const handleModeSelection = async (mode) => {
+    setSelectedMode(mode);
+    await AsyncStorage.setItem("theme", mode); // Save mode to AsyncStorage
+  };
+
+  // Function to handle color selection
+  const handleColorSelection = async (color) => {
+    setSelectedColor(color);
+    await AsyncStorage.setItem("color", color); // Save color to AsyncStorage
   };
 
   return (
@@ -31,53 +42,99 @@ const Theme = () => {
         <Text style={styles.headerText}>Theme</Text>
       </View>
 
-      {/* Manage Theme */}
+      {/* Manage Mode */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeader}>Mode</Text>
 
         <TouchableOpacity
           style={styles.option}
-          onPress={() => handleThemeSelection("dark")}
+          onPress={() => handleModeSelection("dark")}
         >
-          <Text style={styles.optionText2}>Dark</Text>
+          <Text style={styles.optionText1}>Dark</Text>
           <MaterialIcons
             name={
-              selectedTheme === "dark" ? "check-circle" : "check-circle-outline"
+              selectedMode === "dark" ? "check-circle" : "check-circle-outline"
             }
             size={24}
-            color={selectedTheme === "dark" ? "yellow" : "white"}
+            color={selectedMode === "dark" ? "yellow" : "white"}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.option}
-          onPress={() => handleThemeSelection("light")}
+          onPress={() => handleModeSelection("light")}
         >
-          <Text style={styles.optionText2}>Light</Text>
+          <Text style={styles.optionText1}>Light</Text>
           <MaterialIcons
             name={
-              selectedTheme === "light"
-                ? "check-circle"
-                : "check-circle-outline"
+              selectedMode === "light" ? "check-circle" : "check-circle-outline"
             }
             size={24}
-            color={selectedTheme === "light" ? "yellow" : "white"}
+            color={selectedMode === "light" ? "yellow" : "white"}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.option}
-          onPress={() => handleThemeSelection("auto")}
+          onPress={() => handleModeSelection("grey")}
         >
-          <Text style={styles.optionText2}>Auto</Text>
+          <Text style={styles.optionText1}>Grey</Text>
           <MaterialIcons
             name={
-              selectedTheme === "auto" ? "check-circle" : "check-circle-outline"
+              selectedMode === "grey" ? "check-circle" : "check-circle-outline"
             }
             size={24}
-            color={selectedTheme === "auto" ? "yellow" : "white"}
+            color={selectedMode === "grey" ? "yellow" : "white"}
           />
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => handleModeSelection("auto")}
+        >
+          <Text style={styles.optionText1}>Auto</Text>
+          <MaterialIcons
+            name={
+              selectedMode === "auto" ? "check-circle" : "check-circle-outline"
+            }
+            size={24}
+            color={selectedMode === "auto" ? "yellow" : "white"}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Manage Color */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Color</Text>
+
+        {/* New Color Options */}
+        {["red", "orange", "yellow", "blue", "green", "purple", "pink"].map(
+          (color) => (
+            <TouchableOpacity
+              key={color}
+              style={styles.option}
+              onPress={() => handleColorSelection(color)}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View
+                  style={[styles.colorCircle, { backgroundColor: color }]}
+                />
+                <Text style={styles.optionText2}>
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
+                </Text>
+              </View>
+              <MaterialIcons
+                name={
+                  selectedColor === color
+                    ? "check-circle"
+                    : "check-circle-outline"
+                }
+                size={24}
+                color={selectedColor === color ? "yellow" : "white"}
+              />
+            </TouchableOpacity>
+          )
+        )}
       </View>
     </View>
   );
@@ -93,14 +150,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "white",
     fontWeight: "bold",
-    marginVertical: 20,
+    marginBottom: 15,
   },
   sectionContainer: {
     marginVertical: 15,
   },
   sectionHeader: {
     fontSize: 20,
-    color: "lightgray",
+    color: "grey",
     marginBottom: 15,
     fontWeight: "bold",
   },
@@ -111,10 +168,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 15,
   },
-  optionText2: {
+  optionText1: {
     fontSize: 18,
     color: "white",
     fontWeight: "regular",
+  },
+  optionText2: {
+    fontSize: 18,
+    color: "white",
+    marginLeft: 15,
+    fontWeight: "regular",
+  },
+  colorCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
 });
 
