@@ -109,7 +109,7 @@ const Scores = () => {
         if (savedSport !== null) {
           setSelectedSport(savedSport);
           await handleSelectSport(savedSport); // Simulate sport switch
-          console.log("Loaded sport:", savedSport); // Log the sport loaded
+          // console.log("Loaded sport:", savedSport); // Log the sport loaded
         } else {
           await handleSelectSport("ncaaf"); // Simulate sport switch for default
         }
@@ -124,7 +124,7 @@ const Scores = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      console.log("Selected date:", selectedDate); // Log the selected date after it has been set
+      // console.log("Selected date:", selectedDate); // Log the selected date after it has been set
       fetchGameData(selectedSport, selectedDate);
 
       // Scroll to the date if needed
@@ -171,7 +171,7 @@ const Scores = () => {
   const handleSelectSport = async (sport) => {
     setSelectedSport(sport);
     await fetchDates(sport);
-    console.log("Switched to sport:", sport); // Log the sport switched
+    // console.log("Switched to sport:", sport); // Log the sport switched
     try {
       await AsyncStorage.setItem("selectedSport", sport);
     } catch (error) {
@@ -428,7 +428,7 @@ const Scores = () => {
       ]}
       onPress={() => {
         setSelectedDate(item);
-        console.log("Selected Date:", item); // Log the selected date
+        // console.log("Selected Date:", item); // Log the selected date
         scrollToDate(index);
       }}
     >

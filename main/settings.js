@@ -89,18 +89,27 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => navigation.navigate("Notifications")}
         >
-          <Text style={styles.optionText}>Notifications</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="notifications" size={24} color="white" />
+            <Text style={styles.optionText}>Notifications</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
           onPress={() => navigation.navigate("Theme")}
         >
-          <Text style={styles.optionText}>Theme</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="palette" size={24} color="white" />
+            <Text style={styles.optionText}>Theme</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>Edit Profile</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="edit" size={24} color="white" />
+            <Text style={styles.optionText}>Edit Profile</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -112,21 +121,30 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://discord.com")}
         >
-          <Text style={styles.optionText}>FanCave X</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="people" size={24} color="white" />
+            <Text style={styles.optionText}>FanCave X</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
           onPress={() => openLink("https://example.com/feedback")}
         >
-          <Text style={styles.optionText}>Feedback</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="feedback" size={24} color="white" />
+            <Text style={styles.optionText}>Feedback</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
           onPress={() => openLink("https://example.com/support")}
         >
-          <Text style={styles.optionText}>Support</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="support" size={24} color="white" />
+            <Text style={styles.optionText}>Support</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -138,36 +156,47 @@ const Settings = ({}) => {
           style={styles.option}
           onPress={() => openLink("https://example.com/faq")}
         >
-          <Text style={styles.optionText}>FAQ</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="question-answer" size={24} color="white" />
+            <Text style={styles.optionText}>FAQ</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
           onPress={() => openLink("https://example.com/terms")}
         >
-          <Text style={styles.optionText}>Terms of Service</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="gavel" size={24} color="white" />
+            <Text style={styles.optionText}>Terms of Service</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
           onPress={() => openLink("https://example.com/privacy")}
         >
-          <Text style={styles.optionText}>Privacy Policy</Text>
+          <View style={styles.optionContent}>
+            <MaterialIcons name="privacy-tip" size={24} color="white" />
+            <Text style={styles.optionText}>Privacy Policy</Text>
+          </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
       {/* Logout and Delete Account */}
       <View style={styles.sectionContainer}>
-        <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.deleteOption}
-          onPress={handleDeleteAccount}
-        >
-          <Text style={styles.deleteText}>Delete Account</Text>
-        </TouchableOpacity>
+        <View style={styles.centeredContainer}>
+          <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteOption}
+            onPress={handleDeleteAccount}
+          >
+            <Text style={styles.deleteText}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -217,10 +246,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  optionContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   optionText: {
     fontSize: 18,
     color: "white",
-    fontWeight: "regular",
+    marginLeft: 10, // Add margin to the left of the text
   },
   logoutOption: {
     paddingBottom: 15,
@@ -235,6 +268,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "darkred",
     fontWeight: "bold",
+  },
+  centeredContainer: {
+    flexDirection: "column",
+    alignItems: "center", // Center items horizontally
+    justifyContent: "center", // Center items vertically
+    paddingVertical: 20, // Optional: Add some vertical padding
   },
 });
 
