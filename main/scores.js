@@ -27,17 +27,17 @@ import NHLIcon from "../assets/hockey-puck.png";
 
 // Replace the existing sportsIcons and sportsMappings with this consolidated object
 const sportsData = {
-  ncaaf: {
-    icon: "american-football-outline",
-    name: "NCAAF",
-    sport: "football",
-    league: "college-football",
-  },
   nfl: {
     icon: "american-football-outline",
     name: "NFL",
     sport: "football",
     league: "nfl",
+  },
+  ncaaf: {
+    icon: "american-football-outline",
+    name: "NCAAF",
+    sport: "football",
+    league: "college-football",
   },
   ncaab: {
     icon: "basketball-outline",
@@ -87,6 +87,9 @@ const SearchBox = ({ value, onChangeText }) => (
   />
 );
 
+// Define a constant for the offset
+const OFFSET = 1; // Adjust this value as needed
+
 const Scores = () => {
   const [selectedSport, setSelectedSport] = useState("ncaaf");
   const [gameData, setGameData] = useState([]);
@@ -105,13 +108,14 @@ const Scores = () => {
         const savedSport = await AsyncStorage.getItem("selectedSport");
         if (savedSport !== null) {
           setSelectedSport(savedSport);
-          await fetchDates(savedSport);
+          await handleSelectSport(savedSport); // Simulate sport switch
+          console.log("Loaded sport:", savedSport); // Log the sport loaded
         } else {
-          await fetchDates("ncaaf");
+          await handleSelectSport("ncaaf"); // Simulate sport switch for default
         }
       } catch (error) {
         console.error("Error loading selected sport:", error);
-        await fetchDates("ncaaf");
+        await handleSelectSport("ncaaf"); // Simulate sport switch for default
       }
     };
 
@@ -120,9 +124,16 @@ const Scores = () => {
 
   useEffect(() => {
     if (selectedDate) {
+      console.log("Selected date:", selectedDate); // Log the selected date after it has been set
       fetchGameData(selectedSport, selectedDate);
+
+      // Scroll to the date if needed
+      const newIndex = dates.findIndex((date) => date === selectedDate);
+      if (newIndex !== -1) {
+        scrollToDate(newIndex);
+      }
     }
-  }, [selectedDate, selectedSport]);
+  }, [selectedDate, selectedSport, dates]); // Add dates to the dependency array
 
   const fetchDates = async (sport) => {
     setDateListLoading(true);
@@ -160,6 +171,7 @@ const Scores = () => {
   const handleSelectSport = async (sport) => {
     setSelectedSport(sport);
     await fetchDates(sport);
+    console.log("Switched to sport:", sport); // Log the sport switched
     try {
       await AsyncStorage.setItem("selectedSport", sport);
     } catch (error) {
@@ -395,7 +407,7 @@ const Scores = () => {
   const scrollToDate = (index) => {
     if (dateListRef.current && dates.length > 0) {
       const itemWidth = 86; // 80px width + 6px for margins
-      const offset = index * itemWidth - dateListWidth / 2 + itemWidth / 2;
+      const offset = index * itemWidth - dateListWidth / 2 + itemWidth / 2; // Center the item
       dateListRef.current.scrollToOffset({
         offset: Math.max(0, offset),
         animated: true,
@@ -416,6 +428,7 @@ const Scores = () => {
       ]}
       onPress={() => {
         setSelectedDate(item);
+        console.log("Selected Date:", item); // Log the selected date
         scrollToDate(index);
       }}
     >
@@ -429,6 +442,14 @@ const Scores = () => {
       </Text>
     </TouchableOpacity>
   );
+
+  // Calculate the initial scroll index
+  const initialScrollIndex = dates.indexOf(selectedDate);
+  const centeredScrollIndex =
+    initialScrollIndex !== -1 ? initialScrollIndex : 0;
+
+  // Adjust the initial scroll index to center it
+  const adjustedScrollIndex = Math.max(0, centeredScrollIndex); // No need for OFFSET here
 
   return (
     <View style={styles.page}>
@@ -455,6 +476,8 @@ const Scores = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.dateCarousel}
           onLayout={handleDateLayout}
+          viewPosition={0.5}
+          initialScrollIndex={adjustedScrollIndex} // Use the adjusted index
           getItemLayout={(data, index) => ({
             length: dateListWidth / 5,
             offset: (dateListWidth / 5) * index,
@@ -560,6 +583,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#222222",
     padding: 10,
     marginHorizontal: 10,
+    marginVertical: 5,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "white",
