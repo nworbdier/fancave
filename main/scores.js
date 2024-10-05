@@ -308,16 +308,20 @@ export default function Scores() {
       onPress={() => handleSelectSport(item)}
     >
       {item === "nhl" ? (
-        <Image source={NHLIcon} style={styles.icon} />
+        <Image source={NHLIcon} style={styles.selectedIcon} />
       ) : (
         <Ionicons
           name={sportsData[item].icon}
-          size={18}
-          color="white"
+          size={24} // Increased icon size
+          color={selectedSport === item ? "yellow" : "white"} // Change color based on selection
           style={styles.icon}
         />
       )}
-      <Text style={styles.itemText}>{sportsData[item].name}</Text>
+      <Text
+        style={[styles.itemText, selectedSport === item && styles.selectedText]}
+      >
+        {sportsData[item].name}
+      </Text>
     </TouchableOpacity>
   );
 
@@ -587,23 +591,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 10,
     alignItems: "center",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "white",
-    marginHorizontal: 5,
+    marginHorizontal: 3,
+    // Removed borderRadius and borderWidth
   },
   selectedItem: {
-    backgroundColor: "#333",
+    // Removed background color change
   },
   itemText: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 20, // Increased font size
     marginLeft: 10,
   },
+  selectedText: {
+    color: "yellow", // Change text color to yellow when selected
+  },
+  selectedIcon: {
+    width: 24, // Increased icon size
+    height: 24, // Increased icon size
+  },
   icon: {
-    width: 18,
-    height: 18,
+    width: 24,
+    height: 24,
   },
   gameList: {
     paddingVertical: 5,
@@ -623,7 +632,7 @@ const styles = StyleSheet.create({
   teamRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     flex: 1,
   },
   teamContainer: {
@@ -720,7 +729,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "yellow",
-    marginHorizontal: 5,
+    marginHorizontal: 2,
   },
   situationContainer: {
     alignItems: "center",
