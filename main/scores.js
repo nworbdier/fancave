@@ -323,43 +323,45 @@ export default function Scores() {
 
   const renderGameItem = ({ item }) => (
     <View style={styles.gameContainer}>
-      <View style={styles.teamContainer}>
+      <View style={styles.teamRow}>
+        <View style={styles.teamContainer}>
+          <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
+          <Text
+            style={[
+              styles.teamName,
+              item.Status === "STATUS_FINAL"
+                ? item.AwayWinner
+                  ? styles.winnerText
+                  : styles.loserText
+                : null,
+            ]}
+          >
+            {item.AwayTeam}
+            {item.AwayRank && ` (${item.AwayRank})`}
+          </Text>
+          <Text
+            style={[
+              styles.recordScore,
+              item.Status === "STATUS_FINAL"
+                ? item.AwayWinner
+                  ? styles.winnerText
+                  : styles.loserText
+                : null,
+            ]}
+          >
+            {item.Status === "STATUS_SCHEDULED"
+              ? (item.AwayTeamRecordSummary !== "N/A" &&
+                  item.AwayTeamRecordSummary) ||
+                ""
+              : item.AwayScore}
+          </Text>
+        </View>
         {item.AwayPossession && <View style={styles.possessionIndicator} />}
-        <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
-        <Text
-          style={[
-            styles.teamName,
-            item.Status === "STATUS_FINAL"
-              ? item.AwayWinner
-                ? styles.winnerText
-                : styles.loserText
-              : null,
-          ]}
-        >
-          {item.AwayTeam}
-          {item.AwayRank && ` (${item.AwayRank})`}
-        </Text>
-        <Text
-          style={[
-            styles.recordScore,
-            item.Status === "STATUS_FINAL"
-              ? item.AwayWinner
-                ? styles.winnerText
-                : styles.loserText
-              : null,
-          ]}
-        >
-          {item.Status === "STATUS_SCHEDULED"
-            ? (item.AwayTeamRecordSummary !== "N/A" &&
-                item.AwayTeamRecordSummary) ||
-              ""
-            : item.AwayScore}
-        </Text>
       </View>
       <View style={styles.gameInfo}>
         <Text style={styles.gameStatus}>
           {item.Status === "STATUS_SCHEDULED"
-            ? item.GameTime // This will now display as "9:00 PM"
+            ? item.GameTime
             : item.StatusShortDetail}
         </Text>
         {(item.sport === "football" || item.sport === "college-football") &&
@@ -376,38 +378,40 @@ export default function Scores() {
             </View>
           )}
       </View>
-      <View style={styles.teamContainer}>
+      <View style={styles.teamRow}>
         {item.HomePossession && <View style={styles.possessionIndicator} />}
-        <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
-        <Text
-          style={[
-            styles.teamName,
-            item.Status === "STATUS_FINAL"
-              ? item.HomeWinner
-                ? styles.winnerText
-                : styles.loserText
-              : null,
-          ]}
-        >
-          {item.HomeTeam}
-          {item.HomeRank && ` (${item.HomeRank})`}
-        </Text>
-        <Text
-          style={[
-            styles.recordScore,
-            item.Status === "STATUS_FINAL"
-              ? item.HomeWinner
-                ? styles.winnerText
-                : styles.loserText
-              : null,
-          ]}
-        >
-          {item.Status === "STATUS_SCHEDULED"
-            ? (item.HomeTeamRecordSummary !== "N/A" &&
-                item.HomeTeamRecordSummary) ||
-              ""
-            : item.HomeScore}
-        </Text>
+        <View style={styles.teamContainer}>
+          <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
+          <Text
+            style={[
+              styles.teamName,
+              item.Status === "STATUS_FINAL"
+                ? item.HomeWinner
+                  ? styles.winnerText
+                  : styles.loserText
+                : null,
+            ]}
+          >
+            {item.HomeTeam}
+            {item.HomeRank && ` (${item.HomeRank})`}
+          </Text>
+          <Text
+            style={[
+              styles.recordScore,
+              item.Status === "STATUS_FINAL"
+                ? item.HomeWinner
+                  ? styles.winnerText
+                  : styles.loserText
+                : null,
+            ]}
+          >
+            {item.Status === "STATUS_SCHEDULED"
+              ? (item.HomeTeamRecordSummary !== "N/A" &&
+                  item.HomeTeamRecordSummary) ||
+                ""
+              : item.HomeScore}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -616,10 +620,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "white",
   },
+  teamRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: 1,
+  },
   teamContainer: {
     alignItems: "center",
     flex: 1,
-    position: "relative", // Add this to position the indicator
   },
   teamLogo: {
     width: 50,
@@ -707,14 +716,11 @@ const styles = StyleSheet.create({
     color: "#999", // A lighter grey color
   },
   possessionIndicator: {
-    position: "absolute",
-    top: "50%",
-    left: 0,
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: "yellow",
-    zIndex: 1,
+    marginHorizontal: 5,
   },
   situationContainer: {
     alignItems: "center",
