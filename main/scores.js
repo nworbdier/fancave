@@ -246,7 +246,11 @@ export default function Scores() {
             ? `${awayWins}-${homeWins}`
             : competition.competitors[1].records?.[0]?.summary || "N/A",
           AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
-          GameTime: date,
+          GameTime: date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          }), // Format the game time
           Status: competition.status.type.name,
           StatusShortDetail: competition.status.type.shortDetail,
           Date: date.toLocaleDateString("en-US", {
@@ -259,6 +263,10 @@ export default function Scores() {
           AwayWinner: competition.competitors[1].winner,
           HomePossession: homePossession,
           AwayPossession: awayPossession,
+          sport: sportName,
+          shortDownDistanceText:
+            competition.situation?.shortDownDistanceText || null,
+          possessionText: competition.situation?.possessionText || null,
         };
       });
 
@@ -351,12 +359,22 @@ export default function Scores() {
       <View style={styles.gameInfo}>
         <Text style={styles.gameStatus}>
           {item.Status === "STATUS_SCHEDULED"
-            ? item.GameTime.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              })
+            ? item.GameTime // This will now display as "9:00 PM"
             : item.StatusShortDetail}
         </Text>
+        {(item.sport === "football" || item.sport === "college-football") &&
+          (item.shortDownDistanceText || item.possessionText) && (
+            <View style={styles.situationContainer}>
+              {item.shortDownDistanceText && (
+                <Text style={styles.situationText}>
+                  {item.shortDownDistanceText}
+                </Text>
+              )}
+              {item.possessionText && (
+                <Text style={styles.situationText}>{item.possessionText}</Text>
+              )}
+            </View>
+          )}
       </View>
       <View style={styles.teamContainer}>
         {item.HomePossession && <View style={styles.possessionIndicator} />}
@@ -623,10 +641,18 @@ const styles = StyleSheet.create({
   gameInfo: {
     alignItems: "center",
     flex: 1,
+    justifyContent: "center",
   },
   gameStatus: {
     color: "white",
     fontSize: 16,
+    textAlign: "center",
+  },
+  downDistance: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 4,
   },
   searchBox: {
     flexShrink: 1,
@@ -689,6 +715,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "yellow",
     zIndex: 1,
+  },
+  situationContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  situationText: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 3,
   },
 });
 
