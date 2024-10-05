@@ -225,6 +225,11 @@ export default function Scores() {
         const homeRank = competition.competitors[0].curatedRank?.current;
         const awayRank = competition.competitors[1].curatedRank?.current;
 
+        // Add possession information
+        const possession = competition.situation?.possession;
+        const homePossession = possession === competition.competitors[0].id;
+        const awayPossession = possession === competition.competitors[1].id;
+
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
@@ -252,6 +257,8 @@ export default function Scores() {
           IsPlayoff: isPlayoff,
           HomeWinner: competition.competitors[0].winner,
           AwayWinner: competition.competitors[1].winner,
+          HomePossession: homePossession,
+          AwayPossession: awayPossession,
         };
       });
 
@@ -309,6 +316,7 @@ export default function Scores() {
   const renderGameItem = ({ item }) => (
     <View style={styles.gameContainer}>
       <View style={styles.teamContainer}>
+        {item.AwayPossession && <View style={styles.possessionIndicator} />}
         <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
         <Text
           style={[
@@ -351,6 +359,7 @@ export default function Scores() {
         </Text>
       </View>
       <View style={styles.teamContainer}>
+        {item.HomePossession && <View style={styles.possessionIndicator} />}
         <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
         <Text
           style={[
@@ -592,6 +601,7 @@ const styles = StyleSheet.create({
   teamContainer: {
     alignItems: "center",
     flex: 1,
+    position: "relative", // Add this to position the indicator
   },
   teamLogo: {
     width: 50,
@@ -669,6 +679,16 @@ const styles = StyleSheet.create({
   loserText: {
     fontWeight: "normal",
     color: "#999", // A lighter grey color
+  },
+  possessionIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: 0,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "yellow",
+    zIndex: 1,
   },
 });
 
