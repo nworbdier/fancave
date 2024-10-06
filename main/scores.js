@@ -220,6 +220,12 @@ export default function Scores() {
 
       const data = await response.json();
       const gameData = data.events.map((event) => {
+        const homeTeam = event.competitions[0].competitors[0];
+        const awayTeam = event.competitions[0].competitors[1];
+
+        const homeLogoDark = homeTeam.team.logo.replace("/500/", "/500-dark/");
+        const awayLogoDark = awayTeam.team.logo.replace("/500/", "/500-dark/");
+
         const competition = event.competitions[0];
         const date = new Date(event.date);
         const isPlayoff =
@@ -243,14 +249,16 @@ export default function Scores() {
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
-          HomeLogo: competition.competitors[0].team.logo,
+          HomeLogo: homeLogoDark, // Use the dark logo
+          HomeLogoDark: homeLogoDark,
           HomeScore: competition.competitors[0].score,
           HomeTeamRecordSummary: isPlayoff
             ? `${homeWins}-${awayWins}`
             : competition.competitors[0].records?.[0]?.summary || "N/A",
           HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
-          AwayLogo: competition.competitors[1].team.logo,
+          AwayLogo: awayLogoDark, // Use the dark logo
+          AwayLogoDark: awayLogoDark,
           AwayScore: competition.competitors[1].score,
           AwayTeamRecordSummary: isPlayoff
             ? `${awayWins}-${homeWins}`
@@ -270,7 +278,14 @@ export default function Scores() {
             month: "short",
             day: "numeric",
           }),
+          Inning: competition.status.period || null,
+          Outs: competition.situation ? competition.situation.outs : null,
+          First: competition.situation ? competition.situation.onFirst : null,
+          Second: competition.situation ? competition.situation.onSecond : null,
+          Third: competition.situation ? competition.situation.onThird : null,
           IsPlayoff: isPlayoff,
+          HomeWins: homeWins,
+          AwayWins: awayWins,
           HomeWinner: competition.competitors[0].winner,
           AwayWinner: competition.competitors[1].winner,
           HomePossession: homePossession,
@@ -282,8 +297,22 @@ export default function Scores() {
         };
       });
 
+      // Sort games: put STATUS_IN_PROGRESS first, STATUS_SCHEDULED second, and STATUS_FINAL last
+      const sortedGames = gameData.sort((a, b) => {
+        const statusOrder = {
+          STATUS_IN_PROGRESS: 1,
+          STATUS_SCHEDULED: 2,
+          STATUS_FINAL: 3,
+        };
+        const statusComparison = statusOrder[a.Status] - statusOrder[b.Status];
+        if (statusComparison !== 0) {
+          return statusComparison; // Sort by status first
+        }
+        return new Date(a.GameTime) - new Date(b.GameTime); // Sort by GameTime if statuses are the same
+      });
+
       // Group games by date
-      const groupedGames = gameData.reduce((acc, game) => {
+      const groupedGames = sortedGames.reduce((acc, game) => {
         if (!acc[game.Date]) {
           acc[game.Date] = [];
         }
@@ -380,26 +409,21 @@ export default function Scores() {
             <Text style={styles.gameStatus}>
               {item.Status === "STATUS_END_PERIOD" ? (
                 <Text style={{ fontWeight: "bold" }}>
-                  {item.StatusShortDetail} {/* Show shortDetail for football */}
+                  {item.StatusShortDetail}
                 </Text>
               ) : item.Status === "STATUS_FINAL" ? (
                 <Text style={{ fontWeight: "bold" }}>
                   {item.StatusShortDetail}
                 </Text>
               ) : item.Status === "STATUS_SCHEDULED" ? (
-                <Text style={{ fontWeight: "bold" }}>
-                  {item.GameTime}{" "}
-                  {/* Display GameTime when status is scheduled for football */}
-                </Text>
+                <Text style={{ fontWeight: "bold" }}>{item.GameTime} </Text>
               ) : (
                 <>
                   <Text style={{ fontWeight: "bold" }}>
                     {item.displayClock}
                   </Text>{" "}
-                  {/* Show displayClock for football */}
                   <Text style={{ color: "#999", fontWeight: "bold" }}>
                     {` ${getOrdinal(item.period)}`}{" "}
-                    {/* Show ordinal for football */}
                   </Text>
                 </>
               )}
@@ -419,13 +443,42 @@ export default function Scores() {
               </View>
             )}
           </>
+        ) : item.sport === "baseball" ? ( // Check if the sport is baseball
+          <>
+            <Text style={styles.gameStatus}>
+              {item.Status === "STATUS_SCHEDULED" ? (
+                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
+              ) : (
+                <View>
+                  <Text style={{ fontWeight: "bold", color: "white" }}>
+                    {item.StatusShortDetail}
+                  </Text>
+                  {item.Status !== "STATUS_FINAL" && ( // Show bases only if not final
+                    <>
+                      <View style={{ marginVertical: 10 }}>
+                        {renderBasesComponent(
+                          item.First,
+                          item.Second,
+                          item.Third
+                        )}
+                      </View>
+                      <View>
+                        {item.Outs !== null && (
+                          <Text style={{ color: "white", fontWeight: "bold" }}>
+                            {item.Outs} Outs
+                          </Text>
+                        )}
+                      </View>
+                    </>
+                  )}
+                </View>
+              )}
+            </Text>
+          </>
         ) : (
           <Text style={styles.gameStatus}>
             {item.Status === "STATUS_SCHEDULED" ? (
-              <Text style={{ fontWeight: "bold" }}>
-                {item.GameTime}{" "}
-                {/* Display GameTime when status is scheduled for other sports */}
-              </Text>
+              <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
             ) : (
               <Text style={{ fontWeight: "bold" }}>
                 {item.StatusShortDetail}
@@ -530,6 +583,23 @@ export default function Scores() {
       </Text>
     </TouchableOpacity>
   );
+
+  const renderBasesComponent = (First, Second, Third) => {
+    return (
+      <View style={styles.basesContainer}>
+        <View style={styles.baseRow}>
+          <View style={styles.emptySpace} />
+          <View style={[styles.base, Second && styles.baseActive]} />
+          <View style={styles.emptySpace} />
+        </View>
+        <View style={styles.baseRow}>
+          <View style={[styles.base, Third && styles.baseActive]} />
+          <View style={styles.emptySpace} />
+          <View style={[styles.base, First && styles.baseActive]} />
+        </View>
+      </View>
+    );
+  };
 
   // Calculate the initial scroll index
   const initialScrollIndex = dates.indexOf(selectedDate);
@@ -764,7 +834,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   loserText: {
-    fontWeight: "normal",
+    fontWeight: "bold",
     color: "#999", // A lighter grey color
   },
   possessionIndicator: {
@@ -806,6 +876,30 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10, // Position the button inside the search box
     padding: 5,
+  },
+  basesContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  baseRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  base: {
+    width: 15,
+    height: 15,
+    backgroundColor: "grey",
+    transform: [{ rotate: "45deg" }], // Rotate to make it look like a diamond
+  },
+  baseActive: {
+    backgroundColor: "yellow", // Change active base color to yellow
+  },
+  emptySpace: {
+    width: 15,
+    height: 15,
+    transform: [{ rotate: "45deg" }], // Rotate to make it look like a diamond
   },
 });
 
