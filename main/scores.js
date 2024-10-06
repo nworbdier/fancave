@@ -375,42 +375,64 @@ export default function Scores() {
         {item.AwayPossession && <View style={styles.possessionIndicator} />}
       </View>
       <View style={styles.gameInfo}>
-        <Text style={styles.gameStatus}>
-          {item.Status === "STATUS_FINAL" ? (
-            <Text style={{ fontWeight: "bold" }}>
-              {item.StatusShortDetail}
-              {/* Display StatusShortDetail when status is STATUS_FINAL */}
-            </Text>
-          ) : item.Status === "STATUS_SCHEDULED" ? (
-            <Text style={{ fontWeight: "bold" }}>
-              {item.GameTime} {/* Display GameTime when status is scheduled */}
-            </Text>
-          ) : item.sport === "football" || item.sport === "college-football" ? (
-            <>
-              <Text style={{ color: "white", fontWeight: "bold" }}>
-                {item.displayClock}
-              </Text>
-              <Text style={{ color: "#999", fontWeight: "bold" }}>
-                {` ${getOrdinal(item.period)}`}
-              </Text>
-            </>
-          ) : (
-            <Text style={{ fontWeight: "bold" }}>{item.StatusShortDetail}</Text>
-          )}
-        </Text>
-        {(item.sport === "football" || item.sport === "college-football") &&
-          (item.shortDownDistanceText || item.possessionText) && (
-            <View style={styles.situationContainer}>
-              {item.shortDownDistanceText && (
-                <Text style={styles.situationText}>
-                  {item.shortDownDistanceText}
+        {item.sport === "football" ? ( // Check if the sport is football
+          <>
+            <Text style={styles.gameStatus}>
+              {item.Status === "STATUS_END_PERIOD" ? (
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.StatusShortDetail} {/* Show shortDetail for football */}
                 </Text>
+              ) : item.Status === "STATUS_FINAL" ? (
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.StatusShortDetail}
+                </Text>
+              ) : item.Status === "STATUS_SCHEDULED" ? (
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.GameTime}{" "}
+                  {/* Display GameTime when status is scheduled for football */}
+                </Text>
+              ) : (
+                <>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {item.displayClock}
+                  </Text>{" "}
+                  {/* Show displayClock for football */}
+                  <Text style={{ color: "#999", fontWeight: "bold" }}>
+                    {` ${getOrdinal(item.period)}`}{" "}
+                    {/* Show ordinal for football */}
+                  </Text>
+                </>
               )}
-              {item.possessionText && (
-                <Text style={styles.situationText}>{item.possessionText}</Text>
-              )}
-            </View>
-          )}
+            </Text>
+            {(item.shortDownDistanceText || item.possessionText) && (
+              <View style={styles.situationContainer}>
+                {item.shortDownDistanceText && (
+                  <Text style={styles.situationText}>
+                    {item.shortDownDistanceText}
+                  </Text>
+                )}
+                {item.possessionText && (
+                  <Text style={styles.situationText}>
+                    {item.possessionText}
+                  </Text>
+                )}
+              </View>
+            )}
+          </>
+        ) : (
+          <Text style={styles.gameStatus}>
+            {item.Status === "STATUS_SCHEDULED" ? (
+              <Text style={{ fontWeight: "bold" }}>
+                {item.GameTime}{" "}
+                {/* Display GameTime when status is scheduled for other sports */}
+              </Text>
+            ) : (
+              <Text style={{ fontWeight: "bold" }}>
+                {item.StatusShortDetail}
+              </Text>
+            )}
+          </Text>
+        )}
       </View>
       <View style={styles.teamRow}>
         {item.HomePossession && <View style={styles.possessionIndicator} />}
