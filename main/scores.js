@@ -583,6 +583,7 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexBasis: "auto",
     paddingHorizontal: 20,
+    marginBottom: 5, // Set margin to 5 for spacing
   },
   contentView: {
     flex: 10,
@@ -682,17 +683,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 4,
   },
-  searchBox: {
-    flexShrink: 1,
-    width: "90%",
-    height: 40,
-    color: "white",
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "white",
-  },
   scoresContainer: {
     flex: 10,
     width: "100%",
@@ -708,7 +698,8 @@ const styles = StyleSheet.create({
     flexBasis: "auto",
     paddingHorizontal: 10,
     height: 30,
-    marginTop: 10,
+    marginTop: 5, // Set margin to 5 for spacing
+    marginBottom: 5, // Set margin to 5 for spacing
   },
   dateItem: {
     padding: 5,
@@ -755,14 +746,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "90%",
-    position: "relative", // Position relative for the clear button
+    position: "relative",
+    marginBottom: 5, // Set margin to 5 for spacing
   },
   searchBox: {
     flex: 1,
     height: 40,
     color: "white",
     paddingHorizontal: 10,
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom: 5,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "white",
