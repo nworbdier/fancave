@@ -27,13 +27,23 @@ import NHLIcon from "../assets/hockey-puck.png";
 
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
-  <TextInput
-    style={styles.searchBox}
-    placeholder="Search matchups..."
-    placeholderTextColor="#999"
-    value={value}
-    onChangeText={onChangeText}
-  />
+  <View style={styles.searchBoxContainer}>
+    <TextInput
+      style={styles.searchBox}
+      placeholder="Search matchups..."
+      placeholderTextColor="#999"
+      value={value}
+      onChangeText={onChangeText}
+    />
+    {value.length > 0 && ( // Show the clear button only if there is text
+      <TouchableOpacity
+        onPress={() => onChangeText("")}
+        style={styles.clearButton}
+      >
+        <Ionicons name="close" size={20} color="white" />
+      </TouchableOpacity>
+    )}
+  </View>
 );
 
 // Replace the existing sportsIcons and sportsMappings with this consolidated object
@@ -740,6 +750,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginTop: 3,
+  },
+  searchBoxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "90%",
+    position: "relative", // Position relative for the clear button
+  },
+  searchBox: {
+    flex: 1,
+    height: 40,
+    color: "white",
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "white",
+  },
+  clearButton: {
+    position: "absolute",
+    right: 10, // Position the button inside the search box
+    padding: 5,
   },
 });
 
