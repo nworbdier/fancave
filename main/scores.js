@@ -263,6 +263,8 @@ export default function Scores() {
           }), // Format the game time
           Status: competition.status.type.name,
           StatusShortDetail: competition.status.type.shortDetail,
+          displayClock: competition.status.displayClock || null,
+          period: competition.status.period || null,
           Date: date.toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
@@ -374,9 +376,16 @@ export default function Scores() {
       </View>
       <View style={styles.gameInfo}>
         <Text style={styles.gameStatus}>
-          {item.Status === "STATUS_SCHEDULED"
-            ? item.GameTime
-            : item.StatusShortDetail}
+          {item.sport === "football" || item.sport === "college-football" ? (
+            <>
+              <Text style={{ color: "white" }}>{item.displayClock}</Text>
+              <Text style={{ color: "#999" }}>
+                {` ${getOrdinal(item.period)}`}
+              </Text>
+            </>
+          ) : (
+            item.StatusShortDetail
+          )}
         </Text>
         {(item.sport === "football" || item.sport === "college-football") &&
           (item.shortDownDistanceText || item.possessionText) && (
@@ -738,7 +747,7 @@ const styles = StyleSheet.create({
   },
   situationText: {
     color: "white",
-    fontSize: 14,
+    fontSize: 15,
     textAlign: "center",
     marginTop: 3,
   },
@@ -802,4 +811,12 @@ const formatDate = (dateString) => {
   return date
     .toLocaleDateString("en-US", { month: "short", day: "numeric" })
     .replace(",", "");
+};
+
+// Helper function to get ordinal representation of the period
+const getOrdinal = (period) => {
+  if (period === 1) return "1st";
+  if (period === 2) return "2nd";
+  if (period === 3) return "3rd";
+  return `${period}th`; // For 4 and above
 };
