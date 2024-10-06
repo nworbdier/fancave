@@ -378,8 +378,10 @@ export default function Scores() {
         <Text style={styles.gameStatus}>
           {item.sport === "football" || item.sport === "college-football" ? (
             <>
-              <Text style={{ color: "white" }}>{item.displayClock}</Text>
-              <Text style={{ color: "#999" }}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                {item.displayClock}
+              </Text>
+              <Text style={{ color: "#999", fontWeight: "bold" }}>
                 {` ${getOrdinal(item.period)}`}
               </Text>
             </>
