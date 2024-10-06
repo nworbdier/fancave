@@ -376,7 +376,16 @@ export default function Scores() {
       </View>
       <View style={styles.gameInfo}>
         <Text style={styles.gameStatus}>
-          {item.sport === "football" || item.sport === "college-football" ? (
+          {item.Status === "STATUS_FINAL" ? (
+            <Text style={{ fontWeight: "bold" }}>
+              {item.StatusShortDetail}
+              {/* Display StatusShortDetail when status is STATUS_FINAL */}
+            </Text>
+          ) : item.Status === "STATUS_SCHEDULED" ? (
+            <Text style={{ fontWeight: "bold" }}>
+              {item.GameTime} {/* Display GameTime when status is scheduled */}
+            </Text>
+          ) : item.sport === "football" || item.sport === "college-football" ? (
             <>
               <Text style={{ color: "white", fontWeight: "bold" }}>
                 {item.displayClock}
@@ -386,7 +395,7 @@ export default function Scores() {
               </Text>
             </>
           ) : (
-            item.StatusShortDetail
+            <Text style={{ fontWeight: "bold" }}>{item.StatusShortDetail}</Text>
           )}
         </Text>
         {(item.sport === "football" || item.sport === "college-football") &&
