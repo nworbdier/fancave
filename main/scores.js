@@ -186,7 +186,11 @@ export default function Scores() {
     // Scroll to the selected sport
     const index = Object.keys(sportsData).indexOf(sport);
     if (sportListRef.current && index !== -1) {
-      sportListRef.current.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+      sportListRef.current.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5,
+      });
     }
     try {
       await AsyncStorage.setItem("selectedSport", sport);
@@ -411,6 +415,9 @@ export default function Scores() {
               ? (item.AwayTeamRecordSummary !== "N/A" &&
                   item.AwayTeamRecordSummary) ||
                 ""
+              : item.Status === "STATUS_POSTPONED" ||
+                item.Status === "STATUS_CANCELED"
+              ? "" // Hide score if postponed or canceled
               : item.AwayScore}
           </Text>
         </View>
@@ -424,7 +431,10 @@ export default function Scores() {
                 <Text style={{ fontWeight: "bold" }}>
                   {item.StatusShortDetail}
                 </Text>
-              ) : item.Status === "STATUS_FINAL" ? (
+              ) : item.Status === "STATUS_FINAL" ||
+                item.Status === "STATUS_POSTPONED" ||
+                item.Status === "STATUS_CANCELED" ||
+                item.Status === "STATUS_DELAYED" ? (
                 <Text style={{ fontWeight: "bold" }}>
                   {item.StatusShortDetail}
                 </Text>
@@ -461,6 +471,13 @@ export default function Scores() {
             <Text style={styles.gameStatus}>
               {item.Status === "STATUS_SCHEDULED" ? (
                 <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
+              ) : item.Status === "STATUS_FINAL" ||
+                item.Status === "STATUS_POSTPONED" ||
+                item.Status === "STATUS_CANCELED" ||
+                item.Status === "STATUS_DELAYED" ? (
+                <Text style={{ fontWeight: "bold", color: "white" }}>
+                  {item.StatusShortDetail}
+                </Text>
               ) : (
                 <View>
                   <Text style={{ fontWeight: "bold", color: "white" }}>
@@ -492,6 +509,13 @@ export default function Scores() {
           <Text style={styles.gameStatus}>
             {item.Status === "STATUS_SCHEDULED" ? (
               <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
+            ) : item.Status === "STATUS_FINAL" ||
+              item.Status === "STATUS_POSTPONED" ||
+              item.Status === "STATUS_CANCELED" ||
+              item.Status === "STATUS_DELAYED" ? (
+              <Text style={{ fontWeight: "bold" }}>
+                {item.StatusShortDetail}
+              </Text>
             ) : (
               <Text style={{ fontWeight: "bold" }}>
                 {item.StatusShortDetail}
@@ -531,6 +555,9 @@ export default function Scores() {
               ? (item.HomeTeamRecordSummary !== "N/A" &&
                   item.HomeTeamRecordSummary) ||
                 ""
+              : item.Status === "STATUS_POSTPONED" ||
+                item.Status === "STATUS_CANCELED"
+              ? "" // Hide score if postponed or canceled
               : item.HomeScore}
           </Text>
         </View>
@@ -873,7 +900,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "90%",
     position: "relative",
-    marginBottom: 5, // Set margin to 5 for spacing
   },
   searchBox: {
     flex: 1,
