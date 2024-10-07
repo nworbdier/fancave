@@ -431,6 +431,8 @@ export default function Scores() {
                 <Text style={{ fontWeight: "bold" }}>
                   {item.StatusShortDetail}
                 </Text>
+              ) : item.Status === "STATUS_HALFTIME" ? (
+                <Text style={{ fontWeight: "bold" }}>Half</Text>
               ) : item.Status === "STATUS_FINAL" ||
                 item.Status === "STATUS_POSTPONED" ||
                 item.Status === "STATUS_CANCELED" ||
@@ -439,14 +441,14 @@ export default function Scores() {
                   {item.StatusShortDetail}
                 </Text>
               ) : item.Status === "STATUS_SCHEDULED" ? (
-                <Text style={{ fontWeight: "bold" }}>{item.GameTime} </Text>
+                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
               ) : (
                 <>
                   <Text style={{ fontWeight: "bold" }}>
                     {item.displayClock}
-                  </Text>{" "}
+                  </Text>
                   <Text style={{ color: "#999", fontWeight: "bold" }}>
-                    {` ${getOrdinal(item.period)}`}{" "}
+                    {` ${getOrdinal(item.period)}`}
                   </Text>
                 </>
               )}
