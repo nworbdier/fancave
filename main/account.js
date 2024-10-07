@@ -81,7 +81,7 @@ const Account = () => {
         );
 
         if (!response.ok) {
-          throw new Error('Failed to update profile');
+          throw new Error("Failed to update profile");
         }
 
         const result = await response.json();
@@ -125,7 +125,7 @@ const Account = () => {
                 );
 
                 if (!response.ok) {
-                  throw new Error('Failed to delete account from database');
+                  throw new Error("Failed to delete account from database");
                 }
 
                 Alert.alert(

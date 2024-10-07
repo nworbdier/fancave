@@ -22,24 +22,22 @@ const Settings = ({}) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
-  const [shouldFetchUserData, setShouldFetchUserData] = useState(false); // New state for re-fetching user data
 
   useEffect(() => {
-    const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(
-      async (currentUser) => {
-        setUser(currentUser);
-        if (currentUser) {
-          // Fetch user data from the API
-          const response = await fetch(
-            `https://fancave-api.up.railway.app/users/${currentUser.uid}`
-          );
-          const data = await response.json();
-          setUserData(data);
-        }
+    const fetchUserData = async (currentUser) => {
+      if (currentUser) {
+        const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
+        console.log("Fetching user data from URL:", url); // Log the URL
+        const response = await fetch(url);
+        const data = await response.json();
+        setUserData(data);
       }
-    );
-    return unsubscribe;
-  }, [shouldFetchUserData]); // Add shouldFetchUserData to the dependency array
+    };
+
+    const currentUser = FIREBASE_AUTH.currentUser;
+    setUser(currentUser);
+    fetchUserData(currentUser);
+  }, []); // Removed shouldFetchUserData
 
   const handleLogout = async () => {
     try {
@@ -49,116 +47,12 @@ const Settings = ({}) => {
     }
   };
 
-  const handleDeleteAccount = () => {
-    Alert.alert(
-      "Confirm",
-      "Warning: This will delete your account and revoke access. Are you sure you want to proceed?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          onPress: async () => {
-            try {
-              const email = user.email;
-              const password = prompt(
-                "Please enter your password to confirm deletion:"
-              );
-
-              const credential = EmailAuthProvider.credential(email, password);
-              await reauthenticateWithCredential(
-                FIREBASE_AUTH.currentUser,
-                credential
-              );
-
-              await fetch(
-                `https://fancave-api.up.railway.app/users/${user.uid}`,
-                {
-                  method: "DELETE",
-                }
-              );
-
-              await deleteUser(FIREBASE_AUTH.currentUser);
-              Alert.alert(
-                "Success",
-                "Your account has been deleted successfully."
-              );
-
-              // Trigger re-fetch of user data
-              setShouldFetchUserData((prev) => !prev); // Toggle the state to trigger re-fetch
-            } catch (error) {
-              console.error("Error deleting account: ", error);
-              Alert.alert(
-                "Error",
-                "Failed to delete your account. Please try again later."
-              );
-            }
-          },
-          style: "destructive",
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
   const openLink = async (url) => {
     try {
       await Linking.openURL(url);
     } catch (error) {
       console.error("Error opening link: ", error);
     }
-  };
-
-  const handleUpdateProfile = async (updatedData) => {
-    try {
-      // Assuming updatedData is an object containing the updated user information
-      const response = await fetch(
-        `https://fancave-api.up.railway.app/users/${user.uid}`,
-        {
-          method: "PUT", // Use PUT method to update user data
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      Alert.alert("Success", "Your profile has been updated successfully.");
-
-      // Trigger re-fetch of user data
-      setShouldFetchUserData((prev) => !prev); // Toggle the state to trigger re-fetch
-    } catch (error) {
-      console.error("Error updating profile: ", error);
-      Alert.alert(
-        "Error",
-        "Failed to update your profile. Please try again later."
-      );
-    }
-  };
-
-  const confirmUpdateProfile = () => {
-    Alert.alert(
-      "Confirm",
-      "Are you sure you want to update your profile?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "OK",
-          onPress: () => {
-            const updatedData = {
-              firstName: "NewFirstName", // Replace with actual data
-              lastName: "NewLastName", // Replace with actual data
-              email: "newemail@example.com", // Replace with actual data
-            };
-            handleUpdateProfile(updatedData);
-          },
-        },
-      ],
-      { cancelable: true }
-    );
   };
 
   return (
