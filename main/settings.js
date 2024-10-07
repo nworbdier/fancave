@@ -6,18 +6,26 @@ import {
   Alert,
   TouchableOpacity,
   Linking,
-  Image,
 } from "react-native";
 import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
-import { signOut, deleteUser } from "firebase/auth";
+import {
+  signOut,
+  deleteUser,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { EmailAuthProvider } from "firebase/auth";
 
 const Settings = ({}) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null); // New state for user data
+  const [userData, setUserData] = useState(null);
+  const [shouldFetchUserData, setShouldFetchUserData] = useState(false); // New state for re-fetching user data
+  const [firstName, setFirstName] = useState(userData?.firstName || "");
+  const [lastName, setLastName] = useState(userData?.lastName || "");
+  const [email, setEmail] = useState(userData?.email || "");
 
   useEffect(() => {
     const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(
@@ -29,12 +37,20 @@ const Settings = ({}) => {
             `https://fancave-api.up.railway.app/users/${currentUser.uid}`
           );
           const data = await response.json();
-          setUserData(data); // Set the fetched user data
+          setUserData(data);
         }
       }
     );
     return unsubscribe;
-  }, []);
+  }, [shouldFetchUserData]); // Add shouldFetchUserData to the dependency array
+
+  useEffect(() => {
+    if (userData) {
+      setFirstName(userData.firstName);
+      setLastName(userData.lastName);
+      setEmail(userData.email);
+    }
+  }, [userData]);
 
   const handleLogout = async () => {
     try {
@@ -54,11 +70,32 @@ const Settings = ({}) => {
           text: "Delete",
           onPress: async () => {
             try {
+              const email = user.email;
+              const password = prompt(
+                "Please enter your password to confirm deletion:"
+              );
+
+              const credential = EmailAuthProvider.credential(email, password);
+              await reauthenticateWithCredential(
+                FIREBASE_AUTH.currentUser,
+                credential
+              );
+
+              await fetch(
+                `https://fancave-api.up.railway.app/users/${user.uid}`,
+                {
+                  method: "DELETE",
+                }
+              );
+
               await deleteUser(FIREBASE_AUTH.currentUser);
               Alert.alert(
                 "Success",
                 "Your account has been deleted successfully."
               );
+
+              // Trigger re-fetch of user data
+              setShouldFetchUserData((prev) => !prev); // Toggle the state to trigger re-fetch
             } catch (error) {
               console.error("Error deleting account: ", error);
               Alert.alert(
@@ -82,13 +119,84 @@ const Settings = ({}) => {
     }
   };
 
+  const handleUpdateProfile = async (updatedData) => {
+    try {
+      // Assuming updatedData is an object containing the updated user information
+      const response = await fetch(
+        `https://fancave-api.up.railway.app/users/${user.uid}`,
+        {
+          method: "PUT", // Use PUT method to update user data
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      Alert.alert("Success", "Your profile has been updated successfully.");
+
+      // Fetch user data again to update the state
+      const fetchResponse = await fetch(
+        `https://fancave-api.up.railway.app/users/${user.uid}`
+      );
+      const data = await fetchResponse.json();
+      setUserData(data); // Update userData with the latest data
+
+      // Update the local state for firstName, lastName, and email
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      setEmail(data.email);
+    } catch (error) {
+      console.error("Error updating profile: ", error);
+      Alert.alert(
+        "Error",
+        "Failed to update your profile. Please try again later."
+      );
+    }
+  };
+
+  const confirmUpdateProfile = () => {
+    Alert.alert(
+      "Confirm",
+      "Are you sure you want to update your profile?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "OK",
+          onPress: () => {
+            const updatedData = {
+              firstName: firstName, // Use the state value
+              lastName: lastName, // Use the state value
+              email: email, // Use the state value
+            };
+            handleUpdateProfile(updatedData);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // Function to check if the button should be enabled
+  const isUpdateButtonDisabled = () => {
+    return (
+      firstName === userData?.firstName &&
+      lastName === userData?.lastName &&
+      email === userData?.email
+    );
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView />
       <View style={styles.header}>
         <Text style={styles.headerText}>Settings</Text>
       </View>
-      {userData && ( // Update to use userData
+      {userData && (
         <View style={styles.accountSection}>
           <View style={styles.profileCircle} />
           <View style={styles.userInfo}>
@@ -289,18 +397,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonContainer: {
-    flexDirection: "column", // Stack buttons vertically
-    alignItems: "center", // Center horizontally
-    justifyContent: "center", // Center vertically
-    paddingVertical: 20, // Add some vertical padding
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
   },
   profileCircle: {
     width: 50,
     height: 50,
     borderRadius: 25,
     backgroundColor: "white",
-    marginRight: 15, // Space between circle and text
-    alignSelf: "center", // Center the circle vertically
+    marginRight: 15,
+    alignSelf: "center",
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -22,10 +22,10 @@ const Account = () => {
     email: "",
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
-      if (currentUser) {
+  const fetchUserData = useCallback(async () => {
+    const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
+    if (currentUser) {
+      try {
         const response = await fetch(
           `https://fancave-api.up.railway.app/users/${currentUser.uid}`
         );
@@ -39,11 +39,16 @@ const Account = () => {
           lastName: data.lastName,
           email: data.email,
         });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Alert.alert("Error", "Failed to fetch user data. Please try again.");
       }
-    };
-
-    fetchUserData();
+    }
   }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   const isButtonDisabled =
     firstName === initialValues.firstName &&
@@ -53,37 +58,45 @@ const Account = () => {
   const handleUpdateProfile = async () => {
     const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
     if (currentUser) {
-      const response = await fetch(
-        "https://fancave-api.up.railway.app/post-users",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            uuid: currentUser.uid, // Use the user's UID as uuid
-            firstName,
-            lastName,
-            email,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result.message); // Handle success message
-        Alert.alert(
-          "Account Updated",
-          "Your account has been updated successfully!",
-          [{ text: "OK" }]
-        ); // Show alert on success
-      } else {
-        const error = await response.json();
-        console.error("Error updating profile: ", error);
-        Alert.alert(
-          "Error",
-          "Failed to update your profile. Please try again later."
+      try {
+        const response = await fetch(
+          "https://fancave-api.up.railway.app/post-users",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              uuid: currentUser.uid, // Use the user's UID as uuid
+              firstName,
+              lastName,
+              email,
+            }),
+          }
         );
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(result.message); // Handle success message
+          Alert.alert(
+            "Account Updated",
+            "Your account has been updated successfully!",
+            [{ text: "OK" }]
+          ); // Show alert on success
+
+          // Fetch user data again to refresh the state
+          await fetchUserData(); // Fetch user data again after update
+        } else {
+          const error = await response.json();
+          console.error("Error updating profile: ", error);
+          Alert.alert(
+            "Error",
+            "Failed to update your profile. Please try again later."
+          );
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        Alert.alert("Error", "An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -91,7 +104,7 @@ const Account = () => {
   const handleDeleteAccount = () => {
     Alert.alert(
       "Confirm",
-      "Warning: This will delete your account and revoke access. Are you sure you want to proceed?",
+      "Warning: This will delete your account! Are you sure you want to proceed?",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -100,12 +113,34 @@ const Account = () => {
             const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
             if (currentUser) {
               try {
+                // Delete the user from Firebase
                 await deleteUser(currentUser);
-                Alert.alert(
-                  "Success",
-                  "Your account has been deleted successfully."
+
+                // Send DELETE request to your API to remove the user from the database
+                const response = await fetch(
+                  `https://fancave-api.up.railway.app/users/${currentUser.uid}`,
+                  {
+                    method: "DELETE",
+                  }
                 );
-                // Optionally, navigate to a different screen or log out
+
+                if (response.ok) {
+                  Alert.alert(
+                    "Success",
+                    "Your account has been deleted successfully."
+                  );
+                  // Optionally, navigate to a different screen or log out
+                } else {
+                  const error = await response.json();
+                  console.error(
+                    "Error deleting account from database: ",
+                    error
+                  );
+                  Alert.alert(
+                    "Error",
+                    "Failed to delete your account from the database. Please try again later."
+                  );
+                }
               } catch (error) {
                 console.error("Error deleting account: ", error);
                 Alert.alert(
