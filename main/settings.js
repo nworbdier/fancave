@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 20,
     color: "grey",
-    marginTop: 10,
+    marginTop: 5,
   },
   sectionContainer: {
     marginBottom: 30,
