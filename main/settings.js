@@ -11,29 +11,31 @@ import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 const Settings = ({}) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    const fetchUserData = async (currentUser) => {
-      if (currentUser) {
-        console.log("Current User UID:", currentUser.uid); // Log the UID for verification
-        const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
-        console.log("Fetching user data from URL:", url); // Log the URL
-        const response = await fetch(url);
-        const data = await response.json();
-        setUserData(data);
-      }
-    };
+  const fetchUserData = async (currentUser) => {
+    if (currentUser) {
+      console.log("Current User UID:", currentUser.uid); // Log the UID for verification
+      const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
+      console.log("Fetching user data from URL:", url); // Log the URL
+      const response = await fetch(url);
+      const data = await response.json();
+      setUserData(data);
+    }
+  };
 
-    const currentUser = FIREBASE_AUTH.currentUser;
-    setUser(currentUser);
-    fetchUserData(currentUser);
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const currentUser = FIREBASE_AUTH.currentUser;
+      setUser(currentUser);
+      fetchUserData(currentUser);
+    }, [])
+  );
 
   const handleLogout = async () => {
     try {
@@ -197,6 +199,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   accountSection: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },
