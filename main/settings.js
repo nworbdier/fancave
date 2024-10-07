@@ -9,14 +9,9 @@ import {
 } from "react-native";
 import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
-import {
-  signOut,
-  deleteUser,
-  reauthenticateWithCredential,
-} from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { EmailAuthProvider } from "firebase/auth";
 
 const Settings = ({}) => {
   const navigation = useNavigation();
@@ -26,6 +21,7 @@ const Settings = ({}) => {
   useEffect(() => {
     const fetchUserData = async (currentUser) => {
       if (currentUser) {
+        console.log("Current User UID:", currentUser.uid); // Log the UID for verification
         const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
         console.log("Fetching user data from URL:", url); // Log the URL
         const response = await fetch(url);
@@ -37,7 +33,7 @@ const Settings = ({}) => {
     const currentUser = FIREBASE_AUTH.currentUser;
     setUser(currentUser);
     fetchUserData(currentUser);
-  }, []); // Removed shouldFetchUserData
+  }, []);
 
   const handleLogout = async () => {
     try {
