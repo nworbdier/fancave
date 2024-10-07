@@ -90,8 +90,9 @@ const Settings = ({}) => {
       </View>
       {userData && ( // Update to use userData
         <View style={styles.accountSection}>
+          <View style={styles.profileCircle} />
           <View style={styles.userInfo}>
-            <Text style={styles.userEmail}>
+            <Text style={styles.userFirstLast}>
               {userData.firstName} {userData.lastName}
             </Text>
             <Text style={styles.userEmail}>{userData.email}</Text>
@@ -241,11 +242,16 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: "center",
-    marginVertical: 30,
+    marginVertical: 25,
+  },
+  userFirstLast: {
+    fontSize: 20,
+    color: "white",
   },
   userEmail: {
     fontSize: 20,
-    color: "white",
+    color: "grey",
+    marginTop: 10,
   },
   sectionContainer: {
     marginBottom: 30,
@@ -290,6 +296,14 @@ const styles = StyleSheet.create({
     alignItems: "center", // Center horizontally
     justifyContent: "center", // Center vertically
     paddingVertical: 20, // Add some vertical padding
+  },
+  profileCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "white",
+    marginRight: 15, // Space between circle and text
+    alignSelf: "center", // Center the circle vertically
   },
 });
 
