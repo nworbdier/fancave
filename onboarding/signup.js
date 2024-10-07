@@ -14,6 +14,7 @@ import { FIREBASE_AUTH } from "../firebaseConfig";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 for icons
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import axios from "axios"; // Import Axios
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -41,6 +42,16 @@ const SignUp = () => {
         email,
         password
       );
+      const uuid = response.user.uid; // Get the user ID from Firebase
+
+      // Send user data to the backend
+      await axios.post("https://fancave-api.up.railway.app/post-users", {
+        uuid,
+        email,
+        firstName,
+        lastName,
+      });
+
       alert("You have successfully created an account!");
     } catch (error) {
       let errorMessage = "An error occurred. Please try again.";
@@ -92,6 +103,22 @@ const SignUp = () => {
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="white"
+          placeholder="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+          autoCapitalize="words" // Capitalize the first letter of each word
+        />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="white"
+          placeholder="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+          autoCapitalize="words" // Capitalize the first letter of each word
         />
         <View style={styles.passwordInputContainer}>
           <TextInput
@@ -200,6 +227,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
+    marginTop: 8,
     paddingHorizontal: 10,
     color: "white",
   },

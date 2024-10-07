@@ -17,9 +17,22 @@ import { useNavigation } from "@react-navigation/native";
 const Settings = ({}) => {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null); // New state for user data
 
   useEffect(() => {
-    const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(setUser);
+    const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(
+      async (currentUser) => {
+        setUser(currentUser);
+        if (currentUser) {
+          // Fetch user data from the API
+          const response = await fetch(
+            `https://fancave-api.up.railway.app/users/${currentUser.uid}`
+          );
+          const data = await response.json();
+          setUserData(data); // Set the fetched user data
+        }
+      }
+    );
     return unsubscribe;
   }, []);
 
@@ -75,10 +88,13 @@ const Settings = ({}) => {
       <View style={styles.header}>
         <Text style={styles.headerText}>Settings</Text>
       </View>
-      {user && (
+      {userData && ( // Update to use userData
         <View style={styles.accountSection}>
           <View style={styles.userInfo}>
-            <Text style={styles.userEmail}>{user.email}</Text>
+            <Text style={styles.userEmail}>
+              {userData.firstName} {userData.lastName}
+            </Text>
+            <Text style={styles.userEmail}>{userData.email}</Text>
           </View>
         </View>
       )}
