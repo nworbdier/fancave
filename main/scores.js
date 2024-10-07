@@ -112,6 +112,7 @@ export default function Scores() {
   const [dateListLoading, setDateListLoading] = useState(true);
   const dateListRef = useRef(null);
   const [dateListWidth, setDateListWidth] = useState(0);
+  const sportListRef = useRef(null); // Create a ref for the FlatList
 
   useEffect(() => {
     const loadSelectedSport = async () => {
@@ -182,7 +183,11 @@ export default function Scores() {
   const handleSelectSport = async (sport) => {
     setSelectedSport(sport);
     await fetchDates(sport);
-    // console.log("Switched to sport:", sport); // Log the sport switched
+    // Scroll to the selected sport
+    const index = Object.keys(sportsData).indexOf(sport);
+    if (sportListRef.current && index !== -1) {
+      sportListRef.current.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+    }
     try {
       await AsyncStorage.setItem("selectedSport", sport);
     } catch (error) {
@@ -223,8 +228,16 @@ export default function Scores() {
         const homeTeam = event.competitions[0].competitors[0];
         const awayTeam = event.competitions[0].competitors[1];
 
-        const homeLogoDark = homeTeam.team.logo.replace("/500/", "/500-dark/");
-        const awayLogoDark = awayTeam.team.logo.replace("/500/", "/500-dark/");
+        const homeLogo = homeTeam.team.logo;
+        const awayLogo = awayTeam.team.logo;
+
+        // Set dark logos only if the original logos exist
+        const homeLogoDark = homeLogo
+          ? homeLogo.replace("/500/", "/500-dark/")
+          : "";
+        const awayLogoDark = awayLogo
+          ? awayLogo.replace("/500/", "/500-dark/")
+          : "";
 
         const competition = event.competitions[0];
         const date = new Date(event.date);
@@ -249,16 +262,16 @@ export default function Scores() {
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
-          HomeLogo: homeLogoDark, // Use the dark logo
-          HomeLogoDark: homeLogoDark,
+          HomeLogo: homeLogo, // Original logo
+          HomeLogoDark: homeLogoDark, // Dark logo or empty string
           HomeScore: competition.competitors[0].score,
           HomeTeamRecordSummary: isPlayoff
             ? `${homeWins}-${awayWins}`
             : competition.competitors[0].records?.[0]?.summary || "N/A",
           HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
-          AwayLogo: awayLogoDark, // Use the dark logo
-          AwayLogoDark: awayLogoDark,
+          AwayLogo: awayLogo, // Original logo
+          AwayLogoDark: awayLogoDark, // Dark logo or empty string
           AwayScore: competition.competitors[1].score,
           AwayTeamRecordSummary: isPlayoff
             ? `${awayWins}-${homeWins}`
@@ -614,6 +627,7 @@ export default function Scores() {
       <SafeAreaView />
       <View style={styles.sportCarousel}>
         <FlatList
+          ref={sportListRef} // Attach the ref here
           data={Object.keys(sportsData)}
           renderItem={renderItem}
           keyExtractor={(item) => item}
