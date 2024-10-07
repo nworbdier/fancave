@@ -29,15 +29,18 @@ const Account = () => {
         const response = await fetch(
           `https://fancave-api.up.railway.app/users/${currentUser.uid}`
         );
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
         const data = await response.json();
         setUserData(data);
-        setFirstName(data.firstName);
-        setLastName(data.lastName);
-        setEmail(data.email);
+        setFirstName(data.firstName || "");
+        setLastName(data.lastName || "");
+        setEmail(data.email || "");
         setInitialValues({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || "",
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -75,25 +78,20 @@ const Account = () => {
           }
         );
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log(result.message); // Handle success message
-          Alert.alert(
-            "Account Updated",
-            "Your account has been updated successfully!",
-            [{ text: "OK" }]
-          ); // Show alert on success
-
-          // Fetch user data again to refresh the state
-          await fetchUserData(); // Fetch user data again after update
-        } else {
-          const error = await response.json();
-          console.error("Error updating profile: ", error);
-          Alert.alert(
-            "Error",
-            "Failed to update your profile. Please try again later."
-          );
+        if (!response.ok) {
+          throw new Error('Failed to update profile');
         }
+
+        const result = await response.json();
+        console.log(result.message); // Handle success message
+        Alert.alert(
+          "Account Updated",
+          "Your account has been updated successfully!",
+          [{ text: "OK" }]
+        ); // Show alert on success
+
+        // Fetch user data again to refresh the state
+        await fetchUserData(); // Fetch user data again after update
       } catch (error) {
         console.error("Error updating profile:", error);
         Alert.alert("Error", "An unexpected error occurred. Please try again.");
@@ -124,23 +122,15 @@ const Account = () => {
                   }
                 );
 
-                if (response.ok) {
-                  Alert.alert(
-                    "Success",
-                    "Your account has been deleted successfully."
-                  );
-                  // Optionally, navigate to a different screen or log out
-                } else {
-                  const error = await response.json();
-                  console.error(
-                    "Error deleting account from database: ",
-                    error
-                  );
-                  Alert.alert(
-                    "Error",
-                    "Failed to delete your account from the database. Please try again later."
-                  );
+                if (!response.ok) {
+                  throw new Error('Failed to delete account from database');
                 }
+
+                Alert.alert(
+                  "Success",
+                  "Your account has been deleted successfully."
+                );
+                // Optionally, navigate to a different screen or log out
               } catch (error) {
                 console.error("Error deleting account: ", error);
                 Alert.alert(
