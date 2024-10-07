@@ -46,7 +46,7 @@ const Search = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://fancave-api-production.up.railway.app/search?q=${query}`
+        `https://fancave-api.up.railway.app/search?q=${query}`
       );
       const data = await response.json();
       // console.log(data);
