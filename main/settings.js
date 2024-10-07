@@ -122,7 +122,10 @@ const Settings = ({}) => {
           </View>
           <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate("Account")}
+        >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="manage-accounts" size={24} color="white" />
             <Text style={styles.optionText}>Account</Text>
@@ -207,12 +210,6 @@ const Settings = ({}) => {
           <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={styles.deleteOption}
-            onPress={handleDeleteAccount}
-          >
-            <Text style={styles.deleteText}>Delete Account</Text>
-          </TouchableOpacity> */}
         </View>
       </View>
     </View>
@@ -264,7 +261,7 @@ const styles = StyleSheet.create({
   },
   option: {
     paddingVertical: 10,
-    marginLeft: 20,
+    marginLeft: 5,
     flexDirection: "row",
     justifyContent: "space-between",
   },

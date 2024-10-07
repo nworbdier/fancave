@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
+import Account from "./main/account";
 import Notifications from "./main/notifications";
 import Theme from "./main/theme";
 import Search from "./main/search";
@@ -25,6 +26,7 @@ function Main() {
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Theme" component={Theme} />
         <Stack.Screen name="Scores" component={Scores} />
+        <Stack.Screen name="Account" component={Account} />
       </Stack.Navigator>
     </View>
   );
