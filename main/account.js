@@ -30,7 +30,7 @@ const Account = () => {
           `https://fancave-api.up.railway.app/users/${currentUser.uid}`
         );
         if (!response.ok) {
-          throw new Error('Failed to fetch user data');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         setUserData(data);
@@ -46,6 +46,8 @@ const Account = () => {
         console.error("Error fetching user data:", error);
         Alert.alert("Error", "Failed to fetch user data. Please try again.");
       }
+    } else {
+      console.warn("No current user found.");
     }
   }, []);
 
