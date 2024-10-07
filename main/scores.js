@@ -387,7 +387,7 @@ export default function Scores() {
     <View style={styles.gameContainer}>
       <View style={styles.teamRow}>
         <View style={styles.teamContainer}>
-          <Image source={{ uri: item.AwayLogo }} style={styles.teamLogo} />
+          <Image source={{ uri: item.AwayLogoDark }} style={styles.teamLogo} />
           <Text
             style={[
               styles.teamName,
@@ -527,7 +527,7 @@ export default function Scores() {
       <View style={styles.teamRow}>
         {item.HomePossession && <View style={styles.possessionIndicator} />}
         <View style={styles.teamContainer}>
-          <Image source={{ uri: item.HomeLogo }} style={styles.teamLogo} />
+          <Image source={{ uri: item.HomeLogoDark }} style={styles.teamLogo} />
           <Text
             style={[
               styles.teamName,
