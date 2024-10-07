@@ -23,9 +23,6 @@ const Settings = ({}) => {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [shouldFetchUserData, setShouldFetchUserData] = useState(false); // New state for re-fetching user data
-  const [firstName, setFirstName] = useState(userData?.firstName || "");
-  const [lastName, setLastName] = useState(userData?.lastName || "");
-  const [email, setEmail] = useState(userData?.email || "");
 
   useEffect(() => {
     const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(
@@ -43,14 +40,6 @@ const Settings = ({}) => {
     );
     return unsubscribe;
   }, [shouldFetchUserData]); // Add shouldFetchUserData to the dependency array
-
-  useEffect(() => {
-    if (userData) {
-      setFirstName(userData.firstName);
-      setLastName(userData.lastName);
-      setEmail(userData.email);
-    }
-  }, [userData]);
 
   const handleLogout = async () => {
     try {
@@ -139,17 +128,8 @@ const Settings = ({}) => {
 
       Alert.alert("Success", "Your profile has been updated successfully.");
 
-      // Fetch user data again to update the state
-      const fetchResponse = await fetch(
-        `https://fancave-api.up.railway.app/users/${user.uid}`
-      );
-      const data = await fetchResponse.json();
-      setUserData(data); // Update userData with the latest data
-
-      // Update the local state for firstName, lastName, and email
-      setFirstName(data.firstName);
-      setLastName(data.lastName);
-      setEmail(data.email);
+      // Trigger re-fetch of user data
+      setShouldFetchUserData((prev) => !prev); // Toggle the state to trigger re-fetch
     } catch (error) {
       console.error("Error updating profile: ", error);
       Alert.alert(
@@ -169,24 +149,15 @@ const Settings = ({}) => {
           text: "OK",
           onPress: () => {
             const updatedData = {
-              firstName: firstName, // Use the state value
-              lastName: lastName, // Use the state value
-              email: email, // Use the state value
+              firstName: "NewFirstName", // Replace with actual data
+              lastName: "NewLastName", // Replace with actual data
+              email: "newemail@example.com", // Replace with actual data
             };
             handleUpdateProfile(updatedData);
           },
         },
       ],
       { cancelable: true }
-    );
-  };
-
-  // Function to check if the button should be enabled
-  const isUpdateButtonDisabled = () => {
-    return (
-      firstName === userData?.firstName &&
-      lastName === userData?.lastName &&
-      email === userData?.email
     );
   };
 
