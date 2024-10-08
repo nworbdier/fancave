@@ -36,12 +36,12 @@ const Account = () => {
         }
         const data = await response.json();
         setUserData(data);
-        setFirstName(data.firstName || "");
-        setLastName(data.lastName || "");
+        setFirstName(data.firstname || "");
+        setLastName(data.lastname || "");
         setEmail(data.email || "");
         setInitialValues({
-          firstName: data.firstName || "",
-          lastName: data.lastName || "",
+          firstName: data.firstname || "",
+          lastName: data.lastNnme || "",
           email: data.email || "",
         });
       } catch (error) {
@@ -58,7 +58,7 @@ const Account = () => {
   }, [fetchUserData]);
 
   const isButtonDisabled =
-    firstName === initialValues.firstName &&
+    firstName === initialValues.firstname &&
     lastName === initialValues.lastName &&
     email === initialValues.email;
 

@@ -64,7 +64,7 @@ const Settings = ({}) => {
           <View style={styles.profileCircle} />
           <View style={styles.userInfo}>
             <Text style={styles.userFirstLast}>
-              {userData.firstName} {userData.lastName}
+              {userData.firstname} {userData.lastname}
             </Text>
             <Text style={styles.userEmail}>{userData.email}</Text>
           </View>

@@ -14,7 +14,6 @@
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
-    "@uploadthing/expo": "^7.0.2",
     "axios": "^1.7.7",
     "cheerio": "^1.0.0-rc.12",
     "expo": "^51.0.32",
