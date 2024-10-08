@@ -166,18 +166,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 15,
+    marginHorizontal: 10,
   },
   optionText1: {
     fontSize: 18,
     color: "white",
-    fontWeight: "regular",
+    fontWeight: "bold",
   },
   optionText2: {
+    fontWeight: "bold",
     fontSize: 18,
     color: "white",
     marginLeft: 15,
-    fontWeight: "regular",
+    fontWeight: "bold",
   },
   colorCircle: {
     width: 24,

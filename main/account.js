@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../firebaseConfig"; // Import Firebase Auth
 import { deleteUser } from "firebase/auth"; // Import deleteUser from Firebase Auth
+import * as ImagePicker from "expo-image-picker"; // Import expo-image-picker
 
 const Account = () => {
   const [userData, setUserData] = useState(null);
@@ -21,6 +22,7 @@ const Account = () => {
     lastName: "",
     email: "",
   });
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
 
   const fetchUserData = useCallback(async () => {
     const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
@@ -64,6 +66,16 @@ const Account = () => {
     const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
     if (currentUser) {
       try {
+        let imageUrl = null; // Initialize imageUrl
+
+        // Check if an image was selected and upload it
+        if (selectedImageUri) {
+          const uploadResponse = await uploadImageToUploadThing(
+            selectedImageUri
+          ); // Function to upload image
+          imageUrl = uploadResponse.url; // Get the URL from the response
+        }
+
         const response = await fetch(
           "https://fancave-api.up.railway.app/post-users",
           {
@@ -76,6 +88,7 @@ const Account = () => {
               firstName,
               lastName,
               email,
+              profileImageUrl: imageUrl, // Include the image URL
             }),
           }
         );
@@ -149,6 +162,32 @@ const Account = () => {
     );
   };
 
+  const handlePickImage = async () => {
+    // Request permission to access the camera roll
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // Launch the image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (result.cancelled) {
+      console.log("User cancelled image picker");
+    } else {
+      setSelectedImageUri(result.uri); // Store the selected image URI
+      console.log("Selected image: ", result.uri);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView />
@@ -159,7 +198,12 @@ const Account = () => {
       {/* Manage Mode */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionHeader}>Profile Image</Text>
-        <View style={styles.profileImage}></View>
+        <View style={styles.profileImageContainer}>
+          <View style={styles.profileImage}></View>
+          <TouchableOpacity onPress={handlePickImage} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.sectionHeader}>First Name</Text>
         <TextInput
           style={styles.input}
@@ -228,6 +272,20 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     backgroundColor: "grey",
     marginBottom: 15,
+  },
+  profileImageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  editButton: {
+    marginLeft: 10,
+    backgroundColor: "lightblue",
+    borderRadius: 5,
+    padding: 5,
+  },
+  editButtonText: {
+    color: "black",
+    fontWeight: "bold",
   },
   input: {
     borderWidth: 1,

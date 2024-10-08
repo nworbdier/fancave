@@ -18,10 +18,13 @@ const Notifications = () => {
         const savedPosts = await AsyncStorage.getItem("posts");
         const savedScores = await AsyncStorage.getItem("scores");
 
-        if (savedAllowNotifications !== null)
-          setAllowNotifications(JSON.parse(savedAllowNotifications));
-        if (savedPosts !== null) setPosts(JSON.parse(savedPosts));
-        if (savedScores !== null) setScores(JSON.parse(savedScores));
+        if (savedAllowNotifications !== null) {
+          const allowNotificationsValue = JSON.parse(savedAllowNotifications);
+          setAllowNotifications(allowNotificationsValue);
+          // Set posts and scores based on allowNotifications
+          setPosts(allowNotificationsValue ? (savedPosts !== null ? JSON.parse(savedPosts) : true) : false);
+          setScores(allowNotificationsValue ? (savedScores !== null ? JSON.parse(savedScores) : true) : false);
+        }
       } catch (e) {
         console.log("Failed to load settings from AsyncStorage", e);
       }
@@ -38,8 +41,8 @@ const Notifications = () => {
           "allowNotifications",
           JSON.stringify(allowNotifications)
         );
-        await AsyncStorage.setItem("posts", JSON.stringify(posts));
-        await AsyncStorage.setItem("scores", JSON.stringify(scores));
+        await AsyncStorage.setItem("posts", JSON.stringify(allowNotifications ? posts : false)); // Update to save false if notifications are off
+        await AsyncStorage.setItem("scores", JSON.stringify(allowNotifications ? scores : false)); // Update to save false if notifications are off
       } catch (e) {
         console.log("Failed to save settings to AsyncStorage", e);
       }
@@ -63,7 +66,16 @@ const Notifications = () => {
           <Text style={styles.optionText}>Allow Notifications</Text>
           <Switch
             value={allowNotifications}
-            onValueChange={(value) => setAllowNotifications(value)}
+            onValueChange={(value) => {
+              setAllowNotifications(value);
+              if (!value) { // If notifications are turned off, also turn off posts and scores
+                setPosts(false);
+                setScores(false);
+              } else { // If notifications are turned on, set posts and scores to true
+                setPosts(true);
+                setScores(true);
+              }
+            }}
             thumbColor={"white"}
             trackColor={{ false: "lightgrey", true: "#5BC236" }}
             ios_backgroundColor="lightgrey"
@@ -73,22 +85,24 @@ const Notifications = () => {
         <View style={styles.option}>
           <Text style={styles.optionText}>Posts</Text>
           <Switch
-            value={posts}
-            onValueChange={(value) => setPosts(value)}
+            value={allowNotifications ? posts : false} // Disable switch if notifications are off
+            onValueChange={(value) => allowNotifications && setPosts(value)} // Only allow changing if notifications are on
             thumbColor={"white"}
             trackColor={{ false: "lightgrey", true: "#5BC236" }}
             ios_backgroundColor="lightgrey"
+            disabled={!allowNotifications} // Disable switch if notifications are off
           />
         </View>
 
         <View style={styles.option}>
           <Text style={styles.optionText}>Scores</Text>
           <Switch
-            value={scores}
-            onValueChange={(value) => setScores(value)}
+            value={allowNotifications ? scores : false} // Disable switch if notifications are off
+            onValueChange={(value) => allowNotifications && setScores(value)} // Only allow changing if notifications are on
             thumbColor={"white"}
             trackColor={{ false: "lightgrey", true: "#5BC236" }}
             ios_backgroundColor="lightgrey"
+            disabled={!allowNotifications} // Disable switch if notifications are off
           />
         </View>
       </View>

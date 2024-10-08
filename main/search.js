@@ -50,7 +50,7 @@ const Search = () => {
       );
       const data = await response.json();
       // console.log(data);
-      setResults(data.data || []); // Set results to data.data which contains the teams
+      setResults(data || []);
     } catch (error) {
       console.error("Error fetching search results:", error);
       setResults([]);
@@ -94,7 +94,7 @@ const Search = () => {
                     color="white"
                   />
                 )}
-                <Text style={styles.listText}>{item.team}</Text>
+                <Text style={styles.listText}>{item.teamname}</Text>
               </TouchableOpacity>
             )}
           />
