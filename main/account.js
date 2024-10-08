@@ -8,9 +8,8 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FIREBASE_AUTH } from "../firebaseConfig"; // Import Firebase Auth
-import { deleteUser } from "firebase/auth"; // Import deleteUser from Firebase Auth
-import * as ImagePicker from "expo-image-picker"; // Import expo-image-picker
+import { FIREBASE_AUTH } from "../firebaseConfig";
+import { deleteUser } from "firebase/auth";
 
 const Account = () => {
   const [userData, setUserData] = useState(null);
@@ -22,10 +21,9 @@ const Account = () => {
     lastName: "",
     email: "",
   });
-  const [selectedImageUri, setSelectedImageUri] = useState(null);
 
   const fetchUserData = useCallback(async () => {
-    const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
+    const currentUser = FIREBASE_AUTH.currentUser;
     if (currentUser) {
       try {
         const response = await fetch(
@@ -41,7 +39,7 @@ const Account = () => {
         setEmail(data.email || "");
         setInitialValues({
           firstName: data.firstname || "",
-          lastName: data.lastNnme || "",
+          lastName: data.lastname || "",
           email: data.email || "",
         });
       } catch (error) {
@@ -58,22 +56,14 @@ const Account = () => {
   }, [fetchUserData]);
 
   const isButtonDisabled =
-    firstName === initialValues.firstname &&
+    firstName === initialValues.firstName &&
     lastName === initialValues.lastName &&
     email === initialValues.email;
 
   const handleUpdateProfile = async () => {
-    const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
+    const currentUser = FIREBASE_AUTH.currentUser;
     if (currentUser) {
       try {
-        let imageUrl = null; // Initialize imageUrl
-
-        // Check if an image was selected (removed upload logic)
-        if (selectedImageUri) {
-          // Removed uploadImageToUploadThing function call
-          imageUrl = selectedImageUri; // Use the selected image URI directly
-        }
-
         const response = await fetch(
           "https://fancave-api.up.railway.app/post-users",
           {
@@ -82,11 +72,10 @@ const Account = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              uuid: currentUser.uid, // Use the user's UID as uuid
+              uuid: currentUser.uid,
               firstName,
-              lastName, // Corrected spelling from lastame to lastName
+              lastName,
               email,
-              profileImageUrl: imageUrl, // Include the image URL
             }),
           }
         );
@@ -96,15 +85,14 @@ const Account = () => {
         }
 
         const result = await response.json();
-        console.log(result.message); // Handle success message
+        console.log(result.message);
         Alert.alert(
           "Account Updated",
           "Your account has been updated successfully!",
           [{ text: "OK" }]
-        ); // Show alert on success
+        );
 
-        // Fetch user data again to refresh the state
-        await fetchUserData(); // Fetch user data again after update
+        await fetchUserData();
       } catch (error) {
         console.error("Error updating profile:", error);
         Alert.alert("Error", "An unexpected error occurred. Please try again.");
@@ -121,13 +109,11 @@ const Account = () => {
         {
           text: "Delete",
           onPress: async () => {
-            const currentUser = FIREBASE_AUTH.currentUser; // Get current user from Firebase
+            const currentUser = FIREBASE_AUTH.currentUser;
             if (currentUser) {
               try {
-                // Delete the user from Firebase
                 await deleteUser(currentUser);
 
-                // Send DELETE request to your API to remove the user from the database
                 const response = await fetch(
                   `https://fancave-api.up.railway.app/users/${currentUser.uid}`,
                   {
@@ -143,7 +129,6 @@ const Account = () => {
                   "Success",
                   "Your account has been deleted successfully."
                 );
-                // Optionally, navigate to a different screen or log out
               } catch (error) {
                 console.error("Error deleting account: ", error);
                 Alert.alert(
@@ -160,32 +145,6 @@ const Account = () => {
     );
   };
 
-  const handlePickImage = async () => {
-    // Request permission to access the camera roll
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    // Launch the image picker
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (result.cancelled) {
-      console.log("User cancelled image picker");
-    } else {
-      setSelectedImageUri(result.uri); // Store the selected image URI
-      console.log("Selected image: ", result.uri);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <SafeAreaView />
@@ -193,49 +152,44 @@ const Account = () => {
         <Text style={styles.headerText}>Account</Text>
       </View>
 
-      {/* Manage Mode */}
       <View style={styles.sectionContainer}>
-        {/* <Text style={styles.sectionHeader}>Profile Image</Text>
-        <View style={styles.profileImageContainer}>
-          <View style={styles.profileImage}></View>
-          <TouchableOpacity onPress={handlePickImage} style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-        </View> */}
         <Text style={styles.sectionHeader}>First Name</Text>
         <TextInput
           style={styles.input}
           value={firstName}
           onChangeText={setFirstName}
-          placeholderTextColor="grey" // Placeholder color set to grey
+          placeholderTextColor="grey"
         />
         <Text style={styles.sectionHeader}>Last Name</Text>
         <TextInput
           style={styles.input}
           value={lastName}
           onChangeText={setLastName}
-          placeholderTextColor="grey" // Placeholder color set to grey
+          placeholderTextColor="grey"
         />
         <Text style={styles.sectionHeader}>Email</Text>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholderTextColor="grey" // Placeholder color set to grey
+          placeholderTextColor="grey"
         />
       </View>
 
       <TouchableOpacity
-        style={[styles.updateButton, isButtonDisabled && styles.disabledButton]}
+        style={[
+          styles.updateButton,
+          isButtonDisabled && styles.disabledButton,
+        ]}
         disabled={isButtonDisabled}
-        onPress={handleUpdateProfile} // Call update function on press
+        onPress={handleUpdateProfile}
       >
         <Text style={styles.buttonText}>Update Profile</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={handleDeleteAccount} // Call delete function on press
+        style={[styles.deleteButton]}
+        onPress={handleDeleteAccount}
       >
         <Text style={styles.buttonText}>Delete Account</Text>
       </TouchableOpacity>
@@ -262,27 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "grey",
     marginBottom: 15,
-    fontWeight: "bold",
-  },
-  profileImage: {
-    width: 75,
-    height: 75,
-    borderRadius: 75,
-    backgroundColor: "grey",
-    marginBottom: 15,
-  },
-  profileImageContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  editButton: {
-    marginLeft: 10,
-    backgroundColor: "lightblue",
-    borderRadius: 5,
-    padding: 5,
-  },
-  editButtonText: {
-    color: "black",
     fontWeight: "bold",
   },
   input: {
@@ -313,8 +246,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: "center",
-    marginTop: 20, // Add some space above the delete button
+    marginTop: 20,
   },
 });
 
-export default Account; // Updated export statement
+export default Account;

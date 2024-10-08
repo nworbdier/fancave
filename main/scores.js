@@ -507,7 +507,37 @@ export default function Scores() {
               )}
             </Text>
           </>
-        ) : (
+        ) : item.sport === "basketball" ? ( // Check if the sport is basketball
+          <>
+            <Text style={styles.gameStatus}>
+              {item.Status === "STATUS_END_PERIOD" ? (
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.StatusShortDetail}
+                </Text>
+              ) : item.Status === "STATUS_HALFTIME" ? (
+                <Text style={{ fontWeight: "bold" }}>Half</Text>
+              ) : item.Status === "STATUS_FINAL" ||
+                item.Status === "STATUS_POSTPONED" ||
+                item.Status === "STATUS_CANCELED" ||
+                item.Status === "STATUS_DELAYED" ? (
+                <Text style={{ fontWeight: "bold" }}>
+                  {item.StatusShortDetail}
+                </Text>
+              ) : item.Status === "STATUS_SCHEDULED" ? (
+                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
+              ) : (
+                <>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {item.displayClock}
+                  </Text>
+                  <Text style={{ color: "#999", fontWeight: "bold" }}>
+                    {` ${getOrdinal(item.period)}`}
+                  </Text>
+                </>
+              )}
+            </Text>
+          </>
+        ) : ( // Default case for other sports
           <Text style={styles.gameStatus}>
             {item.Status === "STATUS_SCHEDULED" ? (
               <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
@@ -787,7 +817,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#222222",
     padding: 10,
     marginHorizontal: 10,
     marginVertical: 5,
