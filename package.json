@@ -37,8 +37,7 @@
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "4.8.2",
     "react-native-web-webview": "^1.0.2",
-    "react-native-webview": "13.6.4",
-    "uploadthing": "^7.0.2"
+    "react-native-webview": "13.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

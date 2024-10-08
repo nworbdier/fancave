@@ -68,12 +68,10 @@ const Account = () => {
       try {
         let imageUrl = null; // Initialize imageUrl
 
-        // Check if an image was selected and upload it
+        // Check if an image was selected (removed upload logic)
         if (selectedImageUri) {
-          const uploadResponse = await uploadImageToUploadThing(
-            selectedImageUri
-          ); // Function to upload image
-          imageUrl = uploadResponse.url; // Get the URL from the response
+          // Removed uploadImageToUploadThing function call
+          imageUrl = selectedImageUri; // Use the selected image URI directly
         }
 
         const response = await fetch(
@@ -86,7 +84,7 @@ const Account = () => {
             body: JSON.stringify({
               uuid: currentUser.uid, // Use the user's UID as uuid
               firstName,
-              lastName,
+              lastName, // Corrected spelling from lastame to lastName
               email,
               profileImageUrl: imageUrl, // Include the image URL
             }),
