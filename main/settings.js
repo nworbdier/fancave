@@ -61,7 +61,7 @@ const Settings = ({}) => {
       </View>
       {userData && (
         <View style={styles.accountSection}>
-          <View style={styles.profileCircle} />
+          {/* <View style={styles.profileCircle} /> */}
           <View style={styles.userInfo}>
             <Text style={styles.userFirstLast}>
               {userData.firstname} {userData.lastname}

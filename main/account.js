@@ -195,13 +195,13 @@ const Account = () => {
 
       {/* Manage Mode */}
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>Profile Image</Text>
+        {/* <Text style={styles.sectionHeader}>Profile Image</Text>
         <View style={styles.profileImageContainer}>
           <View style={styles.profileImage}></View>
           <TouchableOpacity onPress={handlePickImage} style={styles.editButton}>
             <Text style={styles.editButtonText}>Edit</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <Text style={styles.sectionHeader}>First Name</Text>
         <TextInput
           style={styles.input}
