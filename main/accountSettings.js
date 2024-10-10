@@ -153,7 +153,6 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View>
         <Text style={styles.headerText}>Account</Text>
       </View>

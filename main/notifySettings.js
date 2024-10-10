@@ -71,7 +71,6 @@ const NotificationSettings = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View>
         <Text style={styles.headerText}>Notifications</Text>
       </View>

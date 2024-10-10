@@ -8,7 +8,9 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist"; // Import ScaleDecorator
+import DraggableFlatList, {
+  ScaleDecorator,
+} from "react-native-draggable-flatlist"; // Import ScaleDecorator
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const ReorderSports = () => {
@@ -46,7 +48,6 @@ const ReorderSports = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <SafeAreaView />
         <Text style={styles.title}>Sports</Text>
         <DraggableFlatList
           data={sportsOrder}

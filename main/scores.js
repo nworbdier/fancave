@@ -24,6 +24,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native"; // Add this import
+import { useFocusEffect } from "@react-navigation/native"; // Add this import
 
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
@@ -177,6 +178,19 @@ export default function Scores({ route }) {
     }
   }, [selectedDate, selectedSport, dates]); // Add dates to the dependency array
 
+  useFocusEffect(
+    useCallback(() => {
+      const interval = setInterval(() => {
+        if (selectedDate) {
+          // Ensure selectedDate is defined
+          fetchGameData(selectedSport, selectedDate);
+        }
+      }, 5000); // Refresh every 5 seconds
+
+      return () => clearInterval(interval); // Clear the interval on unmount
+    }, [selectedSport, selectedDate]) // Dependencies to ensure it uses the latest values
+  );
+
   const fetchDates = async (sport) => {
     setDateListLoading(true);
     try {
@@ -230,7 +244,6 @@ export default function Scores({ route }) {
   };
 
   const fetchGameData = async (sport, date) => {
-    setLoading(true);
     try {
       const { sport: sportName, league } = sportsData[sport];
 
@@ -370,9 +383,6 @@ export default function Scores({ route }) {
       setGameData(groupedGames);
     } catch (error) {
       console.error("Error in fetchGameData:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -380,7 +390,9 @@ export default function Scores({ route }) {
     setRefreshing(true);
     // Check if selectedDate is defined before fetching game data
     if (selectedDate) {
-      fetchGameData(selectedSport, selectedDate);
+      fetchGameData(selectedSport, selectedDate).finally(() => {
+        setRefreshing(false); // Stop refreshing after data is fetched
+      });
     } else {
       console.error("selectedDate is undefined during refresh");
       setRefreshing(false); // Stop refreshing if no date is set
@@ -690,7 +702,6 @@ export default function Scores({ route }) {
 
   return (
     <View style={styles.page}>
-      <SafeAreaView />
       <View style={styles.sportCarouselContainer}>
         <FlatList
           ref={sportListRef}

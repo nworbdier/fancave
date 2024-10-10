@@ -27,7 +27,6 @@ export default function ActivityCenter() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View style={styles.content}>
         <Text style={styles.title}>Activity Center</Text>
         <View style={styles.activityHeader}>

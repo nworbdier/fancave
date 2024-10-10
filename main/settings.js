@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
   Linking,
+  ScrollView,
 } from "react-native";
 import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
 import { FIREBASE_AUTH } from "../firebaseConfig";
@@ -35,12 +36,7 @@ const Settings = ({}) => {
       const currentUser = FIREBASE_AUTH.currentUser;
       setUser(currentUser);
       const loadUserData = async () => {
-        // const cachedUserData = await AsyncStorage.getItem("userData"); // Remove this line
-        // if (cachedUserData) {
-        //   setUserData(JSON.parse(cachedUserData)); // Set cached data
-        // } else {
         fetchUserData(currentUser); // Fetch if no cached data
-        // }
       };
       loadUserData();
     }, [])
@@ -65,131 +61,171 @@ const Settings = ({}) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View style={styles.header}>
         <Text style={styles.headerText}>Settings</Text>
       </View>
-      {userData && (
-        <View style={styles.accountSection}>
-          <View style={styles.userInfo}>
-            <Text style={styles.userUsername}>{userData.username}</Text>
-            <Text style={styles.userEmail}>{userData.email}</Text>
+      <ScrollView>
+        {userData && (
+          <View style={styles.accountSection}>
+            <View style={styles.userInfo}>
+              <Text style={styles.userUsername}>{userData.username}</Text>
+              <Text style={styles.userEmail}>{userData.email}</Text>
+            </View>
           </View>
-        </View>
-      )}
-      {/* General Settings */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>General</Text>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate("NotificationSettings")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="notifications" size={24} color="white" />
-            <Text style={styles.optionText}>Notifications</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate("ThemeSettings")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="palette" size={24} color="white" />
-            <Text style={styles.optionText}>Theme</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate("Account")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="manage-accounts" size={24} color="white" />
-            <Text style={styles.optionText}>Account</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Contact Section */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>Contact</Text>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://discord.com")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <FontAwesome6 name="x-twitter" size={24} color="white" />
-            <Text style={styles.optionText}>FanCave X</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://example.com/feedback")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="feedback" size={24} color="white" />
-            <Text style={styles.optionText}>Feedback</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://example.com/support")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="support" size={24} color="white" />
-            <Text style={styles.optionText}>Support</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Legal Info Section */}
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>Legal</Text>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://example.com/faq")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="question-answer" size={24} color="white" />
-            <Text style={styles.optionText}>FAQ</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://example.com/terms")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="gavel" size={24} color="white" />
-            <Text style={styles.optionText}>Terms of Service</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => openLink("https://example.com/privacy")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <MaterialIcons name="privacy-tip" size={24} color="white" />
-            <Text style={styles.optionText}>Privacy Policy</Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-right" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Logout and Delete Account */}
-      <View style={styles.sectionContainer}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
+        )}
+        {/* General Settings */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>General</Text>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate("NotificationSettings")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="notifications" size={24} color="white" />
+              <Text style={styles.optionText}>Notifications</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate("ThemeSettings")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="palette" size={24} color="white" />
+              <Text style={styles.optionText}>Theme</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate("Account")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="manage-accounts" size={24} color="white" />
+              <Text style={styles.optionText}>Account</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
           </TouchableOpacity>
         </View>
-      </View>
+
+        {/* Contact Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Contact</Text>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://discord.com")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <FontAwesome6 name="x-twitter" size={24} color="white" />
+              <Text style={styles.optionText}>FanCave X</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://example.com/feedback")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="feedback" size={24} color="white" />
+              <Text style={styles.optionText}>Feedback</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://example.com/support")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="support" size={24} color="white" />
+              <Text style={styles.optionText}>Support</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Legal Info Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Legal</Text>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://example.com/faq")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="question-answer" size={24} color="white" />
+              <Text style={styles.optionText}>FAQ</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://example.com/terms")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="gavel" size={24} color="white" />
+              <Text style={styles.optionText}>Terms of Service</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => openLink("https://example.com/privacy")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="privacy-tip" size={24} color="white" />
+              <Text style={styles.optionText}>Privacy Policy</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Logout and Delete Account */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.logoutOption}
+              onPress={handleLogout}
+            >
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -206,7 +242,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   accountSection: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -271,7 +306,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 20,
   },
   profileCircle: {
     width: 50,

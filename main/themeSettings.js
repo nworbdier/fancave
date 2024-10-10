@@ -37,7 +37,6 @@ const ThemeSettings = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View>
         <Text style={styles.headerText}>Theme</Text>
       </View>

@@ -21,6 +21,7 @@ const Stack = createNativeStackNavigator();
 function Main() {
   return (
     <View style={styles.app}>
+      <SafeAreaView />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
@@ -42,14 +43,13 @@ function Main() {
 function Onboarding() {
   return (
     <View style={styles.app}>
-      <SafeAreaView style={styles.app}>
-        <View style={styles.content}>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Welcome" component={Welcome} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-          </Stack.Navigator>
-        </View>
-      </SafeAreaView>
+      <SafeAreaView />
+      <View style={styles.content}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Welcome" component={Welcome} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+        </Stack.Navigator>
+      </View>
     </View>
   );
 }
@@ -98,6 +98,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: "grey", // 75% opacity black
   },
 });

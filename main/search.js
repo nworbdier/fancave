@@ -61,7 +61,6 @@ const Search = () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView />
       <View style={styles.content}>
         {/* Search Box */}
         <View style={styles.searchBoxContainer}>

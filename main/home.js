@@ -210,7 +210,6 @@ export default function App() {
         </View>
       </Modal>
 
-      <SafeAreaView />
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
@@ -281,7 +280,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
-    marginVertical: 10,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   headerLeft: {
@@ -296,7 +294,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 10.5,
-    paddingTop: 10,
   },
   loadingContainer: {
     // Added loading container style
