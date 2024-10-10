@@ -12,6 +12,7 @@ import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const Settings = ({}) => {
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ const Settings = ({}) => {
       const response = await fetch(url);
       const data = await response.json();
       setUserData(data);
+      await AsyncStorage.setItem("userData", JSON.stringify(data)); // Cache user data
     }
   };
 
@@ -33,13 +35,22 @@ const Settings = ({}) => {
     React.useCallback(() => {
       const currentUser = FIREBASE_AUTH.currentUser;
       setUser(currentUser);
-      fetchUserData(currentUser);
+      const loadUserData = async () => {
+        const cachedUserData = await AsyncStorage.getItem("userData"); // Retrieve cached data
+        if (cachedUserData) {
+          setUserData(JSON.parse(cachedUserData)); // Set cached data
+        } else {
+          fetchUserData(currentUser); // Fetch if no cached data
+        }
+      };
+      loadUserData();
     }, [])
   );
 
   const handleLogout = async () => {
     try {
       await signOut(FIREBASE_AUTH);
+      await AsyncStorage.removeItem("userData"); // Clear cached data on logout
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -62,9 +73,7 @@ const Settings = ({}) => {
       {userData && (
         <View style={styles.accountSection}>
           <View style={styles.userInfo}>
-            <Text style={styles.userFirstLast}>
-              {userData.firstname} {userData.lastname}
-            </Text>
+            <Text style={styles.userUsername}>{userData.username}</Text>
             <Text style={styles.userEmail}>{userData.email}</Text>
           </View>
         </View>
@@ -212,14 +221,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 25,
   },
-  userFirstLast: {
+  userUsername: {
     fontSize: 20,
     color: "white",
   },
   userEmail: {
     fontSize: 20,
     color: "grey",
-    marginTop: 5,
+    marginTop: 10,
   },
   sectionContainer: {
     marginBottom: 30,

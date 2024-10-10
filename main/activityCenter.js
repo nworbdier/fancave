@@ -8,7 +8,12 @@ export default function ActivityCenter() {
       id: "1",
       message: "Welcome to the FanCave App!",
     },
+    {
+      id: "2",
+      message: "Follow us on Twitter/X @FanCaveApp",
+    },
   ];
+
   const notifications = [
     {
       id: "1",
@@ -17,6 +22,8 @@ export default function ActivityCenter() {
     { id: "2", message: "Francisco Lindor grand slam to win it for the Mets" },
     { id: "3", message: "Indiana Pacers win versus the Bulls 102-99" },
   ];
+
+  const renderSeparator = () => <View style={styles.separator} />;
 
   return (
     <View style={styles.container}>
@@ -31,6 +38,7 @@ export default function ActivityCenter() {
             renderItem={({ item }) => (
               <Text style={styles.notification}>{item.message}</Text>
             )}
+            ItemSeparatorComponent={renderSeparator} // Added separator
           />
         </View>
         <View style={styles.notificationHeader}>
@@ -41,6 +49,7 @@ export default function ActivityCenter() {
             renderItem={({ item }) => (
               <Text style={styles.notification}>{item.message}</Text>
             )}
+            ItemSeparatorComponent={renderSeparator} // Added separator
           />
         </View>
       </View>
@@ -89,5 +98,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 5,
     marginLeft: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "grey", // Change this color as needed
+    marginVertical: 10, // Space around the separator
   },
 });

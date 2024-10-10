@@ -10,13 +10,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { deleteUser } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Account = () => {
   const [userData, setUserData] = useState(null);
+  const [username, setUsername] = useState(""); // New state for username
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [initialValues, setInitialValues] = useState({
+    username: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -34,10 +37,12 @@ const Account = () => {
         }
         const data = await response.json();
         setUserData(data);
+        setUsername(data.username || ""); // Set username
         setFirstName(data.firstname || "");
         setLastName(data.lastname || "");
         setEmail(data.email || "");
         setInitialValues({
+          username: data.username || "", // Update initial values
           firstName: data.firstname || "",
           lastName: data.lastname || "",
           email: data.email || "",
@@ -56,6 +61,7 @@ const Account = () => {
   }, [fetchUserData]);
 
   const isButtonDisabled =
+    username === initialValues.username &&
     firstName === initialValues.firstName &&
     lastName === initialValues.lastName &&
     email === initialValues.email;
@@ -73,6 +79,7 @@ const Account = () => {
             },
             body: JSON.stringify({
               uuid: currentUser.uid,
+              username, // Include username
               firstName,
               lastName,
               email,
@@ -92,7 +99,16 @@ const Account = () => {
           [{ text: "OK" }]
         );
 
-        await fetchUserData();
+        // Update cached user data
+        const updatedUserData = {
+          username, // Update cache with username
+          firstname: firstName,
+          lastname: lastName,
+          email: email,
+        };
+        await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData)); // Update cache
+
+        await fetchUserData(); // Refresh user data from the server
       } catch (error) {
         console.error("Error updating profile:", error);
         Alert.alert("Error", "An unexpected error occurred. Please try again.");
@@ -153,6 +169,14 @@ const Account = () => {
       </View>
 
       <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Username</Text>
+        <TextInput
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+          placeholderTextColor="grey"
+          autoCapitalize="none" // Disable auto-capitalization
+        />
         <Text style={styles.sectionHeader}>First Name</Text>
         <TextInput
           style={styles.input}
@@ -177,10 +201,7 @@ const Account = () => {
       </View>
 
       <TouchableOpacity
-        style={[
-          styles.updateButton,
-          isButtonDisabled && styles.disabledButton,
-        ]}
+        style={[styles.updateButton, isButtonDisabled && styles.disabledButton]}
         disabled={isButtonDisabled}
         onPress={handleUpdateProfile}
       >
