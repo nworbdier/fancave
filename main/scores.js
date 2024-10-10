@@ -453,7 +453,9 @@ export default function Scores({ route }) {
         {item.AwayPossession && <View style={styles.possessionIndicator} />}
       </View>
       <View style={styles.gameInfo}>
-        {item.sport === "football" || item.sport === "basketball" ? (
+        {item.sport === "football" ||
+        item.sport === "basketball" ||
+        item.sport === "hockey" ? (
           <>
             <Text style={styles.gameStatus}>
               {item.Status === "STATUS_END_PERIOD" ? (
@@ -1024,7 +1026,10 @@ const formatDate = (dateString) => {
 
 // Update the getOrdinal function
 const getOrdinal = (period) => {
-  if (period >= 1 && period <= 4) return `${period}`;
+  if (period === 1) return "1st";
+  if (period === 2) return "2nd";
+  if (period === 3) return "3rd";
+  if (period === 4) return "4th";
   if (period === 5) return "OT";
   if (period > 5) return `${period - 4}OT`;
 };
