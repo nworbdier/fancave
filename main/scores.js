@@ -773,6 +773,7 @@ const styles = StyleSheet.create({
   sportCarouselContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginHorizontal: 10,
   },
   sportCarousel: {
     flexGrow: 0,
