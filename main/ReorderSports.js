@@ -6,6 +6,7 @@ import {
   Animated,
   PanResponder,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -92,6 +93,7 @@ const ReorderSports = () => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView />
       <Text style={styles.title}>Reorder Sports</Text>
       {sportsOrder.map(renderSportItem)}
       <TouchableOpacity style={styles.doneButton} onPress={saveSportsOrder}>
