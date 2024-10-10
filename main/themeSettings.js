@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Theme = () => {
+const ThemeSettings = () => {
   const [selectedMode, setSelectedMode] = useState("auto"); // Default mode
   const [selectedColor, setSelectedColor] = useState("yellow"); // Default color
 
@@ -187,4 +187,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Theme;
+export default ThemeSettings;

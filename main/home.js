@@ -19,7 +19,6 @@ import NavBar from "../components/navBar";
 import {
   FontAwesome6,
   AntDesign,
-  Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import debounce from "lodash.debounce";
@@ -76,39 +75,29 @@ export default function App() {
         }
       }
 
-      const url = "https://twitter-api47.p.rapidapi.com/v2/list/tweets";
-      const querystring = {
-        listId,
-        limit: TWEETS_PER_PAGE,
-        offset: (pageToFetch - 1) * TWEETS_PER_PAGE,
+      const url = `https://twitter-api45.p.rapidapi.com/listtimeline.php?list_id=${listId}`; // Updated URL with listId
+      const options = {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_KEY,
+          "x-rapidapi-host": "twitter-api45.p.rapidapi.com",
+        },
       };
 
-      const headers = {
-        "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_KEY,
-        "x-rapidapi-host": "twitter-api47.p.rapidapi.com",
-      };
-
-      const response = await fetch(
-        `${url}?${new URLSearchParams(querystring)}`,
-        {
-          method: "GET",
-          headers,
-        }
-      );
-
+      const response = await fetch(url, options);
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      const extractedTweets = (data.tweets || []).map((tweet) => ({
-        text: tweet?.legacy?.full_text,
-        created_at: tweet?.legacy?.created_at,
-        media: tweet?.legacy?.extended_entities?.media?.[0]?.media_url_https,
+      const extractedTweets = (data.timeline || []).map((tweet) => ({
+        text: tweet.text,
+        created_at: tweet.created_at,
+        media:
+          tweet.media?.video?.[0]?.media_url_https ||
+          tweet.media?.photo?.[0]?.media_url_https,
         author: {
-          screen_name: tweet?.core?.user_results?.result?.legacy?.screen_name,
-          avatar:
-            tweet?.core?.user_results?.result?.legacy
-              ?.profile_image_url_https || "default_avatar_url",
+          screen_name: tweet.author.screen_name,
+          avatar: tweet.author.avatar,
         },
       }));
 
@@ -235,7 +224,9 @@ export default function App() {
             marginLeft={5}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("NotificationCenter")}
+        >
           <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
         </TouchableOpacity>
       </View>

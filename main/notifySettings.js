@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Notifications = () => {
+const NotificationSettings = () => {
   const [allowNotifications, setAllowNotifications] = useState(true); // Default to true
   const [posts, setPosts] = useState(true); // Default to true
   const [scores, setScores] = useState(true); // Default to true
@@ -22,8 +22,20 @@ const Notifications = () => {
           const allowNotificationsValue = JSON.parse(savedAllowNotifications);
           setAllowNotifications(allowNotificationsValue);
           // Set posts and scores based on allowNotifications
-          setPosts(allowNotificationsValue ? (savedPosts !== null ? JSON.parse(savedPosts) : true) : false);
-          setScores(allowNotificationsValue ? (savedScores !== null ? JSON.parse(savedScores) : true) : false);
+          setPosts(
+            allowNotificationsValue
+              ? savedPosts !== null
+                ? JSON.parse(savedPosts)
+                : true
+              : false
+          );
+          setScores(
+            allowNotificationsValue
+              ? savedScores !== null
+                ? JSON.parse(savedScores)
+                : true
+              : false
+          );
         }
       } catch (e) {
         console.log("Failed to load settings from AsyncStorage", e);
@@ -41,8 +53,14 @@ const Notifications = () => {
           "allowNotifications",
           JSON.stringify(allowNotifications)
         );
-        await AsyncStorage.setItem("posts", JSON.stringify(allowNotifications ? posts : false)); // Update to save false if notifications are off
-        await AsyncStorage.setItem("scores", JSON.stringify(allowNotifications ? scores : false)); // Update to save false if notifications are off
+        await AsyncStorage.setItem(
+          "posts",
+          JSON.stringify(allowNotifications ? posts : false)
+        ); // Update to save false if notifications are off
+        await AsyncStorage.setItem(
+          "scores",
+          JSON.stringify(allowNotifications ? scores : false)
+        ); // Update to save false if notifications are off
       } catch (e) {
         console.log("Failed to save settings to AsyncStorage", e);
       }
@@ -68,10 +86,12 @@ const Notifications = () => {
             value={allowNotifications}
             onValueChange={(value) => {
               setAllowNotifications(value);
-              if (!value) { // If notifications are turned off, also turn off posts and scores
+              if (!value) {
+                // If notifications are turned off, also turn off posts and scores
                 setPosts(false);
                 setScores(false);
-              } else { // If notifications are turned on, set posts and scores to true
+              } else {
+                // If notifications are turned on, set posts and scores to true
                 setPosts(true);
                 setScores(true);
               }
@@ -144,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Notifications;
+export default NotificationSettings;

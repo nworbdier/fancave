@@ -5,11 +5,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
-import Account from "./main/account";
-import Notifications from "./main/notifications";
-import Theme from "./main/theme";
+import Account from "./main/accountSettings";
+import NotificationSettings from "./main/notifySettings";
+import ThemeSettings from "./main/themeSettings";
 import Search from "./main/search";
 import Settings from "./main/settings";
+import NotificationCenter from "./main/notificationCenter";
 import Scores from "./main/scores";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
@@ -24,8 +25,15 @@ function Main() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="Notifications" component={Notifications} />
-        <Stack.Screen name="Theme" component={Theme} />
+        <Stack.Screen
+          name="NotificationSettings"
+          component={NotificationSettings}
+        />
+        <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
+        <Stack.Screen
+          name="NotificationCenter"
+          component={NotificationCenter}
+        />
         <Stack.Screen name="Scores" component={Scores} />
         <Stack.Screen name="ReorderSports" component={ReorderSports} />
         <Stack.Screen name="Account" component={Account} />
