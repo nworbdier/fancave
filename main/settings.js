@@ -12,7 +12,6 @@ import { FIREBASE_AUTH } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const Settings = ({}) => {
   const navigation = useNavigation();
@@ -27,7 +26,7 @@ const Settings = ({}) => {
       const response = await fetch(url);
       const data = await response.json();
       setUserData(data);
-      await AsyncStorage.setItem("userData", JSON.stringify(data)); // Cache user data
+      // await AsyncStorage.setItem("userData", JSON.stringify(data)); // Remove this line
     }
   };
 
@@ -36,12 +35,12 @@ const Settings = ({}) => {
       const currentUser = FIREBASE_AUTH.currentUser;
       setUser(currentUser);
       const loadUserData = async () => {
-        const cachedUserData = await AsyncStorage.getItem("userData"); // Retrieve cached data
-        if (cachedUserData) {
-          setUserData(JSON.parse(cachedUserData)); // Set cached data
-        } else {
-          fetchUserData(currentUser); // Fetch if no cached data
-        }
+        // const cachedUserData = await AsyncStorage.getItem("userData"); // Remove this line
+        // if (cachedUserData) {
+        //   setUserData(JSON.parse(cachedUserData)); // Set cached data
+        // } else {
+        fetchUserData(currentUser); // Fetch if no cached data
+        // }
       };
       loadUserData();
     }, [])
@@ -50,7 +49,7 @@ const Settings = ({}) => {
   const handleLogout = async () => {
     try {
       await signOut(FIREBASE_AUTH);
-      await AsyncStorage.removeItem("userData"); // Clear cached data on logout
+      // await AsyncStorage.removeItem("userData"); // Remove this line
     } catch (error) {
       console.error("Error signing out: ", error);
     }

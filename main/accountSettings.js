@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../firebaseConfig";
 import { deleteUser } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Account = () => {
   const [userData, setUserData] = useState(null);
@@ -99,15 +98,6 @@ const Account = () => {
           [{ text: "OK" }]
         );
 
-        // Update cached user data
-        const updatedUserData = {
-          username, // Update cache with username
-          firstname: firstName,
-          lastname: lastName,
-          email: email,
-        };
-        await AsyncStorage.setItem("userData", JSON.stringify(updatedUserData)); // Update cache
-
         await fetchUserData(); // Refresh user data from the server
       } catch (error) {
         console.error("Error updating profile:", error);
@@ -175,7 +165,7 @@ const Account = () => {
           value={username}
           onChangeText={setUsername}
           placeholderTextColor="grey"
-          autoCapitalize="none" // Disable auto-capitalization
+          autoCapitalize="none"
         />
         <Text style={styles.sectionHeader}>First Name</Text>
         <TextInput
