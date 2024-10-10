@@ -25,6 +25,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState(""); // Add state for username
   const auth = FIREBASE_AUTH;
 
   const navigation = useNavigation();
@@ -50,11 +51,17 @@ const SignUp = () => {
         email,
         firstName,
         lastName,
+        username, // Ensure username is included
       });
 
       alert("You have successfully created an account!");
+      navigation.navigate("Welcome"); // Navigate to the next page after successful signup
     } catch (error) {
       let errorMessage = "An error occurred. Please try again.";
+
+      if (error.response && error.response.data.error) {
+        errorMessage = error.response.data.error; // Use the error message from the API
+      }
 
       switch (error.code) {
         case "auth/email-already-in-use":
@@ -119,6 +126,14 @@ const SignUp = () => {
           value={lastName}
           onChangeText={setLastName}
           autoCapitalize="words" // Capitalize the first letter of each word
+        />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="white"
+          placeholder="Username" // Add placeholder for username
+          value={username} // Bind value to username state
+          onChangeText={setUsername} // Update state on change
+          autoCapitalize="none"
         />
         <View style={styles.passwordInputContainer}>
           <TextInput
