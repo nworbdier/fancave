@@ -1,14 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Animated,
-  PanResponder,
-  TouchableOpacity,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { sportsData } from "./scores";
 
@@ -17,39 +16,18 @@ const ReorderSports = () => {
   const navigation = useNavigation();
   const { sportsOrder: initialSportsOrder } = route.params;
   const [sportsOrder, setSportsOrder] = useState(initialSportsOrder);
-  const [draggedIndex, setDraggedIndex] = useState(null);
-  const itemHeight = 50;
 
-  const pan = useRef(new Animated.ValueXY()).current;
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (_, gestureState) => {
-        const index = Math.floor(gestureState.y0 / itemHeight);
-        setDraggedIndex(index);
-        pan.setOffset({
-          y: index * itemHeight,
-        });
-      },
-      onPanResponderMove: Animated.event([null, { dy: pan.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (_, gestureState) => {
-        pan.flattenOffset();
-        const newIndex = Math.floor(gestureState.moveY / itemHeight);
-        if (newIndex !== draggedIndex && draggedIndex !== null) {
-          const newOrder = [...sportsOrder];
-          const [reorderedItem] = newOrder.splice(draggedIndex, 1);
-          newOrder.splice(newIndex, 0, reorderedItem);
-          setSportsOrder(newOrder);
-        }
-        setDraggedIndex(null);
-        pan.setValue({ x: 0, y: 0 });
-      },
-    })
-  ).current;
+  const renderSportItem = (sport, index) => {
+    return (
+      <View
+        key={sportsData[sport].id}
+        style={styles.sportItem} // Use normal View instead of Animated.View
+      >
+        <Text style={styles.sportText}>{sportsData[sport].name}</Text>
+        <Ionicons name="menu" size={24} color="white" />
+      </View>
+    );
+  };
 
   const saveSportsOrder = async () => {
     try {
@@ -60,41 +38,10 @@ const ReorderSports = () => {
     }
   };
 
-  const renderSportItem = (sport, index) => {
-    const isBeingDragged = draggedIndex === index;
-    const itemStyle = {
-      ...styles.sportItem,
-      backgroundColor: isBeingDragged ? "lightgrey" : "transparent",
-      elevation: isBeingDragged ? 5 : 0,
-      zIndex: isBeingDragged ? 1 : 0,
-      transform: [
-        {
-          translateY: isBeingDragged
-            ? pan.y.interpolate({
-                inputRange: [-300, 0, 300],
-                outputRange: [-300, 0, 300],
-                extrapolate: "clamp",
-              })
-            : 0,
-        },
-      ],
-    };
-
-    return (
-      <Animated.View
-        key={sportsData[sport].id}
-        style={itemStyle}
-        {...(isBeingDragged ? panResponder.panHandlers : {})}
-      >
-        <Text style={styles.sportText}>{sportsData[sport].name}</Text>
-      </Animated.View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <SafeAreaView />
-      <Text style={styles.title}>Reorder Sports</Text>
+      <Text style={styles.title}>Sports</Text>
       {sportsOrder.map(renderSportItem)}
       <TouchableOpacity style={styles.doneButton} onPress={saveSportsOrder}>
         <Text style={styles.doneButtonText}>Done</Text>
@@ -112,15 +59,20 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: 24,
-    marginBottom: 20,
+    marginTop: 15,
+    marginBottom: 15,
+    fontWeight: "bold",
   },
   sportItem: {
-    padding: 10,
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "white",
+    borderRadius: 10,
     marginVertical: 5,
-    height: 50, // Fixed height for each item
-    justifyContent: "center",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sportText: {
     color: "white",
