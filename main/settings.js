@@ -74,7 +74,7 @@ const Settings = ({}) => {
         <Text style={styles.sectionHeader}>General</Text>
         <TouchableOpacity
           style={styles.option}
-          onPress={() => navigation.navigate("Notifications")}
+          onPress={() => navigation.navigate("NotificationSettings")}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="notifications" size={24} color="white" />
@@ -84,7 +84,7 @@ const Settings = ({}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.option}
-          onPress={() => navigation.navigate("Theme")}
+          onPress={() => navigation.navigate("ThemeSettings")}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="palette" size={24} color="white" />

@@ -10,7 +10,7 @@ import NotificationSettings from "./main/notifySettings";
 import ThemeSettings from "./main/themeSettings";
 import Search from "./main/search";
 import Settings from "./main/settings";
-import NotificationCenter from "./main/notificationCenter";
+import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
@@ -30,10 +30,7 @@ function Main() {
           component={NotificationSettings}
         />
         <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
-        <Stack.Screen
-          name="NotificationCenter"
-          component={NotificationCenter}
-        />
+        <Stack.Screen name="ActivityCenter" component={ActivityCenter} />
         <Stack.Screen name="Scores" component={Scores} />
         <Stack.Screen name="ReorderSports" component={ReorderSports} />
         <Stack.Screen name="Account" component={Account} />

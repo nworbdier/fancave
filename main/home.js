@@ -224,9 +224,7 @@ export default function App() {
             marginLeft={5}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("NotificationCenter")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("ActivityCenter")}>
           <MaterialCommunityIcons name="bell-outline" size={28} color="white" />
         </TouchableOpacity>
       </View>
