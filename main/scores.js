@@ -365,7 +365,7 @@ export default function Scores() {
       ]}
       onPress={() => handleSelectSport(item)}
     >
-      {item === "nhl" ? (
+      {/* {item === "nhl" ? (
         <Image source={NHLIcon} style={styles.selectedIcon} />
       ) : (
         <Ionicons
@@ -374,7 +374,7 @@ export default function Scores() {
           color={selectedSport === item ? "yellow" : "white"} // Change color based on selection
           style={styles.icon}
         />
-      )}
+      )} */}
       <Text
         style={[styles.itemText, selectedSport === item && styles.selectedText]}
       >
@@ -424,7 +424,7 @@ export default function Scores() {
         {item.AwayPossession && <View style={styles.possessionIndicator} />}
       </View>
       <View style={styles.gameInfo}>
-        {item.sport === "football" ? ( // Check if the sport is football
+        {item.sport === "football" || item.sport === "basketball" ? (
           <>
             <Text style={styles.gameStatus}>
               {item.Status === "STATUS_END_PERIOD" ? (
@@ -507,37 +507,8 @@ export default function Scores() {
               )}
             </Text>
           </>
-        ) : item.sport === "basketball" ? ( // Check if the sport is basketball
-          <>
-            <Text style={styles.gameStatus}>
-              {item.Status === "STATUS_END_PERIOD" ? (
-                <Text style={{ fontWeight: "bold" }}>
-                  {item.StatusShortDetail}
-                </Text>
-              ) : item.Status === "STATUS_HALFTIME" ? (
-                <Text style={{ fontWeight: "bold" }}>Half</Text>
-              ) : item.Status === "STATUS_FINAL" ||
-                item.Status === "STATUS_POSTPONED" ||
-                item.Status === "STATUS_CANCELED" ||
-                item.Status === "STATUS_DELAYED" ? (
-                <Text style={{ fontWeight: "bold" }}>
-                  {item.StatusShortDetail}
-                </Text>
-              ) : item.Status === "STATUS_SCHEDULED" ? (
-                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
-              ) : (
-                <>
-                  <Text style={{ fontWeight: "bold" }}>
-                    {item.displayClock}
-                  </Text>
-                  <Text style={{ color: "#999", fontWeight: "bold" }}>
-                    {` ${getOrdinal(item.period)}`}
-                  </Text>
-                </>
-              )}
-            </Text>
-          </>
-        ) : ( // Default case for other sports
+        ) : (
+          // Default case for other sports
           <Text style={styles.gameStatus}>
             {item.Status === "STATUS_SCHEDULED" ? (
               <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
@@ -787,8 +758,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 10,
     alignItems: "center",
-    marginHorizontal: 3,
-    // Removed borderRadius and borderWidth
   },
   selectedItem: {
     // Removed background color change
@@ -797,7 +766,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 20, // Increased font size
-    marginLeft: 10,
+    marginLeft: 4,
   },
   selectedText: {
     color: "yellow", // Change text color to yellow when selected
@@ -1011,10 +980,9 @@ const formatDate = (dateString) => {
     .replace(",", "");
 };
 
-// Helper function to get ordinal representation of the period
+// Update the getOrdinal function
 const getOrdinal = (period) => {
-  if (period === 1) return "1st";
-  if (period === 2) return "2nd";
-  if (period === 3) return "3rd";
-  return `${period}th`; // For 4 and above
+  if (period >= 1 && period <= 4) return `${period}`;
+  if (period === 5) return "OT";
+  if (period > 5) return `${period - 4}OT`;
 };
