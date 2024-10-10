@@ -11,6 +11,7 @@ import Theme from "./main/theme";
 import Search from "./main/search";
 import Settings from "./main/settings";
 import Scores from "./main/scores";
+import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -26,6 +27,7 @@ function Main() {
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="Theme" component={Theme} />
         <Stack.Screen name="Scores" component={Scores} />
+        <Stack.Screen name="ReorderSports" component={ReorderSports} />
         <Stack.Screen name="Account" component={Account} />
       </Stack.Navigator>
     </View>
