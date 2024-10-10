@@ -22,9 +22,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Import the NHL icon at the top of the file
-import NHLIcon from "../assets/hockey-puck.png";
-
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
   <View style={styles.searchBoxContainer}>
@@ -60,12 +57,6 @@ const sportsData = {
     sport: "football",
     league: "college-football",
   },
-  ncaab: {
-    icon: "basketball-outline",
-    name: "NCAAB",
-    sport: "basketball",
-    league: "mens-college-basketball",
-  },
   mlb: {
     icon: "baseball-outline",
     name: "MLB",
@@ -89,6 +80,12 @@ const sportsData = {
     name: "WNBA",
     sport: "basketball",
     league: "wnba",
+  },
+  ncaab: {
+    icon: "basketball-outline",
+    name: "NCAAB",
+    sport: "basketball",
+    league: "mens-college-basketball",
   },
   mls: {
     icon: "football-outline",
