@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { sportsData } from "./scores";
+import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist"; // Import ScaleDecorator
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const ReorderSports = () => {
   const route = useRoute();
@@ -17,15 +17,20 @@ const ReorderSports = () => {
   const { sportsOrder: initialSportsOrder } = route.params;
   const [sportsOrder, setSportsOrder] = useState(initialSportsOrder);
 
-  const renderSportItem = (sport, index) => {
+  const renderItem = ({ item, drag, isActive }) => {
     return (
-      <View
-        key={sportsData[sport].id}
-        style={styles.sportItem} // Use normal View instead of Animated.View
-      >
-        <Text style={styles.sportText}>{sportsData[sport].name}</Text>
-        <Ionicons name="menu" size={24} color="white" />
-      </View>
+      <ScaleDecorator>
+        <TouchableOpacity
+          onLongPress={drag}
+          disabled={isActive}
+          style={[
+            styles.sportItem,
+            { backgroundColor: isActive ? "red" : "black" }, // Change color when active
+          ]}
+        >
+          <Text style={styles.sportText}>{item.label}</Text>
+        </TouchableOpacity>
+      </ScaleDecorator>
     );
   };
 
@@ -39,14 +44,21 @@ const ReorderSports = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView />
-      <Text style={styles.title}>Sports</Text>
-      {sportsOrder.map(renderSportItem)}
-      <TouchableOpacity style={styles.doneButton} onPress={saveSportsOrder}>
-        <Text style={styles.doneButtonText}>Done</Text>
-      </TouchableOpacity>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <SafeAreaView />
+        <Text style={styles.title}>Sports</Text>
+        <DraggableFlatList
+          data={sportsOrder}
+          onDragEnd={({ data }) => setSportsOrder(data)}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+        />
+        <TouchableOpacity style={styles.doneButton} onPress={saveSportsOrder}>
+          <Text style={styles.doneButtonText}>Done</Text>
+        </TouchableOpacity>
+      </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -64,15 +76,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   sportItem: {
-    flexDirection: "row",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    height: 100, // Set a height for the item
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "white",
     borderRadius: 10,
     marginVertical: 5,
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   sportText: {
     color: "white",

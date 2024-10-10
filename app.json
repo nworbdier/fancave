@@ -23,11 +23,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE"
-      ]
+      }
+      // Removed the 'permissions' property
+      // "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -50,10 +48,6 @@
           "microphonePermission": "Allow FanCave to access your microphone."
         }
       ]
-    ],
-    "permissions": [
-      "CAMERA",
-      "MEDIA_LIBRARY"
     ]
   }
 }
