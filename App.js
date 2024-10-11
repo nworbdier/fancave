@@ -12,6 +12,7 @@ import Search from "./main/search";
 import Settings from "./main/settings";
 import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
+import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -23,6 +24,7 @@ function Main() {
     <View style={styles.app}>
       <SafeAreaView />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Feed" component={Feed} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Settings" component={Settings} />

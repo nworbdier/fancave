@@ -6,8 +6,8 @@ import { Ionicons } from "@expo/vector-icons"; // Make sure to install this pack
 
 const TweetLayout = ({ item, onImagePress }) => {
   const getFormattedDate = (createdAt) => {
+    const tweetTime = moment(createdAt); // Use moment to parse the ISO date string
     const now = moment();
-    const tweetTime = moment(createdAt, "ddd MMM DD HH:mm:ss ZZ YYYY");
     const diffMinutes = now.diff(tweetTime, "minutes");
     const diffHours = now.diff(tweetTime, "hours");
 
@@ -16,7 +16,7 @@ const TweetLayout = ({ item, onImagePress }) => {
     } else if (diffHours < 24) {
       return `${diffHours}h`;
     } else {
-      return tweetTime.format("MMM D");
+      return tweetTime.format("MMM D, YYYY"); // Format to display full date
     }
   };
 

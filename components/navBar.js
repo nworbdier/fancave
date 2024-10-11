@@ -8,7 +8,7 @@ const NavBar = () => {
 
   return (
     <View style={styles.navBar}>
-      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Feed")}>
         <MaterialIcons name="home-filled" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Search")}>
