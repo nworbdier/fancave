@@ -34,7 +34,9 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedTeam, setSelectedTeam] = useState("Purdue Boilermakers");
+  const [selectedTeam, setSelectedTeam] = useState(
+    "Purdue Boilermaker Football"
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -47,17 +49,14 @@ const Feed = () => {
   };
 
   const fetchNewsArticles = async () => {
-    const query =
-      selectedTeam === "All Feeds" ? "San Francisco 49ers" : selectedTeam; // Use selected team or default query
-    const url = `https://real-time-news-data.p.rapidapi.com/search?query=${encodeURIComponent(
-      query
-    )}&limit=50&time_published=7d&country=US&lang=en`;
+    const query = selectedTeam; // Use selected team or default query
+    const url = `https://real-time-news-data.p.rapidapi.com/search?query=${query}&limit=25&time_published=7d&country=US&lang=en`; // Removed encodeURIComponent
 
     const options = {
       method: "GET",
       headers: {
-        "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_KEY,
-        "x-rapidapi-host": "real-time-news-data.p.rapidapi.com",
+        "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_NEWS_KEY,
+        "x-rapidapi-host": process.env.EXPO_PUBLIC_RAPID_API_NEWS_HOST,
       },
     };
 
@@ -66,12 +65,12 @@ const Feed = () => {
       const data = await response.json();
 
       const extractedArticles = (data.data || []).map((article) => ({
-        text: article.snippet, // Use title as text
-        created_at: article.published_datetime_utc, // Use published date
-        media: article.photo_url, // Use photo_url for media
+        text: article.snippet ?? "", // Use title as text
+        created_at: article.published_datetime_utc ?? "", // Use published date
+        media: article.photo_url ?? "", // Use photo_url for media
         author: {
-          screen_name: article.source_name, // Use source_name as author
-          avatar: article.source_favicon_url, // Use source_favicon_url for avatar
+          screen_name: article.source_name ?? "", // Use source_name as author
+          avatar: article.source_favicon_url ?? "", // Use source_favicon_url for avatar
         },
       }));
 
