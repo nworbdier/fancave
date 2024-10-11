@@ -350,6 +350,7 @@ export default function Scores({ route }) {
           AwayWinner: competition.competitors[1].winner,
           HomePossession: homePossession,
           AwayPossession: awayPossession,
+          isRedZone: competition.situation?.isRedZone,
           sport: sportName,
           shortDownDistanceText:
             competition.situation?.shortDownDistanceText || null,
@@ -466,7 +467,7 @@ export default function Scores({ route }) {
           <View
             style={[
               styles.possessionIndicator,
-              item.situation?.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
+              item.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
             ]}
           />
         )}
@@ -578,7 +579,14 @@ export default function Scores({ route }) {
         )}
       </View>
       <View style={styles.teamRow}>
-        {item.HomePossession && <View style={styles.possessionIndicator} />}
+        {item.HomePossession && (
+          <View
+            style={[
+              styles.possessionIndicator,
+              item.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
+            ]}
+          />
+        )}
         <View style={styles.teamContainer}>
           <Image source={{ uri: item.HomeLogoDark }} style={styles.teamLogo} />
           <Text
