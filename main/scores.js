@@ -462,7 +462,14 @@ export default function Scores({ route }) {
               : item.AwayScore}
           </Text>
         </View>
-        {item.AwayPossession && <View style={styles.possessionIndicator} />}
+        {item.AwayPossession && (
+          <View
+            style={[
+              styles.possessionIndicator,
+              item.situation?.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
+            ]}
+          />
+        )}
       </View>
       <View style={styles.gameInfo}>
         {item.sport === "football" ||
@@ -995,6 +1002,9 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     transform: [{ rotate: "45deg" }], // Rotate to make it look like a diamond
+  },
+  redPossessionIndicator: {
+    backgroundColor: "red", // Change the color to red
   },
 });
 
