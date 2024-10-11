@@ -59,7 +59,7 @@ export const sportsData = {
   ncaaf: {
     id: 2,
     icon: "american-football-outline",
-    name: "NCAAF",
+    name: "CFB",
     sport: "football",
     league: "college-football",
   },
@@ -94,7 +94,7 @@ export const sportsData = {
   ncaab: {
     id: 7,
     icon: "basketball-outline",
-    name: "NCAAB",
+    name: "CBB",
     sport: "basketball",
     league: "mens-college-basketball",
   },
@@ -839,7 +839,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   selectedText: {
-    color: "yellow", // Change text color to yellow when selected
+    color: "dodgerblue", // Change text color to dodgerblue when selected
   },
   selectedIcon: {
     width: 24, // Increased icon size
@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   selectedDateText: {
-    color: "yellow", // Add this new style for selected date text
+    color: "dodgerblue", // Add this new style for selected date text
   },
   winnerText: {
     fontWeight: "bold",
