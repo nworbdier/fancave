@@ -58,9 +58,8 @@ const TweetLayout = ({ item, onImagePress }) => {
 
 const styles = StyleSheet.create({
   tweetContainer: {
-    backgroundColor: "#000000",
     borderBottomWidth: 1,
-    borderBottomColor: "#2f3336",
+    borderBottomColor: "white",
     padding: 15,
   },
   tweetHeader: {
@@ -80,19 +79,19 @@ const styles = StyleSheet.create({
   authorName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "white",
   },
   authorUsername: {
     fontSize: 14,
-    color: "#8899a6",
+    color: "white",
   },
   date: {
     fontSize: 14,
-    color: "#8899a6",
+    color: "white",
   },
   tweetText: {
     fontSize: 16,
-    color: "#ffffff",
+    color: "white",
     marginBottom: 10,
     lineHeight: 22,
   },
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
   actionText: {
     marginLeft: 5,
     fontSize: 14,
-    color: "#8899a6",
+    color: "white",
   },
 });
 

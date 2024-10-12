@@ -133,16 +133,12 @@ const Welcome = () => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
-    width: "100%",
   },
   loginContainer: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,

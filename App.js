@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 function Main() {
   return (
     <View style={styles.app}>
-      <SafeAreaView />
+      <SafeAreaView style={styles.safeArea} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Feed" component={Feed} />
         <Stack.Screen name="Home" component={Home} />
@@ -45,13 +45,11 @@ function Main() {
 function Onboarding() {
   return (
     <View style={styles.app}>
-      <SafeAreaView />
-      <View style={styles.content}>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Welcome" component={Welcome} />
-          <Stack.Screen name="SignUp" component={SignUp} />
-        </Stack.Navigator>
-      </View>
+      <SafeAreaView style={styles.safeArea} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+      </Stack.Navigator>
     </View>
   );
 }
@@ -90,15 +88,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "grey",
+  },
   app: {
     flex: 1,
-    backgroundColor: "black",
   },
   loadingScreen: {
     flex: 1,
     backgroundColor: "black",
-  },
-  content: {
-    flex: 1,
   },
 });

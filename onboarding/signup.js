@@ -193,7 +193,6 @@ const SignUp = () => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -202,7 +201,6 @@ const styles = StyleSheet.create({
   loginContainer: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,

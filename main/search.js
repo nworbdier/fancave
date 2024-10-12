@@ -159,7 +159,6 @@ const Search = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
   },
   content: {
     flex: 10.5,
