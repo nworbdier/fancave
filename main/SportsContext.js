@@ -6,7 +6,10 @@ const SportsContext = createContext();
 export const useSportsContext = () => useContext(SportsContext);
 
 export const SportsProvider = ({ children }) => {
-  const [sportsData, setSportsData] = useState({
+  const [sportsData, setSportsData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const defaultSportsData = {
     nfl: {
       id: 1,
       icon: "american-football-outline",
@@ -63,20 +66,26 @@ export const SportsProvider = ({ children }) => {
       sport: "soccer",
       league: "usa.1",
     },
-  });
+  };
 
   useEffect(() => {
     loadSportsOrder();
   }, []);
 
   const loadSportsOrder = async () => {
+    setIsLoading(true);
     try {
       const savedOrder = await AsyncStorage.getItem('sportsOrder');
       if (savedOrder) {
         setSportsData(JSON.parse(savedOrder));
+      } else {
+        setSportsData(defaultSportsData);
       }
     } catch (error) {
       console.error('Error loading sports order:', error);
+      setSportsData(defaultSportsData);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,8 +99,14 @@ export const SportsProvider = ({ children }) => {
       await AsyncStorage.setItem('sportsOrder', JSON.stringify(updatedSportsData));
     } catch (error) {
       console.error('Error saving sports order:', error);
+      // Optionally, you can add a fallback here, such as reverting to the previous state
     }
   };
+
+  if (isLoading) {
+    // You can return a loading indicator here if needed
+    return null;
+  }
 
   return (
     <SportsContext.Provider value={{ sportsData, updateSportsOrder }}>
