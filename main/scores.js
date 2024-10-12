@@ -23,7 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { useSportsContext } from "./SportsContext";
-import { Entypo } from '@expo/vector-icons';
+import { Entypo } from "@expo/vector-icons";
 
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
@@ -281,8 +281,12 @@ export default function Scores({ route }) {
       const sortedGames = gameData.sort((a, b) => {
         const statusOrder = {
           STATUS_IN_PROGRESS: 1,
+          STATUS_DELAYED: 1,
+          STATUS_HALFTIME: 1,
           STATUS_SCHEDULED: 2,
           STATUS_FINAL: 3,
+          STATUS_POSTPONED: 3,
+          STATUS_CANCELED: 3,
         };
         const statusComparison = statusOrder[a.Status] - statusOrder[b.Status];
         if (statusComparison !== 0) {
@@ -320,11 +324,11 @@ export default function Scores({ route }) {
   }, [selectedSport, selectedDate]);
 
   const renderItem = ({ item }) => {
-    if (item === 'reorderSports') {
+    if (item === "reorderSports") {
       return (
         <TouchableOpacity
           style={styles.itemContainer}
-          onPress={() => navigation.navigate('ReorderSports')}
+          onPress={() => navigation.navigate("ReorderSports")}
         >
           <Entypo name="dots-three-horizontal" size={24} color="white" />
         </TouchableOpacity>
@@ -339,7 +343,10 @@ export default function Scores({ route }) {
         onPress={() => handleSelectSport(item)}
       >
         <Text
-          style={[styles.itemText, selectedSport === item && styles.selectedText]}
+          style={[
+            styles.itemText,
+            selectedSport === item && styles.selectedText,
+          ]}
         >
           {sportsData[item].name}
         </Text>
@@ -637,7 +644,7 @@ export default function Scores({ route }) {
       <View style={styles.sportCarouselContainer}>
         <FlatList
           ref={sportListRef}
-          data={[...Object.keys(sportsData), 'reorderSports']}
+          data={[...Object.keys(sportsData), "reorderSports"]}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           horizontal
@@ -736,10 +743,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   itemContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center', // Center the content horizontally
+    alignItems: "center",
+    justifyContent: "center", // Center the content horizontally
     minWidth: 40, // Ensure a minimum width for the three dots icon
   },
   selectedItem: {
