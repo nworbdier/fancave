@@ -796,6 +796,7 @@ export default function Scores({ route }) {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+    backgroundColor: "black",
   },
   sportCarouselContainer: {
     flexDirection: "row",

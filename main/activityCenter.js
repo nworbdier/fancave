@@ -60,6 +60,7 @@ export default function ActivityCenter() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "black",
   },
   content: {
     flex: 11.5,

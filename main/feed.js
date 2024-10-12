@@ -242,6 +242,7 @@ const Feed = () => {
 const styles = StyleSheet.create({
   app: {
     flex: 1,
+    backgroundColor: "black",
   },
   header: {
     flexDirection: "row",

@@ -133,6 +133,7 @@ const Welcome = () => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+    backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
   },
