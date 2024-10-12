@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -42,6 +48,7 @@ const ReorderSports = () => {
           onDragEnd={({ data }) => setSportsOrder(data)}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
+          scrollEnabled={false}
         />
         <TouchableOpacity style={styles.doneButton} onPress={handleDonePress}>
           <Text style={styles.doneButtonText}>Done</Text>

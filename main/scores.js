@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { useSportsContext } from "./SportsContext";
+import { Entypo } from '@expo/vector-icons';
 
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
@@ -61,6 +62,7 @@ export default function Scores({ route }) {
   const dateListRef = useRef(null);
   const [dateListWidth, setDateListWidth] = useState(0);
   const sportListRef = useRef(null); // Create a ref for the FlatList
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadSelectedSport = async () => {
@@ -317,21 +319,33 @@ export default function Scores({ route }) {
     }
   }, [selectedSport, selectedDate]);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.itemContainer,
-        selectedSport === item && styles.selectedItem,
-      ]}
-      onPress={() => handleSelectSport(item)}
-    >
-      <Text
-        style={[styles.itemText, selectedSport === item && styles.selectedText]}
+  const renderItem = ({ item }) => {
+    if (item === 'reorderSports') {
+      return (
+        <TouchableOpacity
+          style={styles.itemContainer}
+          onPress={() => navigation.navigate('ReorderSports')}
+        >
+          <Entypo name="dots-three-horizontal" size={24} color="white" />
+        </TouchableOpacity>
+      );
+    }
+    return (
+      <TouchableOpacity
+        style={[
+          styles.itemContainer,
+          selectedSport === item && styles.selectedItem,
+        ]}
+        onPress={() => handleSelectSport(item)}
       >
-        {sportsData[item].name}
-      </Text>
-    </TouchableOpacity>
-  );
+        <Text
+          style={[styles.itemText, selectedSport === item && styles.selectedText]}
+        >
+          {sportsData[item].name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   const renderGameItem = ({ item }) => (
     <View style={styles.gameContainer}>
@@ -623,7 +637,7 @@ export default function Scores({ route }) {
       <View style={styles.sportCarouselContainer}>
         <FlatList
           ref={sportListRef}
-          data={Object.keys(sportsData)}
+          data={[...Object.keys(sportsData), 'reorderSports']}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           horizontal
@@ -722,9 +736,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   itemContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 10,
-    alignItems: "center",
+    alignItems: 'center',
+    justifyContent: 'center', // Center the content horizontally
+    minWidth: 40, // Ensure a minimum width for the three dots icon
   },
   selectedItem: {
     // Removed background color change
