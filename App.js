@@ -16,7 +16,7 @@ import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { SportsProvider } from './main/SportsContext';
+import { SportsProvider } from "./main/SportsContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +38,7 @@ function Main() {
         <Stack.Screen name="Scores" component={Scores} />
         <Stack.Screen name="ReorderSports" component={ReorderSports} />
         <Stack.Screen name="Account" component={Account} />
+        <Stack.Screen name="SportsProvider" component={SportsProvider} />
       </Stack.Navigator>
     </View>
   );
@@ -87,7 +88,6 @@ export default function App() {
     </SportsProvider>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: "black",
