@@ -21,9 +21,9 @@ const Settings = ({}) => {
 
   const fetchUserData = async (currentUser) => {
     if (currentUser) {
-      console.log("Current User UID:", currentUser.uid); // Log the UID for verification
+      // console.log("Current User UID:", currentUser.uid); // Log the UID for verification
       const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
-      console.log("Fetching user data from URL:", url); // Log the URL
+      // console.log("Fetching user data from URL:", url); // Log the URL
       const response = await fetch(url);
       const data = await response.json();
       setUserData(data);
@@ -97,6 +97,20 @@ const Settings = ({}) => {
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MaterialIcons name="palette" size={24} color="white" />
               <Text style={styles.optionText}>Theme</Text>
+            </View>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate("ReorderSports")}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons name="sports-soccer" size={24} color="white" />
+              <Text style={styles.optionText}>Sports</Text>
             </View>
             <MaterialIcons
               name="keyboard-arrow-right"

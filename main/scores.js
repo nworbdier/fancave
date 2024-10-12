@@ -11,20 +11,18 @@ import {
   FlatList,
   Image,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
   SectionList,
   TextInput,
-  PanResponder,
-  Animated,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native"; // Add this import
-import { useFocusEffect } from "@react-navigation/native"; // Add this import
+import { useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import { useSportsContext } from "./SportsContext";
 
 // Define SearchBox component before using it
 const SearchBox = ({ value, onChangeText }) => (
@@ -47,70 +45,11 @@ const SearchBox = ({ value, onChangeText }) => (
   </View>
 );
 
-// Replace the existing sportsIcons and sportsMappings with this consolidated object
-export const sportsData = {
-  nfl: {
-    id: 1,
-    icon: "american-football-outline",
-    name: "NFL",
-    sport: "football",
-    league: "nfl",
-  },
-  ncaaf: {
-    id: 2,
-    icon: "american-football-outline",
-    name: "CFB",
-    sport: "football",
-    league: "college-football",
-  },
-  mlb: {
-    id: 3,
-    icon: "baseball-outline",
-    name: "MLB",
-    sport: "baseball",
-    league: "mlb",
-  },
-  nhl: {
-    id: 4,
-    icon: "hockey-puck",
-    name: "NHL",
-    sport: "hockey",
-    league: "nhl",
-  },
-  nba: {
-    id: 5,
-    icon: "basketball-outline",
-    name: "NBA",
-    sport: "basketball",
-    league: "nba",
-  },
-  wnba: {
-    id: 6,
-    icon: "basketball-outline",
-    name: "WNBA",
-    sport: "basketball",
-    league: "wnba",
-  },
-  ncaab: {
-    id: 7,
-    icon: "basketball-outline",
-    name: "CBB",
-    sport: "basketball",
-    league: "mens-college-basketball",
-  },
-  mls: {
-    id: 8,
-    icon: "football-outline",
-    name: "MLS",
-    sport: "soccer",
-    league: "usa.1",
-  },
-};
-
 // Define a constant for the offset
 const OFFSET = 1; // Adjust this value as needed
 
 export default function Scores({ route }) {
+  const { sportsData } = useSportsContext();
   const [selectedSport, setSelectedSport] = useState("ncaaf");
   const [gameData, setGameData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -122,28 +61,6 @@ export default function Scores({ route }) {
   const dateListRef = useRef(null);
   const [dateListWidth, setDateListWidth] = useState(0);
   const sportListRef = useRef(null); // Create a ref for the FlatList
-  const navigation = useNavigation(); // Add this line
-  const [sportsOrder, setSportsOrder] = useState(Object.keys(sportsData));
-
-  useEffect(() => {
-    const loadSportsOrder = async () => {
-      try {
-        const savedOrder = await AsyncStorage.getItem("sportsOrder");
-        if (savedOrder) {
-          setSportsOrder(JSON.parse(savedOrder));
-        }
-      } catch (error) {
-        console.error("Error loading sports order:", error);
-      }
-    };
-    loadSportsOrder();
-  }, []);
-
-  useEffect(() => {
-    if (route.params?.updatedSportsOrder) {
-      setSportsOrder(route.params.updatedSportsOrder);
-    }
-  }, [route.params?.updatedSportsOrder]);
 
   useEffect(() => {
     const loadSelectedSport = async () => {
@@ -413,15 +330,6 @@ export default function Scores({ route }) {
       >
         {sportsData[item].name}
       </Text>
-    </TouchableOpacity>
-  );
-
-  const renderReorderButton = () => (
-    <TouchableOpacity
-      onPress={navigateToReorderSports}
-      style={styles.reorderButton}
-    >
-      <Ionicons name="ellipsis-vertical" size={24} color="white" />
     </TouchableOpacity>
   );
 
@@ -710,23 +618,17 @@ export default function Scores({ route }) {
   // Adjust the initial scroll index to center it
   const adjustedScrollIndex = Math.max(0, centeredScrollIndex); // No need for OFFSET here
 
-  // Add this function to navigate to the reorder page
-  const navigateToReorderSports = () => {
-    navigation.navigate("ReorderSports", { sportsOrder });
-  };
-
   return (
     <View style={styles.page}>
       <View style={styles.sportCarouselContainer}>
         <FlatList
           ref={sportListRef}
-          data={sportsOrder}
+          data={Object.keys(sportsData)}
           renderItem={renderItem}
           keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.sportCarousel}
-          ListFooterComponent={renderReorderButton}
         />
       </View>
 
@@ -805,11 +707,6 @@ const styles = StyleSheet.create({
   },
   sportCarousel: {
     flexGrow: 0,
-  },
-  reorderButton: {
-    padding: 10,
-    justifyContent: "center",
-    alignItems: "center",
   },
   contentView: {
     flex: 10,
@@ -1061,67 +958,4 @@ const getOrdinal = (period) => {
   if (period === 4) return "4th";
   if (period === 5) return "OT";
   if (period > 5) return `${period - 4}OT`;
-};
-
-// Add a new component for reordering sports
-const ReorderSports = () => {
-  const [sportsOrder, setSportsOrder] = useState(Object.keys(sportsData));
-  const [draggedIndex, setDraggedIndex] = useState(null);
-  const [draggedValue, setDraggedValue] = useState(null);
-  const animatedValue = useRef(new Animated.Value(0)).current;
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => {
-        const index = Math.floor(gestureState.y0 / 50); // Assuming each item has a height of 50
-        setDraggedIndex(index);
-        setDraggedValue(sportsOrder[index]);
-        animatedValue.setValue(0);
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        animatedValue.setValue(gestureState.dy);
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        const newIndex = Math.floor(gestureState.moveY / 50);
-        if (newIndex !== draggedIndex && draggedValue) {
-          const items = Array.from(sportsOrder);
-          items.splice(draggedIndex, 1);
-          items.splice(newIndex, 0, draggedValue);
-          setSportsOrder(items);
-        }
-        setDraggedIndex(null);
-        setDraggedValue(null);
-        Animated.spring(animatedValue, {
-          toValue: 0,
-          useNativeDriver: false,
-        }).start();
-      },
-    })
-  ).current;
-
-  return (
-    <View>
-      {sportsOrder.map((sport, index) => (
-        <Animated.View
-          key={sport}
-          {...(draggedIndex === index ? panResponder.panHandlers : {})}
-          style={{
-            transform: [
-              { translateY: draggedIndex === index ? animatedValue : 0 },
-            ],
-            backgroundColor:
-              draggedIndex === index ? "lightgrey" : "transparent",
-            padding: 10,
-            borderWidth: 1,
-            borderColor: "white",
-            marginVertical: 5,
-          }}
-        >
-          <Text>{sportsData[sport].name}</Text>
-        </Animated.View>
-      ))}
-    </View>
-  );
 };

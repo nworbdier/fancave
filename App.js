@@ -16,6 +16,7 @@ import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
+import { SportsProvider } from './main/SportsContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,7 +74,7 @@ export default function App() {
   }
 
   return (
-    <View style={styles.app}>
+    <SportsProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {user ? (
@@ -83,7 +84,7 @@ export default function App() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-    </View>
+    </SportsProvider>
   );
 }
 
