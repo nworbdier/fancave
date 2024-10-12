@@ -66,6 +66,7 @@ const ReorderSports = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20,
     padding: 20,
     backgroundColor: "black",
   },

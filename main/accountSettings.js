@@ -210,6 +210,7 @@ const Account = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20,
     backgroundColor: "black",
     paddingHorizontal: 20,
   },

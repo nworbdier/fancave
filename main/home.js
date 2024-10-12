@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
   app: {
     flex: 1,
     backgroundColor: "black",
+    paddingTop: 20,
   },
   header: {
     flexDirection: "row",

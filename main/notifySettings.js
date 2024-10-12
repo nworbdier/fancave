@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+    paddingTop: 20,
     paddingHorizontal: 20,
   },
   headerText: {
