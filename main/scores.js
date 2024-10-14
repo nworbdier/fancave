@@ -357,11 +357,13 @@ export default function Scores({ route }) {
   const renderGameItem = ({ item }) => (
     <TouchableOpacity
       style={styles.gameContainer}
-      onPress={() => navigation.navigate('ScoresDetails', { 
-        eventId: item.id,
-        sportName: item.sport,
-        league: sportsData[selectedSport].league
-      })}
+      onPress={() =>
+        navigation.navigate("ScoresDetails", {
+          eventId: item.id,
+          sportName: item.sport,
+          league: sportsData[selectedSport].league,
+        })
+      }
     >
       <View style={styles.teamRow}>
         <View style={styles.teamContainer}>
@@ -731,12 +733,8 @@ const styles = StyleSheet.create({
   sportCarouselContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 5, // Reduced from 10 to 5
-    marginBottom: 0, // Add this to remove any bottom margin
+    marginHorizontal: 5,
   },
-  // sportCarousel: {
-  //   flexGrow: 0,
-  // },
   contentView: {
     flex: 10,
     width: "100%",
@@ -754,24 +752,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 10,
     alignItems: "center",
-    justifyContent: "center", // Center the content horizontally
-    minWidth: 40, // Ensure a minimum width for the three dots icon
-  },
-  selectedItem: {
-    // Removed background color change
+    justifyContent: "center",
+    minWidth: 40,
   },
   itemText: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 20, // Increased font size
+    fontSize: 20,
     marginLeft: 4,
   },
   selectedText: {
-    color: "dodgerblue", // Change text color to dodgerblue when selected
+    color: "dodgerblue",
   },
   selectedIcon: {
-    width: 24, // Increased icon size
-    height: 24, // Increased icon size
+    width: 24,
+    height: 24,
   },
   icon: {
     width: 24,
@@ -847,26 +842,26 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexGrow: 0,
     flexBasis: "auto",
-    paddingHorizontal: 5, // Reduced from 10 to 5
+    paddingHorizontal: 5,
     height: 30,
-    marginTop: 2, // Reduced from 5 to 2
-    marginBottom: 2, // Reduced from 5 to 2
+    marginTop: 2,
+    marginBottom: 2,
   },
   dateItem: {
-    padding: 4, // Reduced from 5 to 4
+    padding: 4,
     marginHorizontal: 1,
-    width: 68, // Reduced from 70 to 68
+    width: 68,
     justifyContent: "center",
     alignItems: "center",
   },
   dateText: {
     color: "white",
-    fontSize: 15, // Reduced from 16 to 15
+    fontSize: 15,
     textAlign: "center",
     fontWeight: "bold",
   },
   selectedDateText: {
-    color: "dodgerblue", // Add this new style for selected date text
+    color: "dodgerblue",
   },
   winnerText: {
     fontWeight: "bold",
@@ -874,7 +869,7 @@ const styles = StyleSheet.create({
   },
   loserText: {
     fontWeight: "bold",
-    color: "#999", // A lighter grey color
+    color: "#999",
   },
   possessionIndicator: {
     width: 8,
@@ -912,7 +907,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     position: "absolute",
-    right: 10, // Position the button inside the search box
+    right: 10,
     padding: 5,
   },
   basesContainer: {
@@ -929,18 +924,18 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     backgroundColor: "grey",
-    transform: [{ rotate: "45deg" }], // Rotate to make it look like a diamond
+    transform: [{ rotate: "45deg" }],
   },
   baseActive: {
-    backgroundColor: "yellow", // Change active base color to yellow
+    backgroundColor: "yellow",
   },
   emptySpace: {
     width: 15,
     height: 15,
-    transform: [{ rotate: "45deg" }], // Rotate to make it look like a diamond
+    transform: [{ rotate: "45deg" }],
   },
   redPossessionIndicator: {
-    backgroundColor: "red", // Change the color to red
+    backgroundColor: "red",
   },
 });
 

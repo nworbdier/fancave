@@ -139,12 +139,7 @@ export default function ScoresDetails({ route }) {
   };
 
   return (
-    <View
-      style={styles.page}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <View style={styles.page}>
       <View style={styles.gameContainer}>
         <View style={styles.teamContainer}>
           <View style={{ flexDirection: "column", alignItems: "center" }}>
@@ -320,6 +315,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-around",
+    marginTop: 10,
   },
   teamContainer: {
     flexDirection: "row",
