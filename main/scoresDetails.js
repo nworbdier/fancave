@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 export default function ScoresDetails({ route }) {
   const { eventId, sportName, league } = route.params;
@@ -18,11 +18,13 @@ export default function ScoresDetails({ route }) {
   const [activeTab, setActiveTab] = useState("Game");
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchGameDetails();
-    const interval = setInterval(fetchGameDetails, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchGameDetails();
+      const interval = setInterval(fetchGameDetails, 5000);
+      return () => clearInterval(interval);
+    }, [])
+  );
 
   const fetchGameDetails = async () => {
     try {
