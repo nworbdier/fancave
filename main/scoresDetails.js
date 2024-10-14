@@ -90,7 +90,7 @@ export default function ScoresDetails({ route }) {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Game":
-        return <Text style={styles.tabContentText}>Feed Content</Text>;
+        return <Text style={styles.tabContentText}>Game Content</Text>;
       case "Stats":
         return <Text style={styles.tabContentText}>Stats Content</Text>;
       case awayAbbreviation:
