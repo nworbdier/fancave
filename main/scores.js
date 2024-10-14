@@ -366,7 +366,7 @@ export default function Scores({ route }) {
       }
     >
       <View style={styles.teamRow}>
-        <View style={styles.teamContainer}>
+        <View style={styles.teamInfoContainer}>
           <Image source={{ uri: item.AwayLogoDark }} style={styles.teamLogo} />
           <Text
             style={[
@@ -381,9 +381,11 @@ export default function Scores({ route }) {
             {item.AwayTeam}
             {item.AwayRank && ` (${item.AwayRank})`}
           </Text>
+        </View>
+        <View style={styles.scoreContainer}>
           <Text
             style={[
-              styles.recordScore,
+              item.Status === "STATUS_SCHEDULED" ? styles.recordText : styles.scoreText,
               item.Status === "STATUS_FINAL"
                 ? item.AwayWinner
                   ? styles.winnerText
@@ -400,15 +402,15 @@ export default function Scores({ route }) {
               ? "" // Hide score if postponed or canceled
               : item.AwayScore}
           </Text>
+          {item.AwayPossession && (
+            <View
+              style={[
+                styles.possessionIndicator,
+                item.isRedZone ? styles.redPossessionIndicator : null,
+              ]}
+            />
+          )}
         </View>
-        {item.AwayPossession && (
-          <View
-            style={[
-              styles.possessionIndicator,
-              item.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
-            ]}
-          />
-        )}
       </View>
       <View style={styles.gameInfo}>
         {item.sport === "football" ||
@@ -517,32 +519,18 @@ export default function Scores({ route }) {
         )}
       </View>
       <View style={styles.teamRow}>
-        {item.HomePossession && (
-          <View
-            style={[
-              styles.possessionIndicator,
-              item.isRedZone ? styles.redPossessionIndicator : null, // Change color if in red zone
-            ]}
-          />
-        )}
-        <View style={styles.teamContainer}>
-          <Image source={{ uri: item.HomeLogoDark }} style={styles.teamLogo} />
+        <View style={styles.scoreContainer}>
+          {item.HomePossession && (
+            <View
+              style={[
+                styles.possessionIndicator,
+                item.isRedZone ? styles.redPossessionIndicator : null,
+              ]}
+            />
+          )}
           <Text
             style={[
-              styles.teamName,
-              item.Status === "STATUS_FINAL"
-                ? item.HomeWinner
-                  ? styles.winnerText
-                  : styles.loserText
-                : null,
-            ]}
-          >
-            {item.HomeTeam}
-            {item.HomeRank && ` (${item.HomeRank})`}
-          </Text>
-          <Text
-            style={[
-              styles.recordScore,
+              item.Status === "STATUS_SCHEDULED" ? styles.recordText : styles.scoreText,
               item.Status === "STATUS_FINAL"
                 ? item.HomeWinner
                   ? styles.winnerText
@@ -558,6 +546,22 @@ export default function Scores({ route }) {
                 item.Status === "STATUS_CANCELED"
               ? "" // Hide score if postponed or canceled
               : item.HomeScore}
+          </Text>
+        </View>
+        <View style={styles.teamInfoContainer}>
+          <Image source={{ uri: item.HomeLogoDark }} style={styles.teamLogo} />
+          <Text
+            style={[
+              styles.teamName,
+              item.Status === "STATUS_FINAL"
+                ? item.HomeWinner
+                  ? styles.winnerText
+                  : styles.loserText
+                : null,
+            ]}
+          >
+            {item.HomeTeam}
+            {item.HomeRank && ` (${item.HomeRank})`}
           </Text>
         </View>
       </View>
@@ -779,7 +783,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 20,
     marginHorizontal: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -792,9 +796,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     flex: 1,
   },
-  teamContainer: {
+  teamInfoContainer: {
     alignItems: "center",
-    flex: 1,
   },
   teamLogo: {
     width: 50,
@@ -807,11 +810,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+  scoreContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   recordScore: {
     color: "white",
     fontWeight: "bold",
     fontSize: 20,
-    marginTop: 5,
+  },
+  possessionIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "yellow",
+    marginHorizontal: 4,
+  },
+  redPossessionIndicator: {
+    backgroundColor: "red",
   },
   gameInfo: {
     alignItems: "center",
@@ -871,13 +888,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#999",
   },
-  possessionIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "yellow",
-    marginHorizontal: 2,
-  },
   situationContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -934,8 +944,15 @@ const styles = StyleSheet.create({
     height: 15,
     transform: [{ rotate: "45deg" }],
   },
-  redPossessionIndicator: {
-    backgroundColor: "red",
+  recordText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'normal',
+  },
+  scoreText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 
