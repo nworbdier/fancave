@@ -27,7 +27,7 @@ export default function ScoresDetails({ route }) {
   const fetchGameDetails = async () => {
     try {
       const url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/summary?event=${eventId}`;
-      //   console.log("Fetching game details from URL:", url);
+      console.log("Fetching game details from URL:", url);
 
       const response = await fetch(url);
       const data = await response.json();
@@ -66,9 +66,9 @@ export default function ScoresDetails({ route }) {
   const Balls = gameData?.situation?.balls;
   const Strikes = gameData?.situation?.strikes;
   const Outs = gameData?.situation?.outs;
-  const OnFirst = !!competition?.situation?.onFirst?.playerId;
-  const OnSecond = !!competition?.situation?.onSecond?.playerId;
-  const OnThird = !!competition?.situation?.onThird?.playerId;
+  const OnFirst = !!gameData?.situation?.onFirst?.playerId;
+  const OnSecond = !!gameData?.situation?.onSecond?.playerId;
+  const OnThird = !!gameData?.situation?.onThird?.playerId;
   const home = competition?.competitors[0];
   const homeAbbreviation = home?.team?.abbreviation;
   const homeLogo = home?.team?.logos[1]?.href;
@@ -137,9 +137,12 @@ export default function ScoresDetails({ route }) {
   };
 
   return (
-    <View style={styles.page} refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    }>
+    <View
+      style={styles.page}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.gameContainer}>
         <View style={styles.teamContainer}>
           <View style={{ flexDirection: "column", alignItems: "center" }}>
@@ -283,9 +286,7 @@ export default function ScoresDetails({ route }) {
             </TouchableOpacity>
           ))}
         </View>
-        <View style={styles.tabContent}>
-          {renderTabContent()}
-        </View>
+        <View style={styles.tabContent}>{renderTabContent()}</View>
       </View>
     </View>
   );
