@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -15,9 +16,12 @@ export default function ScoresDetails({ route }) {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Game");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchGameDetails();
+    const interval = setInterval(fetchGameDetails, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchGameDetails = async () => {
@@ -33,6 +37,12 @@ export default function ScoresDetails({ route }) {
       console.error("Error fetching game details:", error);
       setLoading(false);
     }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchGameDetails();
+    setRefreshing(false);
   };
 
   if (loading) {
@@ -127,7 +137,9 @@ export default function ScoresDetails({ route }) {
   };
 
   return (
-    <View style={styles.page}>
+    <View style={styles.page} refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
       <View style={styles.gameContainer}>
         <View style={styles.teamContainer}>
           <View style={{ flexDirection: "column", alignItems: "center" }}>
@@ -271,7 +283,9 @@ export default function ScoresDetails({ route }) {
             </TouchableOpacity>
           ))}
         </View>
-        <View style={styles.tabContent}>{renderTabContent()}</View>
+        <View style={styles.tabContent}>
+          {renderTabContent()}
+        </View>
       </View>
     </View>
   );
