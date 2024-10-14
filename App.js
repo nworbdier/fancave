@@ -12,6 +12,7 @@ import Search from "./main/search";
 import Settings from "./main/settings";
 import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
+import ScoresDetails from "./main/scoresDetails";
 import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
@@ -36,6 +37,7 @@ function Main() {
         <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
         <Stack.Screen name="ActivityCenter" component={ActivityCenter} />
         <Stack.Screen name="Scores" component={Scores} />
+        <Stack.Screen name="ScoresDetails" component={ScoresDetails} />
         <Stack.Screen name="ReorderSports" component={ReorderSports} />
         <Stack.Screen name="Account" component={Account} />
         <Stack.Screen name="SportsProvider" component={SportsProvider} />

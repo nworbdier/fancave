@@ -355,7 +355,14 @@ export default function Scores({ route }) {
   };
 
   const renderGameItem = ({ item }) => (
-    <View style={styles.gameContainer}>
+    <TouchableOpacity
+      style={styles.gameContainer}
+      onPress={() => navigation.navigate('ScoresDetails', { 
+        eventId: item.id,
+        sportName: item.sport,
+        league: sportsData[selectedSport].league
+      })}
+    >
       <View style={styles.teamRow}>
         <View style={styles.teamContainer}>
           <Image source={{ uri: item.AwayLogoDark }} style={styles.teamLogo} />
@@ -552,7 +559,7 @@ export default function Scores({ route }) {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const handleSearchChange = useCallback((text) => {
@@ -577,7 +584,7 @@ export default function Scores({ route }) {
 
   const scrollToDate = (index) => {
     if (dateListRef.current && dates.length > 0) {
-      const itemWidth = 72; // 70px width + 2px for margins (1px on each side)
+      const itemWidth = 70; // 68px width + 2px for margins (1px on each side)
       const offset = index * itemWidth - dateListWidth / 2 + itemWidth / 2; // Center the item
       dateListRef.current.scrollToOffset({
         offset: Math.max(0, offset),
@@ -666,10 +673,10 @@ export default function Scores({ route }) {
           style={styles.dateCarousel}
           onLayout={handleDateLayout}
           viewPosition={0.5}
-          initialScrollIndex={adjustedScrollIndex} // Use the adjusted index
+          initialScrollIndex={adjustedScrollIndex}
           getItemLayout={(data, index) => ({
-            length: 72, // Match the new itemWidth
-            offset: 72 * index, // Match the new itemWidth
+            length: 70, // Match the new itemWidth (68px + 2px margins)
+            offset: 70 * index,
             index,
           })}
         />
@@ -724,11 +731,12 @@ const styles = StyleSheet.create({
   sportCarouselContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 10,
+    marginHorizontal: 5, // Reduced from 10 to 5
+    marginBottom: 0, // Add this to remove any bottom margin
   },
-  sportCarousel: {
-    flexGrow: 0,
-  },
+  // sportCarousel: {
+  //   flexGrow: 0,
+  // },
   contentView: {
     flex: 10,
     width: "100%",
@@ -839,21 +847,21 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexGrow: 0,
     flexBasis: "auto",
-    paddingHorizontal: 10,
+    paddingHorizontal: 5, // Reduced from 10 to 5
     height: 30,
-    marginTop: 5, // Set margin to 5 for spacing
-    marginBottom: 5, // Set margin to 5 for spacing
+    marginTop: 2, // Reduced from 5 to 2
+    marginBottom: 2, // Reduced from 5 to 2
   },
   dateItem: {
-    padding: 5,
-    marginHorizontal: 1, // Reduced from 3 to 1
-    width: 70, // Reduced from 80 to 70
+    padding: 4, // Reduced from 5 to 4
+    marginHorizontal: 1,
+    width: 68, // Reduced from 70 to 68
     justifyContent: "center",
     alignItems: "center",
   },
   dateText: {
     color: "white",
-    fontSize: 16, // Slightly smaller font
+    fontSize: 15, // Reduced from 16 to 15
     textAlign: "center",
     fontWeight: "bold",
   },
