@@ -82,6 +82,7 @@ const Feed = () => {
       setHasMore(extractedArticles.length === TWEETS_PER_PAGE);
     } catch (error) {
       console.error("Error fetching news articles:", error);
+      console.log(link);
     } finally {
       setLoading(false);
       setRefreshing(false);

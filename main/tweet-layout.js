@@ -25,23 +25,15 @@ const TweetLayout = ({ item, onImagePress }) => {
   return (
     <View style={styles.tweetContainer}>
       <View style={styles.tweetHeader}>
-        {/* <Image source={{ uri: item.author.avatar }} style={styles.avatar} /> */}
         <View style={styles.tweetHeaderText}>
-          {/* <Text style={styles.authorName}>{item.author.name}</Text> */}
           <Text style={styles.authorUsername}>{item.author.screen_name}</Text>
         </View>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
       <Text style={styles.tweetText}>{decode(item.text)}</Text>
-      {item.media && (
-        <TouchableOpacity onPress={() => onImagePress(item.media)}>
-          <Image
-            source={{ uri: item.link }} // Assuming item.link is a valid image URL
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />{" "}
-        </TouchableOpacity>
-      )}
+      {/* {item.link && ( // Check if item.link exists
+        <Text style={styles.linkText}>{item.link}</Text> // Display the link
+      )} */}
       <View style={styles.tweetActions}>
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="chatbubble-outline" size={18} color="#8899a6" />
@@ -120,6 +112,12 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 14,
     color: "white",
+  },
+  linkText: {
+    fontSize: 14,
+    color: "blue", // Change color to indicate it's a link
+    textDecorationLine: "underline", // Underline to signify it's clickable
+    marginBottom: 10,
   },
 });
 
