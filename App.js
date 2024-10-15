@@ -10,7 +10,7 @@ import NotificationSettings from "./main/notifySettings";
 import ThemeSettings from "./main/themeSettings";
 import Search from "./main/search";
 import Settings from "./main/settings";
-import Feedback from "./main/Feedback";
+import Feedback from "./main/feedback";
 import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
 import ScoresDetails from "./main/scoresDetails";
