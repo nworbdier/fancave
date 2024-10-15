@@ -50,9 +50,9 @@ const Feed = () => {
 
   const fetchNewsArticles = async () => {
     const query = selectedTeam; // Use selected team or default query
-    const url = `https://fancave-api.up.railway.app/fetch-news?q=${encodeURIComponent(
+    const url = `https://fancave-api.up.railway.app/fetch-news?q="${encodeURIComponent(
       query
-    )}`; // Updated URL
+    )}"`; // Updated URL
 
     const options = {
       method: "GET",
