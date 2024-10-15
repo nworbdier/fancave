@@ -367,15 +367,20 @@ export default function Scores({ route }) {
     >
       <View style={styles.teamRow}>
         <View style={styles.teamInfoContainer}>
-          <Image source={{ uri: item.AwayLogoDark }} style={styles.teamLogo} />
+          <Image
+            source={{ uri: item.AwayLogoDark }}
+            style={[
+              styles.teamLogo,
+              item.Status === "STATUS_FINAL" &&
+                !item.AwayWinner &&
+                styles.loserLogo,
+            ]}
+          />
           <Text
             style={[
               styles.teamName,
-              item.Status === "STATUS_FINAL"
-                ? item.AwayWinner
-                  ? styles.winnerText
-                  : styles.loserText
-                : null,
+              item.Status === "STATUS_FINAL" &&
+                (item.AwayWinner ? styles.winnerText : styles.loserText),
             ]}
           >
             {item.AwayTeam}
@@ -385,12 +390,11 @@ export default function Scores({ route }) {
         <View style={styles.scoreContainer}>
           <Text
             style={[
-              item.Status === "STATUS_SCHEDULED" ? styles.recordText : styles.scoreText,
-              item.Status === "STATUS_FINAL"
-                ? item.AwayWinner
-                  ? styles.winnerText
-                  : styles.loserText
-                : null,
+              item.Status === "STATUS_SCHEDULED"
+                ? styles.recordText
+                : styles.scoreText,
+              item.Status === "STATUS_FINAL" &&
+                (item.AwayWinner ? styles.winnerText : styles.loserText),
             ]}
           >
             {item.Status === "STATUS_SCHEDULED"
@@ -530,12 +534,11 @@ export default function Scores({ route }) {
           )}
           <Text
             style={[
-              item.Status === "STATUS_SCHEDULED" ? styles.recordText : styles.scoreText,
-              item.Status === "STATUS_FINAL"
-                ? item.HomeWinner
-                  ? styles.winnerText
-                  : styles.loserText
-                : null,
+              item.Status === "STATUS_SCHEDULED"
+                ? styles.recordText
+                : styles.scoreText,
+              item.Status === "STATUS_FINAL" &&
+                (item.HomeWinner ? styles.winnerText : styles.loserText),
             ]}
           >
             {item.Status === "STATUS_SCHEDULED"
@@ -549,15 +552,20 @@ export default function Scores({ route }) {
           </Text>
         </View>
         <View style={styles.teamInfoContainer}>
-          <Image source={{ uri: item.HomeLogoDark }} style={styles.teamLogo} />
+          <Image
+            source={{ uri: item.HomeLogoDark }}
+            style={[
+              styles.teamLogo,
+              item.Status === "STATUS_FINAL" &&
+                !item.HomeWinner &&
+                styles.loserLogo,
+            ]}
+          />
           <Text
             style={[
               styles.teamName,
-              item.Status === "STATUS_FINAL"
-                ? item.HomeWinner
-                  ? styles.winnerText
-                  : styles.loserText
-                : null,
+              item.Status === "STATUS_FINAL" &&
+                (item.HomeWinner ? styles.winnerText : styles.loserText),
             ]}
           >
             {item.HomeTeam}
@@ -886,7 +894,8 @@ const styles = StyleSheet.create({
   },
   loserText: {
     fontWeight: "bold",
-    color: "#999",
+    color: "white",
+    opacity: 0.5, // Add opacity to create a "greyed out" effect
   },
   situationContainer: {
     alignItems: "center",
@@ -945,14 +954,17 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
   },
   recordText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: 'normal',
+    fontWeight: "normal",
   },
   scoreText: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  loserLogo: {
+    opacity: 0.5,
   },
 });
 

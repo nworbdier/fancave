@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
+import Feedback from "./main/feedback";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
 import Account from "./main/accountSettings";
@@ -18,6 +19,7 @@ import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { SportsProvider } from "./main/SportsContext";
+import NavBar from "./components/navBar"; // Import your NavBar
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,7 @@ function Main() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Feedback" component={Feedback} />
         <Stack.Screen
           name="NotificationSettings"
           component={NotificationSettings}

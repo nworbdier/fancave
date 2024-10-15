@@ -153,7 +153,7 @@ const Settings = ({}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.option}
-            onPress={() => openLink("https://example.com/feedback")}
+            onPress={() => navigation.navigate("Feedback")}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MaterialIcons name="feedback" size={24} color="white" />
