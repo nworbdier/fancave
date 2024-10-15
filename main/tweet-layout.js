@@ -25,17 +25,21 @@ const TweetLayout = ({ item, onImagePress }) => {
   return (
     <View style={styles.tweetContainer}>
       <View style={styles.tweetHeader}>
-        <Image source={{ uri: item.author.avatar }} style={styles.avatar} />
+        {/* <Image source={{ uri: item.author.avatar }} style={styles.avatar} /> */}
         <View style={styles.tweetHeaderText}>
-          <Text style={styles.authorName}>{item.author.name}</Text>
-          <Text style={styles.authorUsername}>@{item.author.screen_name}</Text>
+          {/* <Text style={styles.authorName}>{item.author.name}</Text> */}
+          <Text style={styles.authorUsername}>{item.author.screen_name}</Text>
         </View>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
       <Text style={styles.tweetText}>{decode(item.text)}</Text>
       {item.media && (
         <TouchableOpacity onPress={() => onImagePress(item.media)}>
-          <Image source={{ uri: item.media }} style={styles.tweetImage} />
+          <Image
+            source={{ uri: item.link }} // Assuming item.link is a valid image URL
+            style={styles.thumbnail}
+            resizeMode="cover"
+          />{" "}
         </TouchableOpacity>
       )}
       <View style={styles.tweetActions}>
@@ -75,19 +79,21 @@ const styles = StyleSheet.create({
   },
   tweetHeaderText: {
     flex: 1,
-  },
-  authorName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
+    marginBottom: 5,
   },
   authorUsername: {
-    fontSize: 14,
+    fontSize: 18,
     color: "white",
+    fontWeight: "bold",
   },
   date: {
     fontSize: 14,
     color: "white",
+  },
+  thumbnail: {
+    width: "100%",
+    height: 200, // Adjust height as needed
+    borderRadius: 10,
   },
   tweetText: {
     fontSize: 16,

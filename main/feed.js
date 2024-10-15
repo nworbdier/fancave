@@ -43,36 +43,35 @@ const Feed = () => {
 
   const listDictionary = {
     "": "All Feeds",
-    "1777306887953805810": "Purdue Boilermaker Football",
-    "1777402248013771060": "Iowa Hawkeyes",
+    "1777306887953805810": "Purdue Football",
+    "1777402248013771060": "Iowa Hawkeyes Football",
     "1778436010977747315": "Indianapolis Colts",
   };
 
   const fetchNewsArticles = async () => {
     const query = selectedTeam; // Use selected team or default query
-    const url = `https://real-time-news-data.p.rapidapi.com/search?query=${query}&limit=25&time_published=7d&country=US&lang=en`; // Removed encodeURIComponent
+    const url = `https://fancave-api.up.railway.app/fetch-news?q=${encodeURIComponent(
+      query
+    )}`; // Updated URL
 
     const options = {
       method: "GET",
-      headers: {
-        "x-rapidapi-key": process.env.EXPO_PUBLIC_RAPID_API_NEWS_KEY,
-        "x-rapidapi-host": process.env.EXPO_PUBLIC_RAPID_API_NEWS_HOST,
-      },
     };
 
     try {
       const response = await fetch(url, options);
       const data = await response.json();
 
-      const extractedArticles = (data.data || []).map((article) => ({
-        text: article.snippet ?? "", // Use title as text
-        created_at: article.published_datetime_utc ?? "", // Use published date
-        media: article.photo_url ?? "", // Use photo_url for media
-        author: {
-          screen_name: article.source_name ?? "", // Use source_name as author
-          avatar: article.source_favicon_url ?? "", // Use source_favicon_url for avatar
-        },
-      }));
+      const extractedArticles = (data.rss.channel.item || []).map(
+        (article) => ({
+          text: article.title ?? "", // Use title as text
+          link: article.link ?? "", // Use link as text
+          created_at: article.pubDate ?? "", // Use published date
+          author: {
+            screen_name: article.source._ ?? "", // Use source._ as author
+          },
+        })
+      );
 
       // Sort articles by created_at date
       extractedArticles.sort(
