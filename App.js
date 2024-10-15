@@ -102,10 +102,10 @@ const styles = StyleSheet.create({
   },
   app: {
     flex: 1,
-    backgroundColor: "black",
   },
   content: {
     flex: 10,
+    backgroundColor: "black",
   },
   loadingScreen: {
     flex: 1,
