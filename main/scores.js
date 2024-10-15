@@ -588,16 +588,16 @@ export default function Scores({ route }) {
     if (!searchTerm) return gameData;
     const filtered = {};
     Object.entries(gameData).forEach(([date, gamesForDate]) => {
-        const filteredGamesForDate = gamesForDate.filter(
-            (game) =>
-                game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                game.HomeLookup.toLowerCase().includes(searchTerm.toLowerCase()) || // Added filtering by HomeLookup
-                game.AwayLookup.toLowerCase().includes(searchTerm.toLowerCase()) // Added filtering by AwayLookup
-        );
-        if (filteredGamesForDate.length > 0) {
-            filtered[date] = filteredGamesForDate;
-        }
+      const filteredGamesForDate = gamesForDate.filter(
+        (game) =>
+          game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          game.HomeLookup.toLowerCase().includes(searchTerm.toLowerCase()) || // Added filtering by HomeLookup
+          game.AwayLookup.toLowerCase().includes(searchTerm.toLowerCase()) // Added filtering by AwayLookup
+      );
+      if (filteredGamesForDate.length > 0) {
+        filtered[date] = filteredGamesForDate;
+      }
     });
     return filtered;
   }, [gameData, searchTerm]);
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
   teamName: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 16,
     textAlign: "center",
   },
   scoreContainer: {
