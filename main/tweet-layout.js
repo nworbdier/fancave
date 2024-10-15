@@ -55,7 +55,7 @@ const TweetLayout = ({ item, onImagePress }) => {
 const styles = StyleSheet.create({
   tweetContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: "white",
+    borderBottomColor: "grey",
     padding: 15,
   },
   tweetHeader: {
