@@ -13,7 +13,11 @@ const NavBar = ({ currentRoute }) => {
   return (
     <View style={styles.navBar}>
       <TouchableOpacity onPress={() => navigation.navigate("Feed")}>
-        <MaterialIcons name="home-filled" size={32} color={getIconColor("Feed")} />
+        <MaterialIcons
+          name="home-filled"
+          size={32}
+          color={getIconColor("Feed")}
+        />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Search")}>
         <MaterialIcons name="search" size={32} color={getIconColor("Search")} />
@@ -26,7 +30,11 @@ const NavBar = ({ currentRoute }) => {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-        <MaterialCommunityIcons name="account" size={32} color={getIconColor("Settings")} />
+        <MaterialCommunityIcons
+          name="account"
+          size={32}
+          color={getIconColor("Settings")}
+        />
       </TouchableOpacity>
     </View>
   );
