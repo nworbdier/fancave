@@ -3,7 +3,6 @@ import { Platform, StyleSheet, View, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welcome from "./onboarding/welcome";
-import Feedback from "./main/feedback";
 import SignUp from "./onboarding/signup";
 import Home from "./main/home";
 import Account from "./main/accountSettings";
@@ -11,6 +10,7 @@ import NotificationSettings from "./main/notifySettings";
 import ThemeSettings from "./main/themeSettings";
 import Search from "./main/search";
 import Settings from "./main/settings";
+import Feedback from "./main/Feedback";
 import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
 import ScoresDetails from "./main/scoresDetails";
@@ -27,24 +27,27 @@ function Main() {
   return (
     <View style={styles.app}>
       <SafeAreaView style={styles.safeArea} />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Feed" component={Feed} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Search" component={Search} />
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="Feedback" component={Feedback} />
-        <Stack.Screen
-          name="NotificationSettings"
-          component={NotificationSettings}
-        />
-        <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
-        <Stack.Screen name="ActivityCenter" component={ActivityCenter} />
-        <Stack.Screen name="Scores" component={Scores} />
-        <Stack.Screen name="ScoresDetails" component={ScoresDetails} />
-        <Stack.Screen name="ReorderSports" component={ReorderSports} />
-        <Stack.Screen name="Account" component={Account} />
-        <Stack.Screen name="SportsProvider" component={SportsProvider} />
-      </Stack.Navigator>
+      <View style={styles.content}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Feed" component={Feed} />
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Search" component={Search} />
+          <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="Feedback" component={Feedback} />
+          <Stack.Screen
+            name="NotificationSettings"
+            component={NotificationSettings}
+          />
+          <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
+          <Stack.Screen name="ActivityCenter" component={ActivityCenter} />
+          <Stack.Screen name="Scores" component={Scores} />
+          <Stack.Screen name="ScoresDetails" component={ScoresDetails} />
+          <Stack.Screen name="ReorderSports" component={ReorderSports} />
+          <Stack.Screen name="Account" component={Account} />
+          <Stack.Screen name="SportsProvider" component={SportsProvider} />
+        </Stack.Navigator>
+      </View>
+      <NavBar />
     </View>
   );
 }
@@ -99,6 +102,10 @@ const styles = StyleSheet.create({
   },
   app: {
     flex: 1,
+    backgroundColor: "black",
+  },
+  content: {
+    flex: 10,
   },
   loadingScreen: {
     flex: 1,

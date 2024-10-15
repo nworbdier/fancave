@@ -732,7 +732,6 @@ export default function Scores({ route }) {
           )}
         </View>
       </View>
-      <NavBar />
     </View>
   );
 }
@@ -748,8 +747,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   contentView: {
-    flex: 10,
-    width: "100%",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

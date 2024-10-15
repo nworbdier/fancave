@@ -52,7 +52,6 @@ export default function ActivityCenter() {
           />
         </View>
       </View>
-      <NavBar />
     </View>
   );
 }
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   content: {
-    flex: 11.5,
+    flex: 1,
     backgroundColor: "black",
     paddingHorizontal: 20,
   },

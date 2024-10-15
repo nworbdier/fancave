@@ -251,7 +251,6 @@ export default function App() {
           />
         )}
       </View>
-      <NavBar />
 
       {selectedImage && (
         <TouchableOpacity
@@ -293,7 +292,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   content: {
-    flex: 10.5,
+    flex: 1,
   },
   loadingContainer: {
     // Added loading container style

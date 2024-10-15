@@ -151,7 +151,6 @@ const Search = () => {
           </>
         )}
       </View>
-      <NavBar />
     </View>
   );
 };
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   content: {
-    flex: 10.5,
+    flex: 1,
     padding: 20,
   },
   searchBoxContainer: {

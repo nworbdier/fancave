@@ -220,7 +220,6 @@ const Feed = () => {
           />
         )}
       </View>
-      <NavBar />
 
       {selectedImage && (
         <TouchableOpacity
@@ -262,7 +261,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   content: {
-    flex: 10.5,
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
