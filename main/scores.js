@@ -228,6 +228,8 @@ export default function Scores({ route }) {
         return {
           id: event.id,
           HomeTeam: competition.competitors[0].team.shortDisplayName,
+          HomeAbbrev: competition.competitors[0].team.abbreviation,
+          HomeLookup: competition.competitors[0].team.displayName,
           HomeLogo: homeLogo, // Original logo
           HomeLogoDark: homeLogoDark, // Dark logo or empty string
           HomeScore: competition.competitors[0].score,
@@ -236,6 +238,8 @@ export default function Scores({ route }) {
             : competition.competitors[0].records?.[0]?.summary || "N/A",
           HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
+          AwayAbbrev: competition.competitors[1].team.abbreviation,
+          AwayLookup: competition.competitors[1].team.displayName,
           AwayLogo: awayLogo, // Original logo
           AwayLogoDark: awayLogoDark, // Dark logo or empty string
           AwayScore: competition.competitors[1].score,
@@ -383,7 +387,7 @@ export default function Scores({ route }) {
                 (item.AwayWinner ? styles.winnerText : styles.loserText),
             ]}
           >
-            {item.AwayTeam}
+            {item.AwayAbbrev}
             {item.AwayRank && ` (${item.AwayRank})`}
           </Text>
         </View>
@@ -568,7 +572,7 @@ export default function Scores({ route }) {
                 (item.HomeWinner ? styles.winnerText : styles.loserText),
             ]}
           >
-            {item.HomeTeam}
+            {item.HomeAbbrev}
             {item.HomeRank && ` (${item.HomeRank})`}
           </Text>
         </View>
@@ -584,14 +588,16 @@ export default function Scores({ route }) {
     if (!searchTerm) return gameData;
     const filtered = {};
     Object.entries(gameData).forEach(([date, gamesForDate]) => {
-      const filteredGamesForDate = gamesForDate.filter(
-        (game) =>
-          game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      if (filteredGamesForDate.length > 0) {
-        filtered[date] = filteredGamesForDate;
-      }
+        const filteredGamesForDate = gamesForDate.filter(
+            (game) =>
+                game.HomeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                game.AwayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                game.HomeLookup.toLowerCase().includes(searchTerm.toLowerCase()) || // Added filtering by HomeLookup
+                game.AwayLookup.toLowerCase().includes(searchTerm.toLowerCase()) // Added filtering by AwayLookup
+        );
+        if (filteredGamesForDate.length > 0) {
+            filtered[date] = filteredGamesForDate;
+        }
     });
     return filtered;
   }, [gameData, searchTerm]);
@@ -748,6 +754,7 @@ const styles = StyleSheet.create({
   },
   contentView: {
     flex: 1,
+
     justifyContent: "center",
     alignItems: "center",
   },
@@ -831,7 +838,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "yellow",
-    marginHorizontal: 4,
+    marginHorizontal: 10,
   },
   redPossessionIndicator: {
     backgroundColor: "red",

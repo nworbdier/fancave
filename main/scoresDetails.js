@@ -75,12 +75,14 @@ export default function ScoresDetails({ route }) {
   const homeAbbreviation = home?.team?.abbreviation;
   const homeLogo = home?.team?.logos[1]?.href;
   const homeScore = home?.score;
+  const homePossession = home?.possession;
   const homeRecord = home?.record[0]?.summary;
   const away = competition?.competitors[1];
   const awayAbbreviation = away?.team?.abbreviation;
   const awayLogo = away?.team?.logos[1]?.href;
   const awayScore = away?.score;
   const awayRecord = away?.record[0]?.summary;
+  const awayPossession = away?.possession;
   const shortDownDistanceText = competition?.situation?.shortDownDistanceText;
   const possessionText = competition?.situation?.possessionText;
   const isRedZone = competition?.situation?.isRedZone;
