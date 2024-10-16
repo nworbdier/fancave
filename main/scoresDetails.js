@@ -122,9 +122,11 @@ export default function ScoresDetails({ route }) {
                 .slice()
                 .reverse()
                 .map((play, index) => (
-                  <Text key={index} style={styles.tabContentText}>
-                    {play.alternativeText}
-                  </Text>
+                  <View style={styles.playContainer}>
+                    <Text key={index} style={styles.playText}>
+                      {play.alternativeText}
+                    </Text>
+                  </View>
                 ))
             ) : (
               <Text style={styles.tabContentText}>No plays available</Text>
@@ -439,8 +441,6 @@ const styles = StyleSheet.create({
   tabContentText: {
     color: "white",
     fontSize: 18,
-    marginVertical: 10,
-    marginHorizontal: 10,
   },
   basesContainer: {
     flexDirection: "column",
@@ -489,5 +489,15 @@ const styles = StyleSheet.create({
   },
   redPossessionIndicator: {
     backgroundColor: "red",
+  },
+  playContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: "grey",
+    paddingHorizontal: 10,
+    paddingVertical: 25,
+  },
+  playText: {
+    color: "white",
+    fontSize: 18,
   },
 });
