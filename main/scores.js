@@ -251,9 +251,7 @@ export default function Scores({ route }) {
           HomeLogo: homeLogo, // Original logo
           HomeLogoDark: homeLogoDark, // Dark logo or empty string
           HomeScore: competition.competitors[0].score,
-          HomeTeamRecordSummary: isPlayoff
-            ? `${homeWins}-${awayWins}`
-            : competition.competitors[0].records?.[0]?.summary || "N/A",
+          HomeTeamRecordSummary: formatHockeyRecord(competition.competitors[0].records?.[0]?.summary || "N/A", isPlayoff),
           HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
           AwayAbbrev: competition.competitors[1].team.abbreviation,
@@ -261,9 +259,7 @@ export default function Scores({ route }) {
           AwayLogo: awayLogo, // Original logo
           AwayLogoDark: awayLogoDark, // Dark logo or empty string
           AwayScore: competition.competitors[1].score,
-          AwayTeamRecordSummary: isPlayoff
-            ? `${awayWins}-${homeWins}`
-            : competition.competitors[1].records?.[0]?.summary || "N/A",
+          AwayTeamRecordSummary: formatHockeyRecord(competition.competitors[1].records?.[0]?.summary || "N/A", isPlayoff),
           AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
           GameTime: date.toLocaleTimeString("en-US", {
             hour: "numeric",
@@ -1036,4 +1032,10 @@ const getOrdinal = (period) => {
   if (period === 4) return "4th";
   if (period === 5) return "OT";
   if (period > 5) return `${period - 4}OT`;
+};
+
+// New helper function to format hockey records
+const formatHockeyRecord = (record, isPlayoff) => {
+  if (isPlayoff) return record; // Keep playoff records as is
+  return record.endsWith("-0") ? record.slice(0, -2) : record; // Trim off -0 if present
 };
