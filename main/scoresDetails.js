@@ -35,7 +35,7 @@ export default function ScoresDetails({ route }) {
   const fetchGameDetails = async () => {
     try {
       const url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/summary?event=${eventId}`;
-      console.log("Fetching game details from URL:", url);
+      // console.log("Fetching game details from URL:", url);
 
       const response = await fetch(url);
       const data = await response.json();
@@ -50,7 +50,7 @@ export default function ScoresDetails({ route }) {
   const fetchPlayDetails = async () => {
     try {
       const url = `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/events/${eventId}/competitions/${eventId}/plays?limit=1000`;
-      console.log("Fetching play details from URL:", url);
+      // console.log("Fetching play details from URL:", url);
 
       const response = await fetch(url);
       const data = await response.json();
@@ -102,8 +102,10 @@ export default function ScoresDetails({ route }) {
   const awayScore = away?.score;
   const awayRecord = away?.record[0]?.summary;
   const awayPossession = away?.possession;
-  const shortDownDistanceText = competition?.situation?.shortDownDistanceText;
-  const possessionText = competition?.situation?.possessionText;
+  const plays = gameData?.drives?.current?.plays || [];
+  const lastPlay = plays[plays.length - 1];
+  const shortDownDistanceText = lastPlay?.end?.shortDownDistanceText;
+  const possessionText = lastPlay?.end?.possessionText;
   const isRedZone = competition?.situation?.isRedZone;
 
   const getScoreOrRecord = (score, record) => {
@@ -182,17 +184,27 @@ export default function ScoresDetails({ route }) {
             <Image source={{ uri: awayLogo }} style={styles.teamLogo} />
             <Text style={styles.teamName}>{awayAbbreviation}</Text>
           </View>
-          <Text
-            style={[
-              styles.awayScoreOrRecord,
-              {
-                fontWeight: awayScore !== undefined ? "bold" : "normal",
-                fontSize: awayScore !== undefined ? 24 : 20,
-              },
-            ]}
-          >
-            {getScoreOrRecord(awayScore, awayRecord)}
-          </Text>
+          <View style={styles.scoreContainer}>
+            <Text
+              style={[
+                styles.awayScoreOrRecord,
+                {
+                  fontWeight: awayScore !== undefined ? "bold" : "normal",
+                  fontSize: awayScore !== undefined ? 24 : 20,
+                },
+              ]}
+            >
+              {getScoreOrRecord(awayScore, awayRecord)}
+            </Text>
+            {awayPossession && (
+              <View
+                style={[
+                  styles.possessionIndicator,
+                  isRedZone ? styles.redPossessionIndicator : null,
+                ]}
+              />
+            )}
+          </View>
         </View>
         <View style={styles.gameInfo}>
           {sportName === "football" ||
@@ -290,17 +302,27 @@ export default function ScoresDetails({ route }) {
           )}
         </View>
         <View style={styles.teamContainer}>
-          <Text
-            style={[
-              styles.homeScoreOrRecord,
-              {
-                fontWeight: homeScore !== undefined ? "bold" : "normal",
-                fontSize: homeScore !== undefined ? 24 : 20,
-              },
-            ]}
-          >
-            {getScoreOrRecord(homeScore, homeRecord)}
-          </Text>
+          <View style={styles.scoreContainer}>
+            {homePossession && (
+              <View
+                style={[
+                  styles.possessionIndicator,
+                  isRedZone ? styles.redPossessionIndicator : null,
+                ]}
+              />
+            )}
+            <Text
+              style={[
+                styles.homeScoreOrRecord,
+                {
+                  fontWeight: homeScore !== undefined ? "bold" : "normal",
+                  fontSize: homeScore !== undefined ? 24 : 20,
+                },
+              ]}
+            >
+              {getScoreOrRecord(homeScore, homeRecord)}
+            </Text>
+          </View>
           <View style={{ flexDirection: "column", alignItems: "center" }}>
             <Image source={{ uri: homeLogo }} style={styles.teamLogo} />
             <Text style={styles.teamName}>{homeAbbreviation}</Text>
@@ -337,8 +359,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   gameInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: "column",
+    justifyContent: "center",
     alignItems: "center",
   },
   gameInfoText: {
@@ -375,12 +397,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginLeft: 20,
+    marginRight: 10, // Add right margin to create space for the indicator
   },
   homeScoreOrRecord: {
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
+    marginLeft: 10, // Add left margin to create space for the indicator
     marginRight: 20,
   },
   content: {
@@ -451,5 +475,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
     marginTop: 3,
+  },
+  scoreContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  possessionIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "yellow",
+  },
+  redPossessionIndicator: {
+    backgroundColor: "red",
   },
 });
