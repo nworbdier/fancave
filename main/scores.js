@@ -110,6 +110,24 @@ export default function Scores({ route }) {
     }, [selectedSport, selectedDate]) // Dependencies to ensure it uses the latest values
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      // This function will be called when the screen comes into focus
+      const refreshOnFocus = async () => {
+        if (selectedDate) {
+          await fetchGameData(selectedSport, selectedDate);
+        }
+      };
+
+      refreshOnFocus();
+
+      // Return a cleanup function if needed
+      return () => {
+        // Any cleanup code (if necessary)
+      };
+    }, [selectedSport, selectedDate, fetchGameData])
+  );
+
   const fetchDates = async (sport) => {
     setDateListLoading(true);
     try {
@@ -162,7 +180,7 @@ export default function Scores({ route }) {
     }
   };
 
-  const fetchGameData = async (sport, date) => {
+  const fetchGameData = useCallback(async (sport, date) => {
     try {
       const { sport: sportName, league } = sportsData[sport];
 
@@ -312,7 +330,7 @@ export default function Scores({ route }) {
     } catch (error) {
       console.error("Error in fetchGameData:", error);
     }
-  };
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

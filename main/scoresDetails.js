@@ -19,6 +19,7 @@ export default function ScoresDetails({ route }) {
   const [activeTab, setActiveTab] = useState("Plays");
   const [refreshing, setRefreshing] = useState(false);
   const [playData, setPlayData] = useState([]); // Ensure this is initialized as an empty array
+  const [loadingPlays, setLoadingPlays] = useState(true); // New state for loading plays
 
   useFocusEffect(
     useCallback(() => {
@@ -48,15 +49,16 @@ export default function ScoresDetails({ route }) {
   };
 
   const fetchPlayDetails = async () => {
+    setLoadingPlays(true); // Set loading to true when fetching plays
     try {
       const url = `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/events/${eventId}/competitions/${eventId}/plays?limit=1000`;
-      // console.log("Fetching play details from URL:", url);
-
       const response = await fetch(url);
       const data = await response.json();
       setPlayData(data.items || []); // Ensure playData is set to an empty array if items is undefined
     } catch (error) {
       console.error("Error fetching play details:", error);
+    } finally {
+      setLoadingPlays(false); // Set loading to false after fetching
     }
   };
 
@@ -117,15 +119,13 @@ export default function ScoresDetails({ route }) {
       case "Plays":
         return (
           <ScrollView>
-            {playData && playData.length > 0 ? (
+            {playData.length > 0 ? ( // Check if playData is not empty
               playData
                 .slice()
                 .reverse()
                 .map((play, index) => (
-                  <View style={styles.playContainer}>
-                    <Text key={index} style={styles.playText}>
-                      {play.alternativeText}
-                    </Text>
+                  <View style={styles.playContainer} key={index}>
+                    <Text style={styles.playText}>{play.alternativeText}</Text>
                   </View>
                 ))
             ) : (
