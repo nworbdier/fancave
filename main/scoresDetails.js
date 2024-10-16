@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  ScrollView, // Import ScrollView
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
@@ -15,13 +16,18 @@ export default function ScoresDetails({ route }) {
   const navigation = useNavigation();
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Game");
+  const [activeTab, setActiveTab] = useState("Plays");
   const [refreshing, setRefreshing] = useState(false);
+  const [playData, setPlayData] = useState([]); // Ensure this is initialized as an empty array
 
   useFocusEffect(
     useCallback(() => {
       fetchGameDetails();
-      const interval = setInterval(fetchGameDetails, 5000);
+      fetchPlayDetails(); // Fetch play details
+      const interval = setInterval(() => {
+        fetchGameDetails();
+        fetchPlayDetails(); // Fetch play details periodically
+      }, 5000);
       return () => clearInterval(interval);
     }, [])
   );
@@ -38,6 +44,19 @@ export default function ScoresDetails({ route }) {
     } catch (error) {
       console.error("Error fetching game details:", error);
       setLoading(false);
+    }
+  };
+
+  const fetchPlayDetails = async () => {
+    try {
+      const url = `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/events/${eventId}/competitions/${eventId}/plays?limit=1000`;
+      console.log("Fetching play details from URL:", url);
+
+      const response = await fetch(url);
+      const data = await response.json();
+      setPlayData(data.items || []); // Ensure playData is set to an empty array if items is undefined
+    } catch (error) {
+      console.error("Error fetching play details:", error);
     }
   };
 
@@ -93,8 +112,23 @@ export default function ScoresDetails({ route }) {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "Game":
-        return <Text style={styles.tabContentText}>Game Content</Text>;
+      case "Plays":
+        return (
+          <ScrollView>
+            {playData && playData.length > 0 ? (
+              playData
+                .slice()
+                .reverse()
+                .map((play, index) => (
+                  <Text key={index} style={styles.tabContentText}>
+                    {play.alternativeText}
+                  </Text>
+                ))
+            ) : (
+              <Text style={styles.tabContentText}>No plays available</Text>
+            )}
+          </ScrollView>
+        );
       case "Stats":
         return <Text style={styles.tabContentText}>Stats Content</Text>;
       case awayAbbreviation:
@@ -275,7 +309,7 @@ export default function ScoresDetails({ route }) {
       </View>
       <View style={styles.content}>
         <View style={styles.tabBar}>
-          {["Game", "Stats", awayAbbreviation, homeAbbreviation].map((tab) => (
+          {["Plays", "Stats", awayAbbreviation, homeAbbreviation].map((tab) => (
             <TouchableOpacity
               key={tab}
               style={[styles.tab, activeTab === tab && styles.activeTab]}
@@ -381,6 +415,8 @@ const styles = StyleSheet.create({
   tabContentText: {
     color: "white",
     fontSize: 18,
+    marginVertical: 10,
+    marginHorizontal: 10,
   },
   basesContainer: {
     flexDirection: "column",

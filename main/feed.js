@@ -34,9 +34,7 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedTeam, setSelectedTeam] = useState(
-    "Purdue Boilermaker Football"
-  );
+  const [selectedTeam, setSelectedTeam] = useState("Purdue Football");
   const [modalVisible, setModalVisible] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -44,7 +42,7 @@ const Feed = () => {
   const listDictionary = {
     "": "All Feeds",
     "1777306887953805810": "Purdue Football",
-    "1777402248013771060": "Iowa Hawkeyes Football",
+    "1777402248013771060": "Iowa Football",
     "1778436010977747315": "Indianapolis Colts",
   };
 
