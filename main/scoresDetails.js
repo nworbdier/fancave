@@ -36,7 +36,7 @@ export default function ScoresDetails({ route }) {
   const fetchGameDetails = async () => {
     try {
       const url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/summary?event=${eventId}`;
-      // console.log("Fetching game details from URL:", url);
+      console.log("Fetching game details from URL:", url);
 
       const response = await fetch(url);
       const data = await response.json();
@@ -92,18 +92,29 @@ export default function ScoresDetails({ route }) {
   const OnFirst = !!gameData?.situation?.onFirst?.playerId;
   const OnSecond = !!gameData?.situation?.onSecond?.playerId;
   const OnThird = !!gameData?.situation?.onThird?.playerId;
+
+  const isPlayoff = gameData?.header?.season?.type === 3;
+  const seriesIndex = sportName === 'baseball' ? 0 : 1;
+  const seriesData = isPlayoff ? gameData?.header?.competitions[0]?.series[seriesIndex] : null;
+
   const home = competition?.competitors[0];
   const homeAbbreviation = home?.team?.abbreviation;
   const homeLogo = home?.team?.logos[1]?.href;
   const homeScore = home?.score;
   const homePossession = home?.possession;
-  const homeRecord = home?.record[0]?.summary;
+  const homeRecord = isPlayoff && seriesData
+    ? `${seriesData?.competitors[0]?.wins || 0}-${seriesData?.competitors[1]?.wins || 0}`
+    : home?.record[0]?.summary;
+
   const away = competition?.competitors[1];
   const awayAbbreviation = away?.team?.abbreviation;
   const awayLogo = away?.team?.logos[1]?.href;
   const awayScore = away?.score;
-  const awayRecord = away?.record[0]?.summary;
+  const awayRecord = isPlayoff && seriesData
+    ? `${seriesData?.competitors[1]?.wins || 0}-${seriesData?.competitors[0]?.wins || 0}`
+    : away?.record[0]?.summary;
   const awayPossession = away?.possession;
+
   const plays = gameData?.drives?.current?.plays || [];
   const lastPlay = plays[plays.length - 1];
   const shortDownDistanceText = lastPlay?.end?.shortDownDistanceText;

@@ -229,10 +229,14 @@ export default function Scores({ route }) {
           competition.series && competition.series.type === "playoff";
         let homeWins = null;
         let awayWins = null;
+        let homeSeriesRecord = null;
+        let awaySeriesRecord = null;
 
         if (isPlayoff) {
           homeWins = competition.series.competitors[0].wins;
           awayWins = competition.series.competitors[1].wins;
+          homeSeriesRecord = `${homeWins}-${awayWins}`;
+          awaySeriesRecord = `${awayWins}-${homeWins}`;
         }
 
         const homeRank = competition.competitors[0].curatedRank?.current;
@@ -251,7 +255,12 @@ export default function Scores({ route }) {
           HomeLogo: homeLogo, // Original logo
           HomeLogoDark: homeLogoDark, // Dark logo or empty string
           HomeScore: competition.competitors[0].score,
-          HomeTeamRecordSummary: formatHockeyRecord(competition.competitors[0].records?.[0]?.summary || "N/A", isPlayoff),
+          HomeTeamRecordSummary: isPlayoff
+            ? homeSeriesRecord
+            : formatHockeyRecord(
+                competition.competitors[0].records?.[0]?.summary || "N/A",
+                isPlayoff
+              ),
           HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
           AwayTeam: competition.competitors[1].team.shortDisplayName,
           AwayAbbrev: competition.competitors[1].team.abbreviation,
@@ -259,7 +268,12 @@ export default function Scores({ route }) {
           AwayLogo: awayLogo, // Original logo
           AwayLogoDark: awayLogoDark, // Dark logo or empty string
           AwayScore: competition.competitors[1].score,
-          AwayTeamRecordSummary: formatHockeyRecord(competition.competitors[1].records?.[0]?.summary || "N/A", isPlayoff),
+          AwayTeamRecordSummary: isPlayoff
+            ? awaySeriesRecord
+            : formatHockeyRecord(
+                competition.competitors[1].records?.[0]?.summary || "N/A",
+                isPlayoff
+              ),
           AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
           GameTime: date.toLocaleTimeString("en-US", {
             hour: "numeric",
