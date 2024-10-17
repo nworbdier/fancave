@@ -190,16 +190,22 @@ export default function Scores({ route }) {
         return; // Exit the function if date is not defined
       }
 
+      // Log the sport to ensure it's correct
+      console.log("Selected sport:", sport);
+
       let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard?dates=${formatToYYYYMMDD(
         date
       )}`;
 
       // Add groups parameter for college football and basketball
-      if (sport === "ncaaf") {
+      if (sport === "college-football") {
         url += "&groups=80";
-      } else if (sport === "ncaab") {
+      } else if (sport === "mens-college-basketball") {
         url += "&groups=50";
       }
+
+      // Log the final URL
+      // console.log("Final URL with groups:", url);
 
       const response = await fetch(url);
 
@@ -208,106 +214,117 @@ export default function Scores({ route }) {
       }
 
       const data = await response.json();
-      const gameData = data.events.map((event) => {
-        const homeTeam = event.competitions[0].competitors[0];
-        const awayTeam = event.competitions[0].competitors[1];
+      const gameData = data.events
+        .map((event) => {
+          const homeTeam = event.competitions[0].competitors[0];
+          const awayTeam = event.competitions[0].competitors[1];
 
-        const homeLogo = homeTeam.team.logo;
-        const awayLogo = awayTeam.team.logo;
+          const homeLogo = homeTeam.team.logo;
+          const awayLogo = awayTeam.team.logo;
 
-        // Set dark logos only if the original logos exist
-        const homeLogoDark = homeLogo
-          ? homeLogo.replace("/500/", "/500-dark/")
-          : "";
-        const awayLogoDark = awayLogo
-          ? awayLogo.replace("/500/", "/500-dark/")
-          : "";
+          // Set dark logos only if the original logos exist
+          const homeLogoDark = homeLogo
+            ? homeLogo.replace("/500/", "/500-dark/")
+            : "";
+          const awayLogoDark = awayLogo
+            ? awayLogo.replace("/500/", "/500-dark/")
+            : "";
 
-        const competition = event.competitions[0];
-        const date = new Date(event.date);
-        const isPlayoff =
-          competition.series && competition.series.type === "playoff";
-        let homeWins = null;
-        let awayWins = null;
-        let homeSeriesRecord = null;
-        let awaySeriesRecord = null;
+          // Check if both logos exist
+          if (!homeLogo || !awayLogo) {
+            return null; // Filter out events without logos
+          }
 
-        if (isPlayoff) {
-          homeWins = competition.series.competitors[0].wins;
-          awayWins = competition.series.competitors[1].wins;
-          homeSeriesRecord = `${homeWins}-${awayWins}`;
-          awaySeriesRecord = `${awayWins}-${homeWins}`;
-        }
+          const competition = event.competitions[0];
+          const date = new Date(event.date);
+          const isPlayoff =
+            competition.series && competition.series.type === "playoff";
+          let homeWins = null;
+          let awayWins = null;
+          let homeSeriesRecord = null;
+          let awaySeriesRecord = null;
 
-        const homeRank = competition.competitors[0].curatedRank?.current;
-        const awayRank = competition.competitors[1].curatedRank?.current;
+          if (isPlayoff) {
+            homeWins = competition.series.competitors[0].wins;
+            awayWins = competition.series.competitors[1].wins;
+            homeSeriesRecord = `${homeWins}-${awayWins}`;
+            awaySeriesRecord = `${awayWins}-${homeWins}`;
+          }
 
-        // Add possession information
-        const possession = competition.situation?.possession;
-        const homePossession = possession === competition.competitors[0].id;
-        const awayPossession = possession === competition.competitors[1].id;
+          const homeRank = competition.competitors[0].curatedRank?.current;
+          const awayRank = competition.competitors[1].curatedRank?.current;
 
-        return {
-          id: event.id,
-          HomeTeam: competition.competitors[0].team.shortDisplayName,
-          HomeAbbrev: competition.competitors[0].team.abbreviation,
-          HomeLookup: competition.competitors[0].team.displayName,
-          HomeLogo: homeLogo, // Original logo
-          HomeLogoDark: homeLogoDark, // Dark logo or empty string
-          HomeScore: competition.competitors[0].score,
-          HomeTeamRecordSummary: isPlayoff
-            ? homeSeriesRecord
-            : formatHockeyRecord(
-                competition.competitors[0].records?.[0]?.summary || "N/A",
-                isPlayoff
-              ),
-          HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
-          AwayTeam: competition.competitors[1].team.shortDisplayName,
-          AwayAbbrev: competition.competitors[1].team.abbreviation,
-          AwayLookup: competition.competitors[1].team.displayName,
-          AwayLogo: awayLogo, // Original logo
-          AwayLogoDark: awayLogoDark, // Dark logo or empty string
-          AwayScore: competition.competitors[1].score,
-          AwayTeamRecordSummary: isPlayoff
-            ? awaySeriesRecord
-            : formatHockeyRecord(
-                competition.competitors[1].records?.[0]?.summary || "N/A",
-                isPlayoff
-              ),
-          AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
-          GameTime: date.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          }), // Format the game time
-          Status: competition.status.type.name,
-          StatusShortDetail: competition.status.type.shortDetail,
-          displayClock: competition.status.displayClock || null,
-          period: competition.status.period || null,
-          Date: date.toLocaleDateString("en-US", {
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-          }),
-          Inning: competition.status.period || null,
-          Outs: competition.situation ? competition.situation.outs : null,
-          First: competition.situation ? competition.situation.onFirst : null,
-          Second: competition.situation ? competition.situation.onSecond : null,
-          Third: competition.situation ? competition.situation.onThird : null,
-          IsPlayoff: isPlayoff,
-          HomeWins: homeWins,
-          AwayWins: awayWins,
-          HomeWinner: competition.competitors[0].winner,
-          AwayWinner: competition.competitors[1].winner,
-          HomePossession: homePossession,
-          AwayPossession: awayPossession,
-          isRedZone: competition.situation?.isRedZone,
-          sport: sportName,
-          shortDownDistanceText:
-            competition.situation?.shortDownDistanceText || null,
-          possessionText: competition.situation?.possessionText || null,
-        };
-      });
+          // Add possession information
+          const possession = competition.situation?.possession;
+          const homePossession = possession === competition.competitors[0].id;
+          const awayPossession = possession === competition.competitors[1].id;
+
+          return {
+            id: event.id,
+            HomeTeam: competition.competitors[0].team.shortDisplayName,
+            HomeAbbrev: competition.competitors[0].team.abbreviation,
+            HomeLookup: competition.competitors[0].team.displayName,
+            HomeLogo: homeLogo, // Original logo
+            HomeLogoDark: homeLogoDark, // Dark logo or empty string
+            HomeScore: competition.competitors[0].score,
+            HomeTeamRecordSummary: isPlayoff
+              ? homeSeriesRecord
+              : formatHockeyRecord(
+                  competition.competitors[0].records?.[0]?.summary || "N/A",
+                  isPlayoff,
+                  sportName
+                ),
+            HomeRank: homeRank && homeRank !== 99 ? homeRank : null,
+            AwayTeam: competition.competitors[1].team.shortDisplayName,
+            AwayAbbrev: competition.competitors[1].team.abbreviation,
+            AwayLookup: competition.competitors[1].team.displayName,
+            AwayLogo: awayLogo, // Original logo
+            AwayLogoDark: awayLogoDark, // Dark logo or empty string
+            AwayScore: competition.competitors[1].score,
+            AwayTeamRecordSummary: isPlayoff
+              ? awaySeriesRecord
+              : formatHockeyRecord(
+                  competition.competitors[1].records?.[0]?.summary || "N/A",
+                  isPlayoff,
+                  sportName
+                ),
+            AwayRank: awayRank && awayRank !== 99 ? awayRank : null,
+            GameTime: date.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            }), // Format the game time
+            Status: competition.status.type.name,
+            StatusShortDetail: competition.status.type.shortDetail,
+            displayClock: competition.status.displayClock || null,
+            period: competition.status.period || null,
+            Date: date.toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            }),
+            Inning: competition.status.period || null,
+            Outs: competition.situation ? competition.situation.outs : null,
+            First: competition.situation ? competition.situation.onFirst : null,
+            Second: competition.situation
+              ? competition.situation.onSecond
+              : null,
+            Third: competition.situation ? competition.situation.onThird : null,
+            IsPlayoff: isPlayoff,
+            HomeWins: homeWins,
+            AwayWins: awayWins,
+            HomeWinner: competition.competitors[0].winner,
+            AwayWinner: competition.competitors[1].winner,
+            HomePossession: homePossession,
+            AwayPossession: awayPossession,
+            isRedZone: competition.situation?.isRedZone,
+            sport: sportName,
+            shortDownDistanceText:
+              competition.situation?.shortDownDistanceText || null,
+            possessionText: competition.situation?.possessionText || null,
+          };
+        })
+        .filter((event) => event !== null); // Filter out null events
 
       // Sort games: put STATUS_IN_PROGRESS first, STATUS_SCHEDULED second, and STATUS_FINAL last
       const sortedGames = gameData.sort((a, b) => {
@@ -1048,8 +1065,12 @@ const getOrdinal = (period) => {
   if (period > 5) return `${period - 4}OT`;
 };
 
-// New helper function to format hockey records
-const formatHockeyRecord = (record, isPlayoff) => {
+// New helper function to format hockey and soccer records
+const formatHockeyRecord = (record, isPlayoff, sport) => {
   if (isPlayoff) return record; // Keep playoff records as is
-  return record.endsWith("-0") ? record.slice(0, -2) : record; // Trim off -0 if present
+  // Check if the sport is hockey or soccer
+  if (sport === "hockey" || sport === "soccer") {
+    return record.endsWith("-0") ? record.slice(0, -2) : record; // Trim off -0 if present
+  }
+  return record; // Return the record unchanged for other sports
 };
