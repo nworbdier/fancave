@@ -104,7 +104,7 @@ export default function Scores({ route }) {
           // Ensure selectedDate is defined
           fetchGameData(selectedSport, selectedDate);
         }
-      }, 5000); // Refresh every 5 seconds
+      }, 2000); // Refresh every 2 seconds
 
       return () => clearInterval(interval); // Clear the interval on unmount
     }, [selectedSport, selectedDate]) // Dependencies to ensure it uses the latest values
