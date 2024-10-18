@@ -28,7 +28,7 @@ export default function ScoresDetails({ route }) {
       const interval = setInterval(() => {
         fetchGameDetails();
         fetchPlayDetails(); // Fetch play details periodically
-      }, 2000);
+      }, 3000);
       return () => clearInterval(interval);
     }, [])
   );
@@ -350,6 +350,7 @@ export default function ScoresDetails({ route }) {
           </View>
         </View>
       </View>
+      <View style={styles.divider} />
       <View style={styles.content}>
         <View style={styles.tabBar}>
           {["Plays", "Stats", awayAbbreviation, homeAbbreviation].map((tab) => (
@@ -518,5 +519,10 @@ const styles = StyleSheet.create({
   playText: {
     color: "white",
     fontSize: 18,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "lightgrey",
+    marginTop: 20,
   },
 });
