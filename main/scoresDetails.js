@@ -20,6 +20,7 @@ export default function ScoresDetails({ route }) {
   const [refreshing, setRefreshing] = useState(false);
   const [playData, setPlayData] = useState([]); // Ensure this is initialized as an empty array
   const [loadingPlays, setLoadingPlays] = useState(true); // New state for loading plays
+  const [isRedZone, setIsRedZone] = useState(false); // New state for red zone status
 
   useFocusEffect(
     useCallback(() => {
@@ -36,8 +37,7 @@ export default function ScoresDetails({ route }) {
   const fetchGameDetails = async () => {
     try {
       const url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/summary?event=${eventId}`;
-      console.log("Fetching game details from URL:", url);
-
+      // console.log("Fetching game details from URL:", url);
       const response = await fetch(url);
       const data = await response.json();
       setGameData(data);
@@ -52,9 +52,16 @@ export default function ScoresDetails({ route }) {
     setLoadingPlays(true); // Set loading to true when fetching plays
     try {
       const url = `https://sports.core.api.espn.com/v2/sports/${sportName}/leagues/${league}/events/${eventId}/competitions/${eventId}/plays?limit=1000`;
+      // console.log("Fetching play details from URL:", url);
       const response = await fetch(url);
       const data = await response.json();
       setPlayData(data.items || []); // Ensure playData is set to an empty array if items is undefined
+
+      // Check if any play is in the red zone
+      const redZoneStatus = data.items.some(
+        (play) => play.end?.yardsToEndzone <= 20
+      );
+      setIsRedZone(redZoneStatus); // Update the state with the red zone status
     } catch (error) {
       console.error("Error fetching play details:", error);
     } finally {
@@ -127,7 +134,6 @@ export default function ScoresDetails({ route }) {
   const lastPlay = plays[plays.length - 1];
   const shortDownDistanceText = lastPlay?.end?.shortDownDistanceText;
   const possessionText = lastPlay?.end?.possessionText;
-  const isRedZone = competition?.situation?.isRedZone;
 
   const getScoreOrRecord = (score, record) => {
     return score !== undefined ? score : record || "N/A";
