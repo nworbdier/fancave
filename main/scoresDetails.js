@@ -356,7 +356,6 @@ export default function ScoresDetails({ route }) {
           </View>
         </View>
       </View>
-      <View style={styles.divider} />
       <View style={styles.content}>
         <View style={styles.tabBar}>
           {["Plays", "Stats", awayAbbreviation, homeAbbreviation].map((tab) => (
@@ -439,6 +438,7 @@ const styles = StyleSheet.create({
     flex: 9,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 5,
   },
   tabBar: {
     flexDirection: "row",
