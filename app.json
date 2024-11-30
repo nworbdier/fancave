@@ -48,6 +48,7 @@
           "microphonePermission": "Allow FanCave to access your microphone."
         }
       ]
-    ]
+    ],
+    "newArchEnabled": true
   }
 }

@@ -753,7 +753,7 @@ export default function Scores({ route }) {
           {selectedSport ? (
             loading && !refreshing ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="white" />
+                <ActivityIndicator size="100" color="white" />
               </View>
             ) : (
               <SectionList

@@ -78,7 +78,7 @@ export default function ScoresDetails({ route }) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="white" />
+        <ActivityIndicator size="100" color="white" />
       </View>
     );
   }

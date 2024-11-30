@@ -171,7 +171,7 @@ const SignUp = () => {
         </View>
         {error && <Text style={styles.error}>{error}</Text>}
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="100" color="#0000ff" />
         ) : (
           <>
             <TouchableOpacity onPress={signUp} style={styles.buttonContainer}>

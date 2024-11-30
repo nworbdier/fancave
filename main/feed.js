@@ -196,7 +196,7 @@ const Feed = () => {
       </View>
       <View style={styles.content}>
         {loading && page === 1 ? (
-          <ActivityIndicator size="large" color="grey" />
+          <ActivityIndicator size="100" color="grey" />
         ) : (
           <FlatList
             data={tweets}

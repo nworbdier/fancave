@@ -73,7 +73,7 @@ const Search = () => {
           />
         </View>
 
-        {loading && <ActivityIndicator size="large" color="#fff" />}
+        {loading && <ActivityIndicator size="100" color="#fff" />}
 
         {/* Conditionally Render Results or Browse Sections */}
         {results.length > 0 ? (
