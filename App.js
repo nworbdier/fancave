@@ -16,9 +16,10 @@ import Scores from "./main/scores";
 import ScoresDetails from "./main/scoresDetails";
 import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
-import { supabase } from './utils/supabase';
+import { FIREBASE_AUTH } from "./firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 import { SportsProvider } from "./main/SportsContext";
-import NavBar from "./components/navBar";
+import NavBar from "./components/navBar"; // Import your NavBar
 
 const Stack = createNativeStackNavigator();
 
@@ -68,16 +69,13 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    // Cleanup function
+    return unsubscribe;
   }, []);
 
   if (loading) {

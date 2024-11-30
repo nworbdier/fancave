@@ -1,15 +1,18 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
+  Button,
   StyleSheet,
   ActivityIndicator,
   KeyboardAvoidingView,
   TouchableOpacity,
+  Image,
 } from "react-native";
+import { FIREBASE_AUTH } from "../firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
-import { supabase } from '../utils/supabase';
 
 const Welcome = () => {
   const [email, setEmail] = useState("");
@@ -17,28 +20,46 @@ const Welcome = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const auth = FIREBASE_AUTH;
 
   const navigation = useNavigation();
 
   const signInAsync = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      // Successfully signed in
-      // The session will be automatically handled by Supabase
+      const response = await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       let errorMessage = "An error occurred. Please try again.";
-      
-      if (error.message) {
-        errorMessage = error.message;
+
+      switch (error.code) {
+        case "auth/invalid-credential":
+          errorMessage =
+            "Invalid Email/Password combination. Please try again.";
+          break;
+        case "auth/email-already-in-use":
+          errorMessage = "Email address is already in use.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Please enter a valid email address.";
+          break;
+        case "auth/user-disabled":
+          errorMessage = "This account has been disabled.";
+          break;
+        case "auth/user-not-found":
+          errorMessage = "User not found. Please check your credentials.";
+          break;
+        case "auth/wrong-password":
+          errorMessage = "Invalid password. Please try again.";
+          break;
+        case "auth/network-request-failed":
+          errorMessage =
+            "Network request failed. Please check your internet connection.";
+          break;
+        case "auth/weak-password":
+          errorMessage = "Password should be at least 6 characters long.";
+          break;
       }
-      
+
       alert(errorMessage);
     } finally {
       setLoading(false);
