@@ -15,39 +15,14 @@ import {
   ActivityIndicator,
   RefreshControl,
   SectionList,
-  TextInput,
 } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import NavBar from "../components/navBar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { useSportsContext } from "./SportsContext";
 import { Entypo } from "@expo/vector-icons";
-
-// Define SearchBox component before using it
-const SearchBox = ({ value, onChangeText }) => (
-  <View style={styles.searchBoxContainer}>
-    <TextInput
-      style={styles.searchBox}
-      placeholder="Search matchups..."
-      placeholderTextColor="#999"
-      value={value}
-      onChangeText={onChangeText}
-    />
-    {value.length > 0 && ( // Show the clear button only if there is text
-      <TouchableOpacity
-        onPress={() => onChangeText("")}
-        style={styles.clearButton}
-      >
-        <Ionicons name="close" size={20} color="white" />
-      </TouchableOpacity>
-    )}
-  </View>
-);
-
-// Define a constant for the offset
-const OFFSET = 1; // Adjust this value as needed
+import SearchBox from "../components/searchbox";
+import renderBasesComponent from "../components/bases";
 
 export default function Scores({ route }) {
   const { sportsData } = useSportsContext();
@@ -372,7 +347,7 @@ export default function Scores({ route }) {
     }
   }, [selectedSport, selectedDate]);
 
-  const renderItem = ({ item }) => {
+  const sportSelector = ({ item }) => {
     if (item === "reorderSports") {
       return (
         <TouchableOpacity
@@ -403,7 +378,7 @@ export default function Scores({ route }) {
     );
   };
 
-  const renderGameItem = ({ item }) => (
+  const matchupView = ({ item }) => (
     <TouchableOpacity
       style={styles.gameContainer}
       onPress={() =>
@@ -663,7 +638,7 @@ export default function Scores({ route }) {
     setDateListWidth(width);
   };
 
-  const renderDateItem = ({ item, index }) => (
+  const dateSelector = ({ item, index }) => (
     <TouchableOpacity
       style={[
         styles.dateItem,
@@ -686,23 +661,6 @@ export default function Scores({ route }) {
     </TouchableOpacity>
   );
 
-  const renderBasesComponent = (First, Second, Third) => {
-    return (
-      <View style={styles.basesContainer}>
-        <View style={styles.baseRow}>
-          <View style={styles.emptySpace} />
-          <View style={[styles.base, Second && styles.baseActive]} />
-          <View style={styles.emptySpace} />
-        </View>
-        <View style={styles.baseRow}>
-          <View style={[styles.base, Third && styles.baseActive]} />
-          <View style={styles.emptySpace} />
-          <View style={[styles.base, First && styles.baseActive]} />
-        </View>
-      </View>
-    );
-  };
-
   // Calculate the initial scroll index
   const initialScrollIndex = dates.indexOf(selectedDate);
   const centeredScrollIndex =
@@ -717,7 +675,7 @@ export default function Scores({ route }) {
         <FlatList
           ref={sportListRef}
           data={[...Object.keys(sportsData), "reorderSports"]}
-          renderItem={renderItem}
+          renderItem={sportSelector}
           keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -731,7 +689,7 @@ export default function Scores({ route }) {
         <FlatList
           ref={dateListRef}
           data={dates}
-          renderItem={renderDateItem}
+          renderItem={dateSelector}
           keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -761,7 +719,7 @@ export default function Scores({ route }) {
                   title: date,
                   data,
                 }))}
-                renderItem={renderGameItem}
+                renderItem={matchupView}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.gameList}
                 style={styles.fullWidth}
@@ -956,47 +914,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
     marginTop: 3,
-  },
-  searchBoxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    position: "relative",
-  },
-  searchBox: {
-    flex: 1,
-    height: 40,
-    color: "white",
-    paddingHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 5,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "white",
-  },
-  clearButton: {
-    position: "absolute",
-    right: 10,
-    padding: 5,
-  },
-  basesContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  baseRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  base: {
-    width: 15,
-    height: 15,
-    backgroundColor: "grey",
-    transform: [{ rotate: "45deg" }],
-  },
-  baseActive: {
-    backgroundColor: "yellow",
   },
   emptySpace: {
     width: 15,
