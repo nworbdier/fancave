@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
-  SafeAreaView,
   TouchableOpacity,
   Image,
   Text,
@@ -11,11 +10,8 @@ import {
   Modal,
   RefreshControl,
   StatusBar,
-  Touchable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import NavBar from "../components/navBar";
 import {
   FontAwesome6,
   AntDesign,
@@ -24,8 +20,6 @@ import {
 import debounce from "lodash.debounce";
 import TweetLayout from "./tweet-layout";
 
-const CACHE_KEY_PREFIX = "CACHED_TWEETS_";
-const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutes
 const TWEETS_PER_PAGE = 20;
 
 const Feed = () => {

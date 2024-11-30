@@ -191,7 +191,7 @@ export default function Scores({ route }) {
       }
 
       // Log the sport to ensure it's correct
-      console.log("Selected sport:", sport);
+      // console.log("Selected sport:", sport);
 
       let url = `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/scoreboard?dates=${formatToYYYYMMDD(
         date
@@ -753,7 +753,7 @@ export default function Scores({ route }) {
           {selectedSport ? (
             loading && !refreshing ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="100" color="white" />
+                <ActivityIndicator color="white" />
               </View>
             ) : (
               <SectionList
