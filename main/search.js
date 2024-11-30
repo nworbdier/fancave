@@ -6,12 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   Image,
   ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import NavBar from "../components/navBar";
 
 const leagueIcons = {
   NCAAF: "american-football-outline",

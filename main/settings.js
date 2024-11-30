@@ -9,8 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { MaterialIcons, FontAwesome6 } from "@expo/vector-icons";
-import { FIREBASE_AUTH } from "../firebaseConfig";
-import { signOut } from "firebase/auth";
+import { supabase } from "../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
@@ -21,33 +20,40 @@ const Settings = ({}) => {
 
   const fetchUserData = async (currentUser) => {
     if (currentUser) {
-      // console.log("Current User UID:", currentUser.uid); // Log the UID for verification
-      const url = `https://fancave-api.up.railway.app/users/${currentUser.uid}`;
-      // console.log("Fetching user data from URL:", url); // Log the URL
-      const response = await fetch(url);
-      const data = await response.json();
-      setUserData(data);
-      // await AsyncStorage.setItem("userData", JSON.stringify(data)); // Remove this line
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+          
+        if (error) throw error;
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error.message);
+      }
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      const currentUser = FIREBASE_AUTH.currentUser;
-      setUser(currentUser);
-      const loadUserData = async () => {
-        fetchUserData(currentUser); // Fetch if no cached data
+      const getCurrentUser = async () => {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        setUser(currentUser);
+        if (currentUser) {
+          fetchUserData(currentUser);
+        }
       };
-      loadUserData();
+      getCurrentUser();
     }, [])
   );
 
   const handleLogout = async () => {
     try {
-      await signOut(FIREBASE_AUTH);
-      // await AsyncStorage.removeItem("userData"); // Remove this line
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error) {
-      console.error("Error signing out: ", error);
+      console.error("Error signing out: ", error.message);
     }
   };
 

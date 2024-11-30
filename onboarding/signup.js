@@ -3,18 +3,13 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Image,
   TouchableOpacity,
 } from "react-native";
-import { FIREBASE_AUTH } from "../firebaseConfig";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 for icons
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import axios from "axios"; // Import Axios
+import { useNavigation } from "@react-navigation/native";
+import { supabase } from '../utils/supabase';
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -25,8 +20,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState(""); // Add state for username
-  const auth = FIREBASE_AUTH;
+  const [username, setUsername] = useState("");
 
   const navigation = useNavigation();
 
@@ -38,57 +32,43 @@ const SignUp = () => {
 
     setLoading(true);
     try {
-      const response = await createUserWithEmailAndPassword(
-        auth,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password
-      );
-      const uuid = response.user.uid; // Get the user ID from Firebase
-
-      // Send user data to the backend
-      await axios.post("https://fancave-api.up.railway.app/post-users", {
-        uuid,
-        email,
-        firstName,
-        lastName,
-        username, // Ensure username is included
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            username: username,
+          }
+        }
       });
 
-      alert("You have successfully created an account!");
-      navigation.navigate("Welcome"); // Navigate to the next page after successful signup
+      if (error) throw error;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: data.user.id,
+            username,
+            first_name: firstName,
+            last_name: lastName,
+            email,
+          }
+        ]);
+
+      if (profileError) throw profileError;
+
+      alert("Check your email for the confirmation link!");
+      navigation.navigate("Welcome");
     } catch (error) {
       let errorMessage = "An error occurred. Please try again.";
-
-      if (error.response && error.response.data.error) {
-        errorMessage = error.response.data.error; // Use the error message from the API
+      
+      if (error.message) {
+        errorMessage = error.message;
       }
-
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          errorMessage = "Email address is already in use.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Please enter a valid email address.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "This account has been disabled.";
-          break;
-        case "auth/user-not-found":
-          errorMessage = "User not found. Please check your credentials.";
-          break;
-        case "auth/wrong-password":
-          errorMessage = "Invalid password. Please try again.";
-          break;
-        case "auth/network-request-failed":
-          errorMessage =
-            "Network request failed. Please check your internet connection.";
-          break;
-        case "auth/weak-password":
-          errorMessage = "Password should be at least 6 characters long.";
-          break;
-        // Add more cases for other error codes as needed
-      }
-
+      
       alert(errorMessage);
     } finally {
       setLoading(false);
