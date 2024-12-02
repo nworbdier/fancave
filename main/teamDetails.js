@@ -52,12 +52,12 @@ export default function TeamDetails() {
     );
   }
 
-  const logo = teamData.team.logos[1].href;
-  const location = teamData.team.location;
-  const name = teamData.team.name;
-  const record = teamData.team.record.items[0].summary;
-  const rank = teamData.team.rank;
-  const standingSummary = teamData.team.standingSummary;
+  const logo = teamData.team?.logos?.[1]?.href;
+  const location = teamData.team?.location;
+  const name = teamData.team?.name;
+  const record = teamData.team?.record?.items?.[0]?.summary;
+  const rank = teamData.team?.rank;
+  const standingSummary = teamData.team?.standingSummary;
 
   // Add this new function to render tab content
   const renderTabContent = () => {
@@ -72,11 +72,11 @@ export default function TeamDetails() {
               )
               .reverse()
               .map((event, index) => {
-                const eventId = event.id;
-                const homeTeam = event.competitions[0].competitors[0];
-                const awayTeam = event.competitions[0].competitors[1];
-                const homeScore = homeTeam.score?.value;
-                const awayScore = awayTeam.score?.value;
+                const eventId = event?.id;
+                const homeTeam = event?.competitions?.[0]?.competitors?.[0];
+                const awayTeam = event?.competitions?.[0]?.competitors?.[1];
+                const homeScore = homeTeam?.score?.value;
+                const awayScore = awayTeam?.score?.value;
 
                 return (
                   <TouchableOpacity
