@@ -81,7 +81,31 @@ export default function TeamDetails() {
           </View>
         </View>
         <Text style={styles.schedule}>Schedule</Text>
-        <View style={styles.scheduleContainer}></View>
+        <View style={styles.scheduleContainer}>
+          {scheduleData?.events
+            ?.filter(event => event.competitions[0].status.type.name === 'STATUS_FINAL')
+            .reverse()
+            .map((event, index) => {
+              const homeTeam = event.competitions[0].competitors[0];
+              const awayTeam = event.competitions[0].competitors[1];
+              const homeScore = homeTeam.score?.value;
+              const awayScore = awayTeam.score?.value;
+              
+              return (
+                <View key={index} style={styles.gameContainer}>
+                  <View style={styles.teamScoreContainer}>
+                    <Text style={styles.teamName}>{homeTeam.team.abbreviation}</Text>
+                    <Text style={styles.score}>{homeScore}</Text>
+                  </View>
+                  <Text style={styles.vs}>vs</Text>
+                  <View style={styles.teamScoreContainer}>
+                    <Text style={styles.teamName}>{awayTeam.team.abbreviation}</Text>
+                    <Text style={styles.score}>{awayScore}</Text>
+                  </View>
+                </View>
+              );
+          })}
+        </View>
       </ScrollView>
     </View>
   );
@@ -125,5 +149,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "black",
+  },
+  scheduleContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  gameContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#222',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  teamScoreContainer: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  teamName: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  score: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  vs: {
+    color: '#666',
+    fontSize: 14,
+    marginHorizontal: 10,
   },
 });
