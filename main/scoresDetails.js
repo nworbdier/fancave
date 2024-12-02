@@ -142,21 +142,19 @@ export default function ScoresDetails({ route }) {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Plays":
-        return (
+        return playData.length > 0 ? (
           <ScrollView>
-            {playData.length > 0 ? ( // Check if playData is not empty
-              playData
-                .slice()
-                .reverse()
-                .map((play, index) => (
-                  <View style={styles.playContainer} key={index}>
-                    <Text style={styles.playText}>{play.alternativeText}</Text>
-                  </View>
-                ))
-            ) : (
-              <Text style={styles.tabContentText}>No plays available</Text>
-            )}
+            {playData
+              .slice()
+              .reverse()
+              .map((play, index) => (
+                <View style={styles.playContainer} key={index}>
+                  <Text style={styles.playText}>{play.alternativeText}</Text>
+                </View>
+              ))}
           </ScrollView>
+        ) : (
+          <Text style={styles.tabContentText}>No Plays Available</Text>
         );
       case "Stats":
         return <Text style={styles.tabContentText}>Stats Content</Text>;
@@ -207,10 +205,19 @@ export default function ScoresDetails({ route }) {
     <View style={styles.page}>
       <View style={styles.gameContainer}>
         <View style={styles.teamContainer}>
-          <View style={{ flexDirection: "column", alignItems: "center" }}>
+          <TouchableOpacity
+            style={{ flexDirection: "column", alignItems: "center" }}
+            onPress={() =>
+              navigation.navigate("TeamDetails", {
+                teamId: away.team.id,
+                sportName: sportName,
+                league: league,
+              })
+            }
+          >
             <Image source={{ uri: awayLogo }} style={styles.teamLogo} />
             <Text style={styles.teamName}>{awayAbbreviation}</Text>
-          </View>
+          </TouchableOpacity>
           <View style={styles.scoreContainer}>
             <Text
               style={[
@@ -350,10 +357,19 @@ export default function ScoresDetails({ route }) {
               {getScoreOrRecord(homeScore, homeRecord)}
             </Text>
           </View>
-          <View style={{ flexDirection: "column", alignItems: "center" }}>
+          <TouchableOpacity
+            style={{ flexDirection: "column", alignItems: "center" }}
+            onPress={() =>
+              navigation.navigate("TeamDetails", {
+                teamId: home.team.id,
+                sportName: sportName,
+                league: league,
+              })
+            }
+          >
             <Image source={{ uri: homeLogo }} style={styles.teamLogo} />
             <Text style={styles.teamName}>{homeAbbreviation}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.content}>

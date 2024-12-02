@@ -14,6 +14,8 @@ import Feedback from "./main/feedback";
 import ActivityCenter from "./main/activityCenter";
 import Scores from "./main/scores";
 import ScoresDetails from "./main/scoresDetails";
+import PlayerDetails from "./main/playerDetails";
+import TeamDetails from "./main/teamDetails";
 import Feed from "./main/feed";
 import ReorderSports from "./main/ReorderSports";
 import { FIREBASE_AUTH } from "./firebaseConfig";
@@ -42,6 +44,8 @@ function Main() {
           <Stack.Screen name="ActivityCenter" component={ActivityCenter} />
           <Stack.Screen name="Scores" component={Scores} />
           <Stack.Screen name="ScoresDetails" component={ScoresDetails} />
+          <Stack.Screen name="PlayerDetails" component={PlayerDetails} />
+          <Stack.Screen name="TeamDetails" component={TeamDetails} />
           <Stack.Screen name="ReorderSports" component={ReorderSports} />
           <Stack.Screen name="Account" component={Account} />
           <Stack.Screen name="SportsProvider" component={SportsProvider} />
