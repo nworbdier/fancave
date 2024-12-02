@@ -22,7 +22,7 @@ export default function TeamDetails() {
     const response = await fetch(
       `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/teams/${teamId}`
     );
-    console.log(response.url);
+    // console.log(response.url);
     const data = await response.json();
     setTeamData(data);
   };
@@ -31,7 +31,7 @@ export default function TeamDetails() {
     const response = await fetch(
       `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/teams/${teamId}/schedule`
     );
-    console.log(response.url);
+    // console.log(response.url);
 
     const data = await response.json();
     setScheduleData(data);
