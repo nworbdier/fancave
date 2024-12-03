@@ -23,6 +23,7 @@ import { useSportsContext } from "./SportsContext";
 import { Entypo } from "@expo/vector-icons";
 import SearchBox from "../components/searchbox";
 import renderBasesComponent from "../components/bases";
+import ScoreboardGame from "../components/scoreboard";
 
 export default function Scores({ route }) {
   const { sportsData } = useSportsContext();
@@ -379,8 +380,8 @@ export default function Scores({ route }) {
   };
 
   const matchupView = ({ item }) => (
-    <TouchableOpacity
-      style={styles.gameContainer}
+    <ScoreboardGame
+      item={item}
       onPress={() =>
         navigation.navigate("ScoresDetails", {
           eventId: item.id,
@@ -388,216 +389,7 @@ export default function Scores({ route }) {
           league: sportsData[selectedSport].league,
         })
       }
-    >
-      <View style={styles.teamRow}>
-        <View style={styles.teamInfoContainer}>
-          <Image
-            source={{ uri: item.AwayLogoDark }}
-            style={[
-              styles.teamLogo,
-              item.Status === "STATUS_FINAL" &&
-                !item.AwayWinner &&
-                styles.loserLogo,
-            ]}
-          />
-          <Text
-            style={[
-              styles.teamName,
-              item.Status === "STATUS_FINAL" &&
-                (item.AwayWinner ? styles.winnerText : styles.loserText),
-            ]}
-          >
-            {item.AwayAbbrev}
-            {item.AwayRank && ` (${item.AwayRank})`}
-          </Text>
-        </View>
-        <View style={styles.scoreContainer}>
-          <Text
-            style={[
-              item.Status === "STATUS_SCHEDULED"
-                ? styles.recordText
-                : styles.scoreText,
-              item.Status === "STATUS_FINAL" &&
-                (item.AwayWinner ? styles.winnerText : styles.loserText),
-            ]}
-          >
-            {item.Status === "STATUS_SCHEDULED"
-              ? (item.AwayTeamRecordSummary !== "N/A" &&
-                  item.AwayTeamRecordSummary) ||
-                ""
-              : item.Status === "STATUS_POSTPONED" ||
-                item.Status === "STATUS_CANCELED"
-              ? "" // Hide score if postponed or canceled
-              : item.AwayScore}
-          </Text>
-          {item.AwayPossession && (
-            <View
-              style={[
-                styles.possessionIndicator,
-                item.isRedZone ? styles.redPossessionIndicator : null,
-              ]}
-            />
-          )}
-        </View>
-      </View>
-      <View style={styles.gameInfo}>
-        {item.sport === "football" ||
-        item.sport === "basketball" ||
-        item.sport === "hockey" ? (
-          <>
-            <Text style={styles.gameStatus}>
-              {item.Status === "STATUS_END_PERIOD" ? (
-                <Text style={{ fontWeight: "bold" }}>
-                  {item.StatusShortDetail}
-                </Text>
-              ) : item.Status === "STATUS_HALFTIME" ? (
-                <Text style={{ fontWeight: "bold" }}>Half</Text>
-              ) : item.Status === "STATUS_FINAL" ||
-                item.Status === "STATUS_POSTPONED" ||
-                item.Status === "STATUS_CANCELED" ||
-                item.Status === "STATUS_DELAYED" ? (
-                <Text style={{ fontWeight: "bold" }}>
-                  {item.StatusShortDetail}
-                </Text>
-              ) : item.Status === "STATUS_SCHEDULED" ? (
-                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
-              ) : (
-                <>
-                  <Text style={{ fontWeight: "bold" }}>
-                    {item.displayClock}
-                  </Text>
-                  <Text style={{ color: "#999", fontWeight: "bold" }}>
-                    {` ${getOrdinal(item.period)}`}
-                  </Text>
-                </>
-              )}
-            </Text>
-            {(item.shortDownDistanceText || item.possessionText) && (
-              <View style={styles.situationContainer}>
-                {item.shortDownDistanceText && (
-                  <Text style={styles.situationText}>
-                    {item.shortDownDistanceText}
-                  </Text>
-                )}
-                {item.possessionText && (
-                  <Text style={styles.situationText}>
-                    {item.possessionText}
-                  </Text>
-                )}
-              </View>
-            )}
-          </>
-        ) : item.sport === "baseball" ? ( // Check if the sport is baseball
-          <>
-            <Text style={styles.gameStatus}>
-              {item.Status === "STATUS_SCHEDULED" ? (
-                <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
-              ) : item.Status === "STATUS_FINAL" ||
-                item.Status === "STATUS_POSTPONED" ||
-                item.Status === "STATUS_CANCELED" ||
-                item.Status === "STATUS_DELAYED" ? (
-                <Text style={{ fontWeight: "bold", color: "white" }}>
-                  {item.StatusShortDetail}
-                </Text>
-              ) : (
-                <View>
-                  <Text style={{ fontWeight: "bold", color: "white" }}>
-                    {item.StatusShortDetail}
-                  </Text>
-                  {item.Status !== "STATUS_FINAL" && ( // Show bases only if not final
-                    <>
-                      <View style={{ marginVertical: 10 }}>
-                        {renderBasesComponent(
-                          item.First,
-                          item.Second,
-                          item.Third
-                        )}
-                      </View>
-                      <View>
-                        {item.Outs !== null && (
-                          <Text style={{ color: "white", fontWeight: "bold" }}>
-                            {item.Outs} Outs
-                          </Text>
-                        )}
-                      </View>
-                    </>
-                  )}
-                </View>
-              )}
-            </Text>
-          </>
-        ) : (
-          // Default case for other sports
-          <Text style={styles.gameStatus}>
-            {item.Status === "STATUS_SCHEDULED" ? (
-              <Text style={{ fontWeight: "bold" }}>{item.GameTime}</Text>
-            ) : item.Status === "STATUS_FINAL" ||
-              item.Status === "STATUS_POSTPONED" ||
-              item.Status === "STATUS_CANCELED" ||
-              item.Status === "STATUS_DELAYED" ? (
-              <Text style={{ fontWeight: "bold" }}>
-                {item.StatusShortDetail}
-              </Text>
-            ) : (
-              <Text style={{ fontWeight: "bold" }}>
-                {item.StatusShortDetail}
-              </Text>
-            )}
-          </Text>
-        )}
-      </View>
-      <View style={styles.teamRow}>
-        <View style={styles.scoreContainer}>
-          {item.HomePossession && (
-            <View
-              style={[
-                styles.possessionIndicator,
-                item.isRedZone ? styles.redPossessionIndicator : null,
-              ]}
-            />
-          )}
-          <Text
-            style={[
-              item.Status === "STATUS_SCHEDULED"
-                ? styles.recordText
-                : styles.scoreText,
-              item.Status === "STATUS_FINAL" &&
-                (item.HomeWinner ? styles.winnerText : styles.loserText),
-            ]}
-          >
-            {item.Status === "STATUS_SCHEDULED"
-              ? (item.HomeTeamRecordSummary !== "N/A" &&
-                  item.HomeTeamRecordSummary) ||
-                ""
-              : item.Status === "STATUS_POSTPONED" ||
-                item.Status === "STATUS_CANCELED"
-              ? "" // Hide score if postponed or canceled
-              : item.HomeScore}
-          </Text>
-        </View>
-        <View style={styles.teamInfoContainer}>
-          <Image
-            source={{ uri: item.HomeLogoDark }}
-            style={[
-              styles.teamLogo,
-              item.Status === "STATUS_FINAL" &&
-                !item.HomeWinner &&
-                styles.loserLogo,
-            ]}
-          />
-          <Text
-            style={[
-              styles.teamName,
-              item.Status === "STATUS_FINAL" &&
-                (item.HomeWinner ? styles.winnerText : styles.loserText),
-            ]}
-          >
-            {item.HomeAbbrev}
-            {item.HomeRank && ` (${item.HomeRank})`}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+    />
   );
 
   const handleSearchChange = useCallback((text) => {
