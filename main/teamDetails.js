@@ -4,9 +4,10 @@ import {
   Text,
   StyleSheet,
   Image,
-  ScrollView,
+  FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 
@@ -17,6 +18,7 @@ export default function TeamDetails() {
   const [teamData, setTeamData] = useState(null);
   const [scheduleData, setScheduleData] = useState(null);
   const [activeTab, setActiveTab] = useState("Schedule");
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchTeamDetails = async () => {
     const response = await fetch(
@@ -28,19 +30,31 @@ export default function TeamDetails() {
   };
 
   const fetchTeamSchedule = async () => {
-    const response = await fetch(
-      `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/teams/${teamId}/schedule`
-    );
-    // console.log(response.url);
-
-    const data = await response.json();
-    setScheduleData(data);
-    // Handle schedule data if needed
+    try {
+      const response = await fetch(
+        `https://site.api.espn.com/apis/site/v2/sports/${sportName}/${league}/teams/${teamId}/schedule`
+      );
+      const data = await response.json();
+      setScheduleData(data);
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+    }
   };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchTeamSchedule().then(() => setRefreshing(false));
+  }, []);
 
   useEffect(() => {
     fetchTeamDetails();
     fetchTeamSchedule();
+
+    const intervalId = setInterval(() => {
+      fetchTeamSchedule();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   // Check if teamData is available before accessing its properties
@@ -63,62 +77,73 @@ export default function TeamDetails() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Schedule":
-        return (
-          <ScrollView style={styles.scheduleContainer}>
-            {scheduleData?.events
-              ?.filter(
-                (event) =>
-                  event.competitions[0].status.type.name === "STATUS_FINAL"
-              )
-              .reverse()
-              .map((event, index) => {
-                const eventId = event?.id;
-                const homeTeam = event?.competitions?.[0]?.competitors?.[0];
-                const awayTeam = event?.competitions?.[0]?.competitors?.[1];
-                const homeScore = homeTeam?.score?.value;
-                const awayScore = awayTeam?.score?.value;
+        const games = scheduleData?.events
+          ?.filter(
+            (event) =>
+              event.competitions[0].status.type.name !== "STATUS_SCHEDULED"
+          )
+          .reverse();
 
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.gameContainer}
-                    onPress={() =>
-                      navigation.replace("ScoresDetails", {
-                        eventId: eventId,
-                        sportName: sportName,
-                        league: league,
-                      })
-                    }
-                  >
-                    <View style={styles.teamScoreContainer}>
-                      <View style={styles.teamLogoContainer}>
-                        <Image
-                          style={styles.teamLogo}
-                          source={{ uri: awayTeam.team.logos[0].href }}
-                        />
-                        <Text style={styles.teamName}>
-                          {awayTeam.team.abbreviation}
-                        </Text>
-                      </View>
-                      <Text style={styles.score}>{awayScore}</Text>
+        return (
+          <FlatList
+            data={games}
+            keyExtractor={(item) => item.id}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="white"
+              />
+            }
+            renderItem={({ item: event }) => {
+              const eventId = event?.id;
+              const status =
+                event?.competitions?.[0]?.status?.type?.shortDetail;
+              const homeTeam = event?.competitions?.[0]?.competitors?.[0];
+              const awayTeam = event?.competitions?.[0]?.competitors?.[1];
+              const homeScore = homeTeam?.score?.value;
+              const awayScore = awayTeam?.score?.value;
+
+              return (
+                <TouchableOpacity
+                  style={styles.gameContainer}
+                  onPress={() =>
+                    navigation.replace("ScoresDetails", {
+                      eventId: eventId,
+                      sportName: sportName,
+                      league: league,
+                    })
+                  }
+                >
+                  <View style={styles.teamScoreContainer}>
+                    <View style={styles.teamLogoContainer}>
+                      <Image
+                        style={styles.teamLogo}
+                        source={{ uri: awayTeam.team.logos[0].href }}
+                      />
+                      <Text style={styles.teamName}>
+                        {awayTeam.team.abbreviation}
+                      </Text>
                     </View>
-                    <Text style={styles.vs}>vs</Text>
-                    <View style={styles.teamScoreContainer}>
-                      <Text style={styles.score}>{homeScore}</Text>
-                      <View style={styles.teamLogoContainer}>
-                        <Image
-                          style={styles.teamLogo}
-                          source={{ uri: homeTeam.team.logos[0].href }}
-                        />
-                        <Text style={styles.teamName}>
-                          {homeTeam.team.abbreviation}
-                        </Text>
-                      </View>
+                    <Text style={styles.score}>{awayScore}</Text>
+                  </View>
+                  <Text style={styles.status}>{status}</Text>
+                  <View style={styles.teamScoreContainer}>
+                    <Text style={styles.score}>{homeScore}</Text>
+                    <View style={styles.teamLogoContainer}>
+                      <Image
+                        style={styles.teamLogo}
+                        source={{ uri: homeTeam.team.logos[0].href }}
+                      />
+                      <Text style={styles.teamName}>
+                        {homeTeam.team.abbreviation}
+                      </Text>
                     </View>
-                  </TouchableOpacity>
-                );
-              })}
-          </ScrollView>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
         );
       case "Stats":
         return (
@@ -149,7 +174,8 @@ export default function TeamDetails() {
               {location} {name}
             </Text>
             <Text style={styles.record}>
-              {record} | {standingSummary}
+              {record}
+              {standingSummary ? ` | ${standingSummary}` : ""}
             </Text>
           </View>
         </View>
@@ -257,10 +283,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  vs: {
-    color: "#666",
-    fontSize: 14,
-    marginHorizontal: 10,
+  status: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
     flex: 1,
     textAlign: "center",
   },
