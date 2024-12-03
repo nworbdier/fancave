@@ -23,7 +23,7 @@ import { useSportsContext } from "./SportsContext";
 import { Entypo } from "@expo/vector-icons";
 import SearchBox from "../components/searchbox";
 import renderBasesComponent from "../components/bases";
-import ScoreboardGame from "../components/scoreboard";
+import Scoreboard from "../components/scoreboard";
 
 export default function Scores({ route }) {
   const { sportsData } = useSportsContext();
@@ -380,7 +380,7 @@ export default function Scores({ route }) {
   };
 
   const matchupView = ({ item }) => (
-    <ScoreboardGame
+    <Scoreboard
       item={item}
       onPress={() =>
         navigation.navigate("ScoresDetails", {

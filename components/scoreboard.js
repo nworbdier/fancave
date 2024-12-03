@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { renderBasesComponent } from './bases';
 
-const ScoreboardGame = ({ item, onPress }) => {
+const Scoreboard = ({ item, onPress }) => {
   return (
     <TouchableOpacity style={styles.gameContainer} onPress={onPress}>
       <View style={styles.teamRow}>
